@@ -1,0 +1,34 @@
+.grid-layout {
+
+    display: grid;
+    gap: var(--sp-1);
+    grid-template-columns: var(--sp-3) repeat(5, 1fr) var(--sp-3);
+
+}
+
+@media all and (min-width: 768px) {
+
+    .grid-layout {
+        gap: var(--sp-2);
+        grid-template-columns: var(--sp-6) repeat(8, 1fr) var(--sp-6);
+    }
+
+}
+
+@media all and (min-width: 1024px) {
+
+    .grid-layout {
+        gap: var(--sp-3);
+        grid-template-columns: var(--sp-6) repeat(9, 1fr) var(--sp-6);
+    }
+
+}
+
+@media all and (min-width: 1440px) {
+
+    .grid-layout {
+        gap: var(--sp-3);
+        grid-template-columns: calc(var(--sp-6)*2) repeat(12, 1fr) calc(var(--sp-6)*2);
+    }
+
+}

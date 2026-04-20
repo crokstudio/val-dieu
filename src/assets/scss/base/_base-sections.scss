@@ -1,0 +1,16 @@
+.section{
+    padding-block: var(--sp-8);
+    background-color: var(--color-white-100);
+}
+
+.section--dark{
+    background-color: var(--color-green-100);
+}
+
+@media all and (min-width: 768px) {
+
+    .section{
+        padding-top: var(--spacing-10);
+    }
+
+}

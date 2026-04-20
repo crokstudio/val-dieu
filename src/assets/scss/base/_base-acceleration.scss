@@ -1,0 +1,63 @@
+@property --scroll-position {
+	syntax: "<number>";
+	inherits: true;
+	initial-value: 0;
+}
+@property --scroll-position-delayed {
+	syntax: "<number>";
+	inherits: true;
+	initial-value: 0;
+}
+
+@property --nav-transition-duration {
+  syntax: "<time>";
+  inherits: true;
+  initial-value: 0.2s;
+}
+
+@property --when-scrolling {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+
+@keyframes adjust-pos {
+	to {
+		--scroll-position: 1;
+		--scroll-position-delayed: 1;
+	}
+}
+
+:root {
+	animation: adjust-pos linear both;
+	animation-timeline: scroll(root);
+}
+
+body {
+	transition: --scroll-position-delayed 0.15s linear;
+	--scroll-velocity: calc(var(--scroll-position) - var(--scroll-position-delayed));
+	--scroll-speed: max(var(--scroll-velocity), -1 * var(--scroll-velocity)); /* abs(var(--scroll-velocity)); */
+	--scroll-direction: calc(var(--scroll-velocity) / var(--scroll-speed)); /* sign(var(--scroll-velocity)); */
+
+	--when-scrolling: abs(var(--scroll-direction));
+	--when-not-scrolling: abs(var(--when-scrolling) - 1);
+
+	--when-scrolling-up: min(abs(var(--scroll-direction) - abs(var(--scroll-direction))),	1);
+	--when-scrolling-down: min(var(--scroll-direction) + abs(var(--scroll-direction)), 1);
+
+	--when-scrolling-down-or-when-not-scrolling: clamp(0, var(--scroll-direction) + 1, 1);
+	--when-scrolling-up-or-when-not-scrolling: clamp(0, abs(var(--scroll-direction) - 1), 1);
+
+    /*
+    --nav-transition-duration: calc(0.2s + 3s * (1 - var(--when-scrolling)));
+    */
+
+    --nav-transition-duration: calc(0s + 99999s * (1 - var(--when-scrolling)));
+
+	--scroll-threshold: 0.05;
+    --scroll-direction-thresholded: calc(var(--scroll-direction) * min(1, (var(--scroll-speed) / var(--scroll-threshold))) );
+
+	
+
+}
