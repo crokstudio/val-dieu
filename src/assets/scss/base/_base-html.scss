@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    background-color: var(--color-white-100);
 }
 
 ul {
@@ -19,6 +20,42 @@ p{
     margin: 0;
 }
 
+h1{
+    margin: 0;  
+    letter-spacing: -5%;
+}
+
 h2{
     margin: 0;  
+    letter-spacing: -5%;
+}
+
+h5{
+    margin: 0;  
+}
+
+button{
+    cursor: pointer;
+    padding: var(--sp-1) var(--sp-3);
+    width: fit-content;
+    height: fit-content;
+    background-color: initial;
+    border: var(--color-red-100) 3px solid;
+    border-radius: var(--br-l);
+
+    transition: all 0.3s ease;
+}
+
+button:hover{
+    background-color: var(--color-red-100);
+}
+
+button p {
+    font-family: 'Gambetta', serif;
+    color: var(--color-red-100);
+    font-weight: 600;
+}
+
+button:hover p {
+    color: var(--color-white-100);
 }

@@ -8,7 +8,7 @@
     /*h5*/
     --font-family-h5: "General Sans", sans-serif;
     --font-size-h5: var(--txt-2);
-    --font-weight-h5: 700;
+    --font-weight-h5: 600;
     --font-line-height-h5: normal;
 
     /*h4*/
@@ -28,12 +28,14 @@
     --font-size-h2: var(--txt-3);
     --font-weight-h2: 700;
     --font-line-height-h2: 100%;
+    --font-color-h2: var(--color-red-100);
 
     /*h1*/
     --font-family-h1: "Gambetta", serif;
     --font-size-h1: var(--txt-4);
     --font-weight-h1: 700;
     --font-line-height-h1: 89%;
+    --font-color-h1: var(--color-red-100);
 }
 
 /* TABLET FONTS SIZES */
@@ -73,7 +75,7 @@
     --font-size-p: var(--txt-2);
 
     /*h5*/
-    --font-size-h5: var(--txt-3);
+    --font-size-h5: var(--txt-2);
 
     /*h4*/
     --font-size-h4: var(--txt-4);
@@ -115,7 +117,7 @@ h5 {
     font-size: var(--font-size-h5);
     font-weight: var(--font-weight-h5);
 
-    line-height: var(--font-line-height-p);
+    line-height: var(--font-line-height-h5);
 
 
     color: var(--text-color-100);
@@ -126,7 +128,7 @@ h4 {
     font-size: var(--font-size-h4);
     font-weight: var(--font-weight-h4);
 
-    line-height: var(--font-line-height-p);
+    line-height: var(--font-line-height-h4);
     
     color: var(--text-color-75);
 }
@@ -135,7 +137,7 @@ h3 {
     font-family: var(--font-family-h3);
     font-size: var(--font-size-h3);
     font-weight: var(--font-weight-h3);
-    line-height: var(--font-line-height-p);
+    line-height: var(--font-line-height-h3);
     
     color: var(--text-color-100);
     }
@@ -144,18 +146,18 @@ h2 {
     font-family: var(--font-family-h2);
     font-size: var(--font-size-h2);
     font-weight: var(--font-weight-h2);
-    line-height: var(--font-line-height-p);
-    
-    color: var(--text-color-100);
-    }
+    line-height: var(--font-line-height-h2);
+
+    color: var(--font-color-h1);
+}
         
 h1 {
     font-family: var(--font-family-h1);
     font-size: var(--font-size-h1);
     font-weight: var(--font-weight-h1);
-    line-height: var(--font-line-height-p);
+    line-height: var(--font-line-height-h1);
     
-    color: var(--text-color-100);
+    color: var(--font-color-h1);
 }
 
 .fc-100 {

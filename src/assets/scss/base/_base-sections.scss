@@ -1,16 +1,64 @@
+:root{
+    --section-spacing: var(--sp-8);
+
+    /* --content-max-width: 1440px; Could be interesting*/ 
+    --content-max-width: 1920px;
+    --max-width: 1920px;
+}
+
+@media all and (min-width: 768px) {
+    :root{
+        --section-spacing: var(--sp-10);
+    }
+}
+
+
 .section{
-    padding-block: var(--sp-8);
+    padding-block: var(--section-spacing);
     background-color: var(--color-white-100);
+    max-width: var(--content-max-width);
+    margin-inline: auto;
 }
 
 .section--dark{
+    background-image: url("/assets/medias/svg/section-green-texture2.svg");
+    background-repeat: repeat;
+    background-size: 100%;
+    //background-blend-mode: darken; Doesn't seem to work as expected
     background-color: var(--color-green-100);
+}
+
+.section--dark button{
+    border: none;
+    background-color: var(--color-white-100);
+    & p{
+        color: var(--color-green-100);
+    }
+}
+
+body > div:nth-last-of-type(1) {
+    padding-bottom: calc(var(--section-spacing)*2);
 }
 
 @media all and (min-width: 768px) {
 
     .section{
-        padding-top: var(--spacing-10);
+        padding-block: var(--section-spacing);
     }
 
+    body > div:nth-last-of-type(1) {
+        padding-bottom: calc(var(--section-spacing)*2);
+    }
+
+}
+
+@media all and (min-width: 1440px) {
+
+    .section{
+        padding-block: var(--section-spacing);
+    }
+
+    body > div:nth-last-of-type(1) {
+        padding-bottom: calc(var(--section-spacing)*2);
+    }
 }
