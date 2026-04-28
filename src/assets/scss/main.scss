@@ -2,13 +2,13 @@
 
 /* @use "./base/base-reset.scss" as *;   EXEMPLE */
 
+@use "./base/base-spacing.scss" as *;
 @use "./base/base-html.scss" as *;
 @use "./base/base-acceleration.scss" as *;
 @use "./base/base-fonts.scss" as *;
 @use "./base/base-grid.scss" as *;
 @use "./base/base-sections.scss" as *;
 
-@use "./params/params-spacing.scss" as *;
 @use "./params/params-fonts.scss" as *;
 @use "./params/params-colors.scss" as *;
 

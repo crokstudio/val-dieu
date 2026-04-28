@@ -54,7 +54,7 @@
 .hp-bg::after{
     content: "";
     position: absolute;
-    bottom: 25%;
+    bottom: 25vh;
     width: 100%;
     max-width: var(--max-width);
     height: 5%;
@@ -92,7 +92,7 @@
     }
 
     .hp-bg::after{
-        bottom: 40%;
+        bottom: 40vh;
     }
 
     .hp-intro .hp-intro-img, .hp-intro p{
@@ -113,7 +113,7 @@
     }
 
     .hp-bg::after{
-        bottom: 5%;
+        bottom: 5vh;
     }
 
 
