@@ -1,3 +1,48 @@
+@use "sass:map";
+
+$grid-columns: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;
+
+$grid-breakpoints: (
+    "tablet": (
+        "min-width": 768px,
+        "grid-gap": var(--sp-2),
+        "row-gap": var(--sp-5),
+        "outer-gutter": var(--sp-4),
+        "outer-columns": 8
+    ),
+    "desktop": (
+        "min-width": 1024px,
+        "outer-gutter": var(--sp-4),
+        "outer-columns": 9
+    ),
+    "wide": (
+        "min-width": 1440px,
+        "grid-gap": var(--sp-3),
+        "outer-gutter": var(--sp-9),
+        "outer-columns": 12
+    )
+);
+
+@mixin grid-layout-columns($columns) {
+    display: grid;
+    gap: var(--spacing-grid-gap);
+    row-gap: var(--spacing-grid-row-gap, var(--spacing-grid-gap));
+    grid-template-columns: repeat($columns, minmax(0, 1fr));
+}
+
+@mixin grid-layout-utilities($prefix: null) {
+    @each $columns in $grid-columns {
+        .grid-layout#{$prefix}-#{$columns} {
+            @include grid-layout-columns($columns);
+        }
+    }
+}
+
+:root {
+    --spacing-grid-gap: var(--sp-1);
+    --spacing-grid-row-gap: var(--sp-3);
+}
+
 .grid-layout {
 
     display: grid;
@@ -11,58 +56,36 @@
     grid-column: 2 / -2;
 }
 
-.inner-grid {
-    display: grid;
-    row-gap: var(--sp-3);
-    column-gap: var(--sp-1);
-    grid-template-columns: repeat(5, 1fr);
-}
+@include grid-layout-utilities;
 
-.inner-grid > * {
+[class*="grid-layout-"] > * {
     grid-column: 1 / -1;
 }
 
-@media all and (min-width: 768px) {
+@each $name, $breakpoint in $grid-breakpoints {
+    @media all and (min-width: map.get($breakpoint, "min-width")) {
 
-    .grid-layout {
-        column-gap: var(--sp-2);
-        grid-template-columns: var(--sp-4) repeat(8, 1fr) var(--sp-4);
+        @if map.has-key($breakpoint, "grid-gap") or map.has-key($breakpoint, "row-gap") {
+            :root {
+                @if map.has-key($breakpoint, "grid-gap") {
+                    --spacing-grid-gap: #{map.get($breakpoint, "grid-gap")};
+                }
+
+                @if map.has-key($breakpoint, "row-gap") {
+                    --spacing-grid-row-gap: #{map.get($breakpoint, "row-gap")};
+                }
+            }
+        }
+
+        .grid-layout {
+            @if map.has-key($breakpoint, "grid-gap") {
+                column-gap: map.get($breakpoint, "grid-gap");
+            }
+
+            grid-template-columns: map.get($breakpoint, "outer-gutter") repeat(map.get($breakpoint, "outer-columns"), 1fr) map.get($breakpoint, "outer-gutter");
+        }
+
+        @include grid-layout-utilities("-#{$name}");
+
     }
-
-    .inner-grid {
-        row-gap: var(--sp-5);
-        column-gap: var(--sp-2);
-        grid-template-columns: repeat(8, 1fr);
-    }
-
-}
-
-@media all and (min-width: 1024px) {
-
-    .grid-layout {
-        column-gap: var(--sp-2);
-        grid-template-columns: var(--sp-4) repeat(9, 1fr) var(--sp-4);
-    }
-
-    .inner-grid {
-        row-gap: var(--sp-5);
-        column-gap: var(--sp-2);
-        grid-template-columns: repeat(9, 1fr);
-    }
-
-}
-
-@media all and (min-width: 1440px) {
-
-    .grid-layout {
-        column-gap: var(--sp-3);
-        grid-template-columns: var(--sp-9) repeat(12, 1fr) var(--sp-9);
-    }
-
-    .inner-grid {
-        row-gap: var(--sp-5);
-        column-gap: var(--sp-3);
-        grid-template-columns: repeat(12, 1fr);
-    }
-
 }
