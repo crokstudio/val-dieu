@@ -45,7 +45,7 @@
     background: url("/assets/medias/img/hp_bg.png")   ;
     background-size: cover;
     background-position: center;
-    height: 75vh;
+    height: 75dvh;
     width: 100%;
     max-width: var(--max-width);
     justify-self: center;
@@ -54,7 +54,7 @@
 .hp-bg::after{
     content: "";
     position: absolute;
-    bottom: 25vh;
+    bottom: 25dvh;
     width: 100%;
     max-width: var(--max-width);
     height: 5%;
@@ -87,12 +87,12 @@
 @media all and (min-width: 768px) {
 
     .hp-bg{
-        height: 60vh;
+        height: 60dvh;
         background-position: 50% 75%;
     }
 
     .hp-bg::after{
-        bottom: 40vh;
+        bottom: 40dvh;
     }
 
     .hp-intro .hp-intro-img, .hp-intro p{
@@ -108,12 +108,12 @@
 @media all and (min-width: 1024px) {
 
     .hp-bg{
-        height: 95vh;
+        height: 95dvh;
         background-position: 50% 50%;
     }
 
     .hp-bg::after{
-        bottom: 5vh;
+        bottom: 5dvh;
     }
 
 
