@@ -2,13 +2,13 @@
     /*p*/
     --font-family-p: "General Sans", sans-serif;
     --font-size-p: var(--txt-1);
-    --font-weight-p: 400;
+    --font-weight-p: 300;
     --font-line-height-p: normal;
 
     /*h5*/
     --font-family-h5: "General Sans", sans-serif;
     --font-size-h5: var(--txt-2);
-    --font-weight-h5: 600;
+    --font-weight-h5: 500;
     --font-line-height-h5: normal;
 
     /*h4*/
@@ -169,4 +169,7 @@ h1 {
 
 .section--dark{
     --text-color-100: var(--text-color-light-100);
+    & h1, h2 {
+        color: var(--color-white-100);
+    }
 }
