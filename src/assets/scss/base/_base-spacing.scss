@@ -32,3 +32,32 @@
     --br-l: calc(64 / 16 * 1rem);
 
 }
+
+@-moz-document url-prefix() {
+    :root {
+        --sp-0: 0.25rem;
+        --sp-1: 0.5rem;
+        --sp-2: 1rem;
+        --sp-3: 1.5rem;
+        --sp-4: 2rem;
+        --sp-5: 2.5rem;
+        --sp-6: 3rem;
+        --sp-7: 3.5rem;
+        --sp-8: 4rem;
+        --sp-9: 4.5rem;
+        --sp-10: 5rem;
+
+        --txt-0: 0.75rem;
+        --txt-1: 1rem;
+        --txt-2: 1.3125rem;
+        --txt-3: 1.75rem;
+        --txt-4: 2.375rem;
+        --txt-5: 3.125rem;
+        --txt-6: 4.1875rem;
+        --txt-7: 5.625rem;
+
+        --br-s: 1rem;
+        --br-m: 2rem;
+        --br-l: 4rem;
+    }
+}
