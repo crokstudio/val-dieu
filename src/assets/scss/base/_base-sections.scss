@@ -36,8 +36,9 @@
     }
 }
 
-body > div:nth-last-of-type(1) {
-    padding-bottom: calc(var(--section-spacing)*2);
+/* Make space for footer overlapp */
+.section:last-of-type {
+    padding-block-end: calc(var(--section-spacing)*2 + var(--br-m));
 }
 
 @media all and (min-width: 768px) {
@@ -46,8 +47,9 @@ body > div:nth-last-of-type(1) {
         padding-block: var(--section-spacing);
     }
 
-    body > div:nth-last-of-type(1) {
-        padding-bottom: calc(var(--section-spacing)*2);
+    /* Make space for footer overlapp */
+    .section:last-of-type {
+        padding-block-end: calc(var(--section-spacing)*2 + var(--br-m));
     }
 
 }
@@ -58,7 +60,10 @@ body > div:nth-last-of-type(1) {
         padding-block: var(--section-spacing);
     }
 
-    body > div:nth-last-of-type(1) {
-        padding-bottom: calc(var(--section-spacing)*2);
+    /* Make space for footer overlapp */
+    .section:last-of-type {
+        padding-block-end: calc(var(--section-spacing)*2 + var(--br-m));
     }
 }
+
+
