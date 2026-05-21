@@ -1,0 +1,153 @@
+.discover--intro {
+    row-gap: var(--sp-5);
+}
+
+.discover--intro-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    gap: var(--sp-3);
+
+    grid-column: 2/-2;
+}
+
+.discover--intro-txt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    grid-column: 2/-2;
+
+    text-align: center;
+}
+
+.discover--history {
+    grid-column: 1/-1;
+    position: relative;
+}
+
+.discover--history-content {
+    grid-column: 1/8;
+    padding-block: var(--sp-10);
+    row-gap: var(--sp-3);
+    z-index: 1;
+    
+    border-radius: 0 var(--br-m) var(--br-m) 0;
+}
+
+.discover--history-content * {
+    grid-column: 2/-2;
+}
+
+.discover--history-image {
+    position: absolute;
+    
+    background-image: url("/assets/medias/img/discover-history.jpeg");
+    background-size: cover;
+    background-position: right;
+    
+    width: 100%;
+    height: 100%;
+
+    grid-column: 7/-1;
+}
+
+
+.discover--structur-abbaye {
+    grid-column: 6/-6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* TIMELINE */
+
+.discover--timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+}
+
+.discover--timeline-title {
+    grid-column: 2/-2;
+    text-align: center;
+}
+
+.timeline--dates {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--sp-1);
+
+    grid-column: 2 / 3;
+}
+
+.timeline--date-item h4 {
+    margin: 0;
+}
+
+.timeline--cards {
+    display: flex;
+    flex-direction: column;
+
+    grid-column: 4 / -2;
+}
+
+.timeline--card-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.timeline--card-input {
+    display: none;
+}
+
+.timeline--card-content {
+
+    transform: translateY(48px);
+    height: 0;
+    overflow-y: visible;
+    opacity: 0;
+    
+    transition: none;
+}
+
+.timeline--card-input:checked + .timeline--card-content {
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+    transition: all 0.5s ease;
+}
+
+.timeline--card-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+
+    margin: 0;
+
+    grid-column: 1 / 6;
+}
+
+.timeline--card-header * {
+    margin: 0;
+}
+
+.timeline--card-header h3 {
+    margin-block-end: var(--sp-2);
+    font-family: "General Sans", sans-serif;
+    font-size: var(--txt-7);
+    font-weight: 300;
+}
+
+.timeline--card-img {
+    grid-column: 6 / -1;
+    aspect-ratio: 1/1;
+
+    border-radius: var(--br-s);
+}

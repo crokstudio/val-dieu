@@ -6,9 +6,13 @@ permalink: index.html
 
 {% block content %}
 
+<<<<<<< HEAD
 <div class="hp-bg">
     <div></div>
 </div>
+=======
+{{ banner("assets/medias/img/Banner_Home.jpg", "Image abbaye", "") }}
+>>>>>>> main
 
 <div class="section grid-layout">
 
@@ -27,13 +31,23 @@ permalink: index.html
 
 <div class="section grid-layout">
 
-    <div class="hp-gallery">
-        <img src="../assets/medias/img/hp-intro-bg.png" alt="gallery image">
-        <img src="../assets/medias/img/hp-intro-bg.png" alt="gallery image">
-        <img src="../assets/medias/img/hp-intro-bg.png" alt="gallery image">
-        <img src="../assets/medias/img/hp-intro-bg.png" alt="gallery image">
-        <img src="../assets/medias/img/hp-intro-bg.png" alt="gallery image">
-    </div>
+    <ul class="hp-gallery">
+        <li class="hp--gallery-item">
+            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_basilique.jpg" alt="gallery image">
+        </li>
+        <li class="hp--gallery-item">
+            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_parc.jpg" alt="gallery image">
+        </li>
+        <li class="hp--gallery-item">
+            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cloche.jpg" alt="gallery image">
+        </li>
+        <li class="hp--gallery-item">
+            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cassecroute.jpg" alt="gallery image">
+        </li>
+        <li class="hp--gallery-item">
+            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_brasserie.jpg" alt="gallery image">
+        </li>
+    </ul>
 
 </div>
 
@@ -92,8 +106,8 @@ permalink: index.html
         </li>
 
     </ul>
-
-    <div class="interactive-map"></div>
+    
+    {% include "partials/interactive-map.njk" %}
 
 </div>
 

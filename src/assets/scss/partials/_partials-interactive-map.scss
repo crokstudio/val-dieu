@@ -1,5 +1,6 @@
 .interactive-map{
-    background-image: url("/assets/medias/img/hp-intro-bg.png");
+    position: relative;
+    background-image: url("/assets/medias/img/Map.png");
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -21,4 +22,106 @@
         grid-column: 3 / -3;
     }
 
+}
+
+/* Map info */
+.map--info{
+    display: flex;
+    flex-direction: row;
+    gap: var(--sp-1);
+    align-items: center;
+
+    position: absolute;
+    transform: translate(-25px, -25px);
+}
+
+.map--info-img{
+    display: block;
+    width: 50px;
+    height: 50px;
+}
+
+.map--info-link{
+    display: block;
+    cursor: pointer;
+}
+
+.map--info-txt{
+    user-select: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    font-size: var(--txt-1);
+    color: var(--color-white-100);
+    font-family: "Gambetta", serif;
+    font-weight: 600;
+    padding: var(--sp-1) var(--sp-2);
+
+    background-color: rgba(80,89,87, 0.8);
+    border: solid 2px var(--color-red-100);
+    border-radius: var(--br-m);
+}
+
+.map--info-link:hover + .map--info-txt{
+    opacity: 1;
+}
+
+#map--abbaye{
+    left: 56.21%;
+    top: 39.97%;
+}
+
+#map--magasin{
+    left: 25.51%;
+    top: 57.22%;
+}
+
+#map--info{
+    left: 51.61%;
+    top: 65.63%;
+}
+
+#map--restauration{
+    left: 40.28%;
+    top: 56.92%;
+}
+
+#map--bird{
+    left: 45.24%;
+    top: 22.17%;
+}
+
+#map--wc{
+    left: 36.71%;
+    top: 48.97%;
+}
+
+#map--promenade{
+    left: 13.49%;
+    top: 47.26%;
+}
+
+#map--brasserie{
+    left: 31.96%;
+    top: 71.53%;
+}
+
+#map--parc{
+    left: 86.34%;
+    top: 64.41%;
+}
+
+#map--parking-01{
+    left: 44.46%;
+    top: 44.31%;
+}
+
+#map--parking-03{
+    left: 76.77%;
+    top: 30.26%;
+}
+
+#map--parking-02{
+    left: 21.09%;
+    top: 37.44%;
 }
