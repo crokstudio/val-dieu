@@ -29,6 +29,8 @@ body:has(.mainnav__toggle:checked) {
 
     background-color: var(--color-white-100);
     box-shadow: 0px 3px 10px -5px rgba(0,0,0,0.45);
+
+    overflow: hidden;
     
 }
 
@@ -316,16 +318,20 @@ body:has(.mainnav__toggle:checked) {
 
 }
 
-/* Nav Scroll or not */
-.nav-not-scrolled  {
-    background-color: transparent;
-    box-shadow: none;
-}
+@media all and (min-width: 768px) {
 
-.nav-not-scrolled .mainnav__item h2 {
-    color: var(--color-white-100);
-}
+    /* Nav Scroll or not */
+    .nav-not-scrolled  {
+        background-color: transparent;
+        box-shadow: none;
+    }
 
-.nav-not-scrolled .mainnav__logo {
-    filter: brightness(0) invert(1);
+    .nav-not-scrolled .mainnav__item h2 {
+        color: var(--color-white-100);
+    }
+
+    .nav-not-scrolled .mainnav__logo {
+        filter: brightness(0) invert(1);
+    }
+
 }
