@@ -42,8 +42,62 @@ permalink: discover.html
 
     </div>
 
-    <div class="section grid-layout section--dark">
-        <h2>Au fil du temps...</h2>
+    <div class="section section--dark discover--timeline">
+        <h2 class="discover--timeline-title">Au fil du temps...</h2>
+        <div class="discover--timeline-content grid-layout">
+            <ul class="timeline--dates">
+                <li class="timeline--date-item">
+                    <label for="timeline-0" class="timeline--date-label">
+                        <h5>1200</h5>
+                    </label>
+                </li>
+                <li class="timeline--date-item">
+                    <label for="timeline-1" class="timeline--date-label">
+                        <h5>1300</h5>
+                    </label>
+                </li>
+                <li class="timeline--date-item">
+                    <label for="timeline-2" class="timeline--date-label">
+                        <h5>1400</h5>
+                    </label>
+                </li>
+            </ul>
+            <ul class="timeline--cards">
+                <li class="timeline--card-item">
+                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-0" checked>
+                    <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
+                        <div class="timeline--card-header">
+                            <h3>1200</h3>
+                            <h4>l'arrivée des moines</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                        <img src="assets/medias/img/hp_bg.png" alt="" class="timeline--card-img fluid-img">
+                    </div>
+                </li>
+                <li class="timeline--card-item">
+                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-1">
+                    <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
+                        <div class="timeline--card-header">
+                            <h3>1300</h3>
+                            <h4>l'extension de l'abbaye</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                        <img src="assets/medias/img/hp_bg.png" alt="" class="timeline--card-img fluid-img">
+                    </div>
+                </li>
+                <li class="timeline--card-item">
+                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-2">
+                    <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
+                        <div class="timeline--card-header">
+                            <h3>1400</h3>
+                            <h4>l'arrivée des moines</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                        <img src="assets/medias/img/hp_bg.png" alt="" class="timeline--card-img fluid-img">
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 
 {% endblock %}

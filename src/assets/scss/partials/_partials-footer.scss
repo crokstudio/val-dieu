@@ -10,6 +10,10 @@ footer{
     margin-top: calc(-1 * var(--br-m));
 }
 
+.footer .section {
+    padding-block-end: var(--section-spacing);
+}
+
 .footer .section--dark{
     background-color: var(--color-olive-100);
     border-radius: var(--br-m) var(--br-m) 0 0;
