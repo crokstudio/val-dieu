@@ -169,7 +169,7 @@ h1 {
 
 .section--dark{
     --text-color-100: var(--text-color-light-100);
-    & h1, h2 {
+    & h1, h2, h3, h4 {
         color: var(--color-white-100);
     }
 }

@@ -5,11 +5,6 @@ body:has(.mainnav__toggle:checked) {
     box-sizing: border-box;
 }
 
-.nav-scrolled{
-    background-color: var(--color-white-100);
-    box-shadow: 0px 3px 10px -5px rgba(0,0,0,0.45);
-}
-
 
 .-anim__scrollHidden {
 
@@ -31,6 +26,10 @@ body:has(.mainnav__toggle:checked) {
     z-index: 2;
 
     transition: 0.3s ease-in-out;
+
+    background-color: var(--color-white-100);
+    box-shadow: 0px 3px 10px -5px rgba(0,0,0,0.45);
+    
 }
 
 .mainnav__container .section{
@@ -295,4 +294,18 @@ body:has(.mainnav__toggle:checked) {
         gap: var(--sp-10);
     }
 
+}
+
+/* Nav Scroll or not */
+.nav-not-scrolled  {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.nav-not-scrolled .mainnav__item h2 {
+    color: var(--color-white-100);
+}
+
+.nav-not-scrolled .mainnav__logo {
+    filter: brightness(0) invert(1);
 }

@@ -41,31 +41,6 @@
 
 /* HOME PAGE INTRO SECTION */
 
-.hp-bg{
-    background: url("/assets/medias/img/hp_bg.png")   ;
-    background-size: cover;
-    background-position: center;
-    aspect-ratio: 3 / 5;
-    height: 75%;
-    width: 100%;
-    max-width: var(--max-width);
-    justify-self: center;
-
-    position: relative;
-}
-
-.hp-bg::after{
-    content: "";
-    display: block;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    max-width: var(--max-width);
-    height: 5%;
-    background-color: var(--color-white-100); /* Adjust the opacity as needed */
-    border-radius: var(--br-m) var(--br-m) 0 0;
-}
-
 .hp-intro {
     grid-column: 3 / -3;
 }
@@ -79,7 +54,7 @@
 }
 
 .hp-intro-img{
-    background-image: url("/assets/medias/img/hp-intro-bg.png");
+    background-image: url("/assets/medias/img/image_Home.jpg");
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -93,11 +68,6 @@
 }
 
 @media all and (min-width: 768px) {
-
-    .hp-bg{
-        aspect-ratio: 5 / 3;
-        background-position: 50% 75%;
-    }
 
     .hp-intro .hp-intro-img, .hp-intro p{
         grid-column: 2 / -2;
