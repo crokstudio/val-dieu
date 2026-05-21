@@ -59,14 +59,12 @@ body:has(.mainnav__toggle:checked) {
 }
 
 .mainnav__logo{
-    width: 100%;
+    width: 20vw;
     max-width: 85px;
 }
 
 .mainnav__bar a{
-
     pointer-events: all;
-
 }
 
 
@@ -160,16 +158,39 @@ body:has(.mainnav__toggle:checked) {
     }
 }
 
+.mainnav__item{
+    position: relative;
+}
+
 .mainnav__item h2{
     font-size: var(--txt-1);
     font-weight: 600;
     letter-spacing: normal;
-    
 }
 
-.mainnav__item--active h2{
+.mainnav__item a::after{
+    content: "";
+    position: absolute;            /* Sticks to the bottom of the link area */
+    width: 100%;           /* Spans the full width of the text */
+    height: 2px;           /* Thickness of your line */
+    background-color: var(--color-red-100);
+
+    margin-top: var(--sp-0);
     
-    text-decoration: underline;
+    /* Animation Magic */
+    transform: scaleX(0);  /* Hide it by shrinking it to 0 width */
+    transition: transform 0.3s ease;
+}
+
+.mainnav__item a:hover::after{
+    
+    /* Animation Magic */
+    transform: scaleX(1);  /* Hide it by shrinking it to 0 width */
+}
+
+.mainnav__item--active a::after{
+    
+    transform: scaleX(1);  /* Hide it by shrinking it to 0 width */
     font-weight: bold;
 
 }
@@ -217,7 +238,6 @@ body:has(.mainnav__toggle:checked) {
 
     .mainnav__logo {
 
-        width: 20vw;
         padding-inline: 0;
 
     }
