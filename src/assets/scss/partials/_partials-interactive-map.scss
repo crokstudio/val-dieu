@@ -33,6 +33,12 @@
 
     position: absolute;
     transform: translate(-25px, -25px);
+
+    z-index: 1;
+}
+
+.map--info:hover {
+    z-index: 2;
 }
 
 .map--info-img{
@@ -60,6 +66,8 @@
     background-color: rgba(80,89,87, 0.8);
     border: solid 2px var(--color-red-100);
     border-radius: var(--br-m);
+
+    text-wrap: nowrap;
 }
 
 .map--info-link:hover + .map--info-txt{
