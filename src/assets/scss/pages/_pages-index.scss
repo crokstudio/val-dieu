@@ -114,6 +114,7 @@
 
 .hp--gallery-img{
     border-radius: var(--br-s);
+    height: 100%;
 
     flex: 0 0 auto;
 }
@@ -128,7 +129,7 @@
     .hp--gallery-item{
         flex: 1 1 0;
         padding: 0;
-        height: 480px;
+        height: 250px;
         transition: all 0.2s ease;
         padding-block: var(--sp-6);
         padding-inline: var(--sp-2);
@@ -172,6 +173,19 @@
 
 }
 
+@media all and (min-width: 1024px) {
+
+    .hp--gallery-item{
+        height: 350px;
+    }
+}
+
+@media all and (min-width: 1440px) {
+
+    .hp--gallery-item{
+        height: 480px;
+    }
+}
 
 /* HOME PAGE EXPLORE SECTION */
 

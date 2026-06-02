@@ -206,7 +206,7 @@
     div{
         display: flex;
         flex-direction: column;
-        gap: var(--sp-3);
+        gap: var(--sp-2);
     }
 }
 
@@ -232,7 +232,8 @@
         }
 
         img{
-            aspect-ratio: 3 / 4;
+            aspect-ratio: unset;
+            height: 100%;
             border-radius: var(--br-m);
             order: 1;
             grid-column: 7 / -1;

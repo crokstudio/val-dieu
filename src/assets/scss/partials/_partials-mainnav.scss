@@ -30,7 +30,7 @@ body:has(.mainnav__toggle:checked) {
     background-color: var(--color-white-100);
     box-shadow: 0px 3px 10px -5px rgba(0,0,0,0.45);
 
-    overflow: hidden;
+    /*overflow: hidden;*/ /* BREAKS */
     
 }
 
@@ -39,7 +39,7 @@ body:has(.mainnav__toggle:checked) {
 }
 
 .mainnav__content{
-    padding-block: var(--sp-3);
+    padding-block: var(--sp-2);
 }
 
 .mainnav__bar {
@@ -318,20 +318,11 @@ body:has(.mainnav__toggle:checked) {
 
 }
 
-@media all and (min-width: 768px) {
+@media all and (min-width: 1024px) {
 
     /* Nav Scroll or not */
     .nav-not-scrolled  {
-        background-color: transparent;
         box-shadow: none;
-    }
-
-    .nav-not-scrolled .mainnav__item h2 {
-        color: var(--color-white-100);
-    }
-
-    .nav-not-scrolled .mainnav__logo {
-        filter: brightness(0) invert(1);
     }
 
 }
