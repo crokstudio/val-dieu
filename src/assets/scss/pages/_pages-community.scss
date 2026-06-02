@@ -1,0 +1,384 @@
+/* COMMUNITY PAGE INTRO SECTION */
+
+
+.community--intro {
+    row-gap: var(--sp-5);
+}
+
+.community--intro-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    text-align: center;
+
+    gap: var(--sp-3);
+}
+
+.community--intro-txt {
+
+    text-align: center;
+}
+
+@media all and (min-width: 768px) {
+
+    .community--intro {
+        grid-column: 3/-3;
+    }
+
+}
+
+/* COMMUNITY PAGE LIFE SECTION */
+
+
+.community--life {
+    row-gap: var(--sp-5);
+}
+
+.community--life img {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 16/9;
+    border-radius: var(--br-s);
+}
+
+.community--life > div {
+    display: flex;
+    flex-direction: column;
+
+    row-gap: var(--sp-2);
+}
+
+@media all and (min-width: 768px) {
+
+    .community--life {
+        grid-column: 1/-2;
+    }
+
+    .community--life img {
+        grid-column: 1/4;
+        height: 100%;
+
+        border-radius: 0 var(--br-s) var(--br-s) 0;
+    }
+
+    .community--life > div {
+        grid-column: 5/-1;
+    }
+
+}
+
+@media all and (min-width: 1024px) {
+
+    .community--life img {
+        grid-column: 1/5;
+
+        border-radius: 0 var(--br-m) var(--br-m) 0;
+    }
+
+    .community--life > div {
+        grid-column: 6/-1;
+    }
+
+}
+
+@media all and (min-width: 1440px) {
+
+    .community--life img {
+        grid-column: 1/6;
+
+        border-radius: 0 var(--br-m) var(--br-m) 0;
+    }
+
+    .community--life > div {
+        grid-column: 8/-1;
+    }
+
+}
+
+/* COMMUNITY PAGE PRAY SECTION */
+
+.community--agenda{
+    grid-column: 1 / -1;
+    gap: 0px;
+    row-gap: 0px;
+
+    h3, h4, p{
+    color: var(--text-color-light-100);
+
+    }
+
+    ul{
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1);
+        padding-top: var(--sp-3);
+    }
+}
+
+.community--agenda-item {
+
+    border-bottom: 1px var(--color-white-100) solid;
+
+    padding: calc(var(--sp-3) + var(--sp-1)) var(--sp-5);
+
+    li{
+    display: flex;
+    justify-content: space-between;
+    }   
+    
+    p:first-child{
+        font-weight: 600;
+    }
+}
+
+@media all and (min-width: 768px) {
+
+    .community--pray-title, .community--pray-txt{
+        text-align: center;
+        grid-column: 2 / -2;
+    }
+
+    .community--agenda{
+        grid-column: 2 / -2;
+
+        border-radius: var(--br-m);
+
+        ul{
+            
+        }
+    }
+
+    .community--agenda-item{
+        display: grid;
+        grid-template-columns: 0.5fr 1fr;
+        padding: var(--sp-5) var(--sp-10);
+
+
+        h3{
+            align-self: center;
+        }
+        ul{
+            padding: 0 0 0 var(--sp-3);
+            border-left: 1px var(--color-white-100) solid;
+        }
+    }
+
+}
+
+@media all and (min-width: 1440px) {
+
+    .community--pray-title, .community--pray-txt{
+        grid-column: 3 / -3;
+    }
+
+    .community--agenda-item ul{
+        padding-left: var(--sp-5);
+    }
+
+}
+
+
+/* COMMUNITY PAGE MORE SECTION */
+
+.community--more{
+
+    row-gap: var(--sp-5);
+
+    img{
+        width: 100%;
+        object-fit: cover;
+        aspect-ratio: 16/9;
+        border-radius: var(--br-s);
+    }
+
+    h4{
+        color: var(--color-red-100);
+    }
+}
+
+.community--more-content{
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+
+    div{
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+    }
+}
+
+@media all and (min-width: 768px){
+
+    .community--more{
+        grid-column: 3/-3;
+
+        img{
+            border-radius: var(--br-m);
+        }
+    }
+
+}
+
+@media all and (min-width: 1024px){
+
+    .community--more{
+        grid-column: 2/-2;
+
+        div{
+            grid-column: 1 / 6;
+        }
+
+        img{
+            aspect-ratio: 3 / 4;
+            border-radius: var(--br-m);
+            order: 1;
+            grid-column: 7 / -1;
+            grid-row: 1 / 1;
+        }
+    }
+
+}
+
+@media all and (min-width: 1440px){
+
+    .community--more{
+        img{
+            grid-column: 8 / -1;
+        }
+    }
+
+}
+
+/* COMMUNITY PAGE NEWS SECTION */
+
+.community--news{
+    grid-column: 1 / -1;
+    ul{
+        display: flex;
+        gap: var(--sp-1);
+        overflow-y: scroll;
+        scroll-snap-type: x mandatory;
+        padding-bottom: var(--sp-3);
+    }
+}
+
+.community--news-item{
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+
+    box-sizing: border-box;
+
+    padding-inline: var(--sp-3);
+
+    flex: 0 0 100%;
+
+    img{
+        width: 100%;
+        object-fit: cover;
+        aspect-ratio: 16/9;
+        border-radius: var(--br-s);
+    }
+
+    h5{
+        color: var(--color-red-100);
+        font-family: var(--font-family-h4);
+        font-weight: var(--font-weight-h4);
+        line-height: var(--font-line-height-h1);
+    }
+
+    p:last-of-type{
+        font-weight: 600;
+        opacity: 0.5;
+    }
+}
+
+@media all and (min-width: 768px){
+
+    .community--news-title{
+        grid-column: 3 / -3;
+    }
+
+    .community--news{
+        grid-column: 3 / -3;
+
+        ul{
+            gap: var(--sp-1);
+            padding-bottom: 0px;
+        }
+    }
+
+    .community--news-item{
+        padding-inline: 0px;
+        flex: 0 0 49%;
+    }
+
+}
+
+@media all and (min-width: 1024px){
+
+    .community--news-title{
+        grid-column: 2 / -2;
+    }
+
+    .community--news{
+        grid-column: 2 / -2;
+
+        ul{
+            gap: var(--sp-3);
+            padding-bottom: 0px;
+        }
+    }
+
+    .community--news-item{
+        padding-inline: 0px;
+        flex: inherit;
+    }
+
+}
+
+/* COMMUNITY PAGE CHARTE SECTION */
+
+.community--charte{
+    div{
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+
+        p{
+            width: 100%;
+        }
+    }
+
+    button{
+        justify-self: center;
+    }
+}
+
+@media all and (min-width: 768px){
+
+    .community--charte{
+        grid-column: 3 / -3;
+
+        h2{
+            text-align: center;
+        }
+
+        div{
+            flex-direction: row;
+            gap: var(--sp-5);
+        }
+    }
+
+}
+
+@media all and (min-width: 1440px){
+
+    .community--charte{
+        grid-column: 4 / -4;
+    }
+
+}

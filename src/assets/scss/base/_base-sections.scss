@@ -1,5 +1,5 @@
 :root{
-    --section-spacing: var(--sp-8);
+    --section-spacing: var(--sp-10);
 
     /* --content-max-width: 1440px; Could be interesting*/ 
     --content-max-width: 1920px;
@@ -8,7 +8,13 @@
 
 @media all and (min-width: 768px) {
     :root{
-        --section-spacing: var(--sp-10);
+        --section-spacing: calc(var(--sp-10) + var(--sp-5));
+    }
+}
+
+@media all and (min-width: 1024px) {
+    :root{
+        --section-spacing: calc(var(--sp-10)*2);
     }
 }
 

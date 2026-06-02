@@ -37,10 +37,24 @@ footer{
     font-weight: 700;
 }
 
+@media all and (min-width: 768px) {
+
+    .footer .section {
+        padding-block-start: calc(var(--section-spacing)/2);
+        padding-block-end: var(--section-spacing);
+    }
+
+}
+
 @media all and (min-width: 1024px) {
 
     footer .grid-layout{
-        row-gap: var(--section-spacing);
+        row-gap: calc(var(--section-spacing)/2);
+    }
+
+    .footer .section {
+        padding-block-start: calc(var(--section-spacing)/4);
+        padding-block-end: calc(var(--section-spacing)/4);
     }
 
 }
