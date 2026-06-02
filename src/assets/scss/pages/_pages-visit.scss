@@ -69,6 +69,12 @@
     aspect-ratio: 1/1;
     box-sizing: border-box;
     
+    transition: all 0.2s ease;
+}
+
+.visit--activities-card:hover {
+    transform: scale(1.02);
+
 }
 
 .activities--card--disabled {

@@ -17,6 +17,19 @@
     height: 50vh;
 }
 
+.banner::before{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    max-width: var(--max-width);
+    height: 30%;
+    opacity: 0.8;
+    background: linear-gradient(to bottom, var(--color-black-100) 0%, transparent 100%);
+    z-index: 1;
+}
+
 .banner::after{
     content: "";
     display: block;
