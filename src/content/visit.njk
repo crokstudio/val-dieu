@@ -1,0 +1,103 @@
+---
+permalink: visit.html
+---
+
+{% extends "layouts/base.njk" %}
+
+{% block content %}
+
+{{ banner("assets/medias/img/Banner_Discover.jpeg", "Image abbaye", "banner--small") }}
+
+    <div class="section grid-layout">
+
+        <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 discover--intro">
+            <div class="discover--intro-title">
+                <img src="/assets/medias/svg/LOGO_Map.svg" alt="" class="discover--intro-icon">
+                <h1>Que faire à l'Abbaye ?</h1>
+            </div>
+            <p class="discover--intro-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+
+    </div>
+
+    <div class="section grid-layout visit--activites">
+        <div class="visit--activites-header grid-layout-desktop-12 grid-layout-tablet-8">
+            <p class="activites--header-what">Que faire ?</p>
+            <h2 class="activites--header-title">Activités de l’abbaye du Val-Dieu</h2>
+            <p class="activites--header-txt">Découvrez tout ce que l’abbaye a à offrir à travers une variété d’activités accessibles à tous. Entre patrimoine, nature et moments de détente, explorez le site à votre rythme et vivez une expérience unique au cœur du Val-Dieu.</p>
+        </div>
+        <ul class="visit--activities-list">
+            <a href="#" class="visit--activities-card">
+                <div class="activities--card-content">
+                    <h4 class="activities--card-title">Activité 1</h4>
+                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                </div>
+            </a>
+            <a href="#" class="visit--activities-card">
+                <div class="activities--card-content">
+                    <h4 class="activities--card-title">Activité 1</h4>
+                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                </div>
+            </a>
+            <a href="#" class="visit--activities-card">
+                <div class="activities--card-content">
+                    <h4 class="activities--card-title">Activité 1</h4>
+                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                </div>
+            </a>
+                <a href="#" class="visit--activities-card">
+                <div class="activities--card-content">
+                    <h4 class="activities--card-title">Activité 1</h4>
+                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                </div>
+            </a>
+            <a href="#" class="visit--activities-card">
+                <div class="activities--card-content">
+                    <h4 class="activities--card-title">Activité 1</h4>
+                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                </div>
+            </a>
+            <a href="#" class="visit--activities-card activities--card--disabled">
+            </a>
+        </ul>
+    </div>
+
+    <div class="section grid-layout">
+        {% include "partials/interactive-map.njk" %}
+    </div>
+
+    <div class="section section--dark grid-layout">
+        <ul class="visit--details-list">
+            <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8">
+                <img src="/assets/medias/img/Banner_Discover.jpeg" alt="" class="visit--details-img fluid-img">
+                <div class="visit--details-content">
+                    <h3 class="visit--details-title">Détail 1</h3>
+                    <p class="visit--details-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </li>
+            <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8">
+                <img src="/assets/medias/img/Banner_Discover.jpeg" alt="" class="visit--details-img fluid-img">
+                <div class="visit--details-content">
+                    <h3 class="visit--details-title">Détail 1</h3>
+                    <p class="visit--details-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </li>
+            <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8">
+                <img src="/assets/medias/img/hp-intro-bg.png" alt="" class="visit--details-img fluid-img">
+                <div class="visit--details-content">
+                    <h3 class="visit--details-title">Détail 1</h3>
+                    <p class="visit--details-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </li>
+            <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8">
+                <img src="/assets/medias/img/Banner_Discover.jpeg" alt="" class="visit--details-img fluid-img">
+                <div class="visit--details-content">
+                    <h3 class="visit--details-title">Détail 1</h3>
+                    <p class="visit--details-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <button> <p>Réserver</p> </button>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+{% endblock %}
