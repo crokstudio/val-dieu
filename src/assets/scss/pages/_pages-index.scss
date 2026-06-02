@@ -153,13 +153,10 @@
         flex-grow: 2 !important;
         padding-block: 0px !important;
     }
-    
-    .hp-gallery:has(.hp--gallery-item:nth-child(2):hover) .hp--gallery-item:nth-child(1), 
-    .hp-gallery:has(.hp--gallery-item:nth-child(2):hover) .hp--gallery-item:nth-child(3),
-    .hp-gallery:has(.hp--gallery-item:nth-child(4):hover) .hp--gallery-item:nth-child(3),
-    .hp-gallery:has(.hp--gallery-item:nth-child(4):hover) .hp--gallery-item:nth-child(5),
-    .hp-gallery:has(.hp--gallery-item:nth-child(3):hover) .hp--gallery-item:nth-child(2),
-    .hp-gallery:has(.hp--gallery-item:nth-child(3):hover) .hp--gallery-item:nth-child(4),
+
+    .hp-gallery:has(.hp--gallery-item:nth-child(2):hover) :is(.hp--gallery-item:nth-child(1), .hp--gallery-item:nth-child(3)),
+    .hp-gallery:has(.hp--gallery-item:nth-child(4):hover) :is(.hp--gallery-item:nth-child(3), .hp--gallery-item:nth-child(5)),
+    .hp-gallery:has(.hp--gallery-item:nth-child(3):hover) :is(.hp--gallery-item:nth-child(2), .hp--gallery-item:nth-child(4)),
     .hp-gallery:has(.hp--gallery-item:nth-child(1):hover) .hp--gallery-item:nth-child(2),
     .hp-gallery:has(.hp--gallery-item:nth-child(5):hover) .hp--gallery-item:nth-child(4)
     {
