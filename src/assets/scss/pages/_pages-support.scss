@@ -90,8 +90,18 @@
 
 /* SUPPORT PAGE PROJECTS SECTION */
 
+@keyframes slideXR{
+    0%{
+        transform: translateX(-50%);
+    }
+    100%{
+        transform: translateX(0%);
+    }
+}
+
 .support--projects{
     row-gap: var(--sp-10);
+    scroll-timeline: --projects-timeline;
 }
 
 .support--projects-item{
@@ -99,7 +109,10 @@
 
     row-gap: var(--sp-5);
     img{
-        height: 100%;
+        /*height: 100%; BREAKS SAFARI */
+        animation: slideXR linear;
+        animation-timeline: --projects-timeline;
+        animation-range: cover 0% contain 25%;
         grid-column: 1/-2;
         aspect-ratio: 16/9;
         border-radius: 0 var(--br-s) var(--br-s) 0;
@@ -125,6 +138,7 @@
 
     .support--projects-item{
         img{
+            height: 100%;
             grid-column: 1/5;
             border-radius: 0 var(--br-m) var(--br-m) 0;
         }
@@ -140,6 +154,8 @@
         img{
             grid-column: 7/-1;
             grid-row: 1/1;
+            border-radius: var(--br-m) 0 0 var(--br-m);
+
         }
         div{
             grid-row: 1/1;

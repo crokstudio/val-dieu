@@ -1,0 +1,132 @@
+/* DONATION PAGE INTRO SECTION */
+
+.donation--intro{
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+
+    background-color: var(--color-white-100);
+    margin-inline: calc(var(--sp-3) + var(--sp-1));
+
+    padding: var(--sp-5);
+
+    border-radius: var(--br-s);
+
+    position: absolute;
+    top: 40%;
+}
+
+@media all and (min-width: 768px) {
+
+    .donation--intro{
+        border-radius: var(--br-m);
+        h3, p{
+        text-align: center;
+        }
+    }
+        
+
+}
+
+/* DONATION PAGE INFO SECTION */
+
+.section:has(.donation--info){
+    padding-top: calc(var(--section-spacing)*3);
+}
+
+.donation--info{
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    h4{
+        color: var(--color-red-100);
+    }
+    ul{
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1);
+
+        li span{
+            font-weight: 500;
+            font-style: italic;
+        }
+    }
+    ~ img{
+        justify-self: center;    
+    }
+
+    ~ hr{
+        width: 100%;
+        color: var(--color-black-100);
+        margin:  0;
+    }
+}
+
+@media all and (min-width: 768px) {
+
+    .donation--intro{
+        margin-inline: calc(var(--sp-10) * 1.75);
+    }
+
+    .section:has(.donation--info){
+        padding-top: var(--section-spacing);
+    }
+
+    .donation--info{
+        grid-column: 3/6;
+
+        ~ img{
+            grid-column: -5/-3;
+        }
+        ~ hr{
+            grid-column: 6/-6;
+            width: 0px;
+            display: block;
+            justify-self: center;
+        }
+        ~ p{
+            grid-column: 3/-3;
+        }
+    }
+
+}
+
+@media all and (min-width: 1024px) {
+
+    .donation--intro{
+        margin-inline: calc(var(--sp-10) * 2);
+    }
+
+    .section:has(.donation--info){
+        padding-top: cacl(var(--section-spacing)/2);
+    }
+
+    .donation--info{
+        grid-column: 3/7;
+
+        ~ img{
+            grid-column: -5/-3;
+        }
+        ~ hr{
+            grid-column: 7/7;
+        }
+        ~ p{
+            grid-column: 3/-3;
+        }
+    }
+
+}
+
+@media all and (min-width: 1440px) {
+
+    .donation--intro{
+        margin-inline: calc(var(--sp-10) * 4);
+    }
+
+    .donation--info{
+        ~ hr{
+            grid-column: 9/9;
+        }
+    }
+
+}
