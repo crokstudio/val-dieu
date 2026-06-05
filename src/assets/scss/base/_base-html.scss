@@ -68,9 +68,9 @@ button{
     width: fit-content;
     height: fit-content;
     background-color: initial;
-    border: var(--color-red-100) 3px solid;
+    border: var(--color-red-100) 2px solid;
     border-radius: var(--br-l);
-
+    
     transition: all 0.3s ease;
 }
 
@@ -87,6 +87,25 @@ button p {
 button:hover p {
     color: var(--color-white-100);
 }
+
+.section--dark button{
+    border: none;
+    background-color: var(--color-green-100);
+    border: var(--color-white-100) 2px solid;
+    & p{
+        color: var(--color-white-100);
+    }
+}
+
+.section--dark button:hover{
+    border: none;
+    background-color: var(--color-white-100);
+    border: var(--color-white-100) 2px solid;
+    & p{
+        color: var(--color-green-100);
+    }
+}
+
 
 .fluid-img {
     width: 100%;

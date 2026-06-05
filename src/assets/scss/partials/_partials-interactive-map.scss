@@ -30,6 +30,7 @@
     flex-direction: row;
     gap: var(--sp-1);
     align-items: center;
+    pointer-events: none;
 
     position: absolute;
     transform: translate(-25px, -25px);
@@ -45,6 +46,10 @@
     display: block;
     width: var(--sp-4);
     height: var(--sp-4);
+    pointer-events: all;
+}
+#map--parking-03 img{
+    width: calc(var(--sp-4)*2);
 }
 
 @media all and (min-width: 768px) {
@@ -52,12 +57,18 @@
         width: var(--sp-5);
         height: var(--sp-5);
     }
+    #map--parking-03 img{
+        width: calc(var(--sp-5)*2);
+    }
 }
 
 @media all and (min-width: 1024px) {
     .map--info-img{
         width: var(--sp-6);
         height: var(--sp-6);
+    }
+    #map--parking-03 img{
+        width: calc(var(--sp-6)*2);
     }
 }
 
@@ -68,6 +79,7 @@
 
 .map--info-txt{
     user-select: none;
+    pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
 
@@ -86,6 +98,7 @@
 
 .map--info-link:hover + .map--info-txt{
     opacity: 1;
+    display: block;
 }
 
 #map--abbaye{

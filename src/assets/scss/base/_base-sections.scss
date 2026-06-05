@@ -40,14 +40,6 @@
     background-color: var(--color-green-100);
 }
 
-.section--dark button{
-    border: none;
-    background-color: var(--color-white-100);
-    & p{
-        color: var(--color-green-100);
-    }
-}
-
 /* Make space for footer overlapp */
 .section:last-of-type {
     padding-block-end: calc(var(--section-spacing)*2 + var(--br-m));
