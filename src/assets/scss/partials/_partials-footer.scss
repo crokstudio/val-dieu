@@ -146,16 +146,18 @@ footer{
 
 .footer-button{
     width: fit-content;
+    border: none !important;
+    background-color: var(--color-white-100) !important;
     padding: var(--sp-1) var(--sp-3);
     & p{
-        color: var(--color-olive-100);
+        color: var(--color-olive-100 ) !important;
     }
 }
 
 a:last-of-type .footer-button{
-    background-color: var(--color-green-100);
+    background-color: var(--color-green-100) !important;
     & p{
-        color: var(--color-white-100);
+        color: var(--color-white-100) !important;
     }
 }
 
