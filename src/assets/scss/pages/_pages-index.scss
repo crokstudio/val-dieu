@@ -94,6 +94,7 @@
     flex-direction: row;
 
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
 
     width: 100%;
@@ -322,7 +323,7 @@
     grid-column: 2 / -2;
 }
 
-.hp-book button{
+.hp-book a{
     justify-self: center;
     align-self: center;
     grid-column: 2 / -2;
@@ -337,7 +338,7 @@
         grid-column: 2 / 5;
         text-align: left;
     }
-    .hp-book button{
+    .hp-book a{
         grid-column: -5 / -2;
         justify-self: end;
         width: 100%;
@@ -363,7 +364,7 @@
         grid-column: 2 / -2;
     }
 
-    .hp-community button{
+    .hp-community a{
         justify-self: center;
         grid-column: 3 / -3;
     }

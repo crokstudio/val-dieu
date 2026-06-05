@@ -144,6 +144,16 @@
     margin: 0;
 }
 
+.visit--details-item {
+    scroll-margin-block-start: 120px;
+}
+@media all and (min-width: 1024px) {
+    .visit--details-item {
+        scroll-margin-block-start: 180px;
+    }
+}
+
+
 .visit--details-item:nth-child(2n) .visit--details-img {
     grid-column: 7/-1;
 }

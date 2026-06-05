@@ -8,13 +8,13 @@
 
 @media all and (min-width: 768px) {
     :root{
-        --section-spacing: calc(var(--sp-10) + var(--sp-5));
+        --section-spacing: calc(var(--sp-10));
     }
 }
 
 @media all and (min-width: 1024px) {
     :root{
-        --section-spacing: calc(var(--sp-10)*2);
+        --section-spacing: calc(var(--sp-10) + var(--sp-5));
     }
 }
 
