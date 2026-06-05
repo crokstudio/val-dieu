@@ -1,0 +1,75 @@
+name: Rebuild from Craft
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - craft-content-saved
+
+concurrency:
+  group: static-site-deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload static build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  deploy-ovh:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_OVH_DEPLOY == 'true' }}
+
+    steps:
+      - name: Download static build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
+      - name: Configure SSH
+        env:
+          OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$OVH_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy to OVH
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_TARGET_DIR: ${{ secrets.OVH_TARGET_DIR }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          rsync -az --delete dist/ "$OVH_USER@$OVH_HOST:$OVH_TARGET_DIR/"

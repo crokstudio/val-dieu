@@ -1,0 +1,42 @@
+allowLineBreaksInTitles: false
+color: null
+description: null
+fieldLayouts:
+  061532ed-e90f-4e27-a172-48907a9f6ed8:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: '2026-06-05T16:10:26+00:00'
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 8dfa60dc-cc4d-44d3-a3a7-0d4b8506e33e # Page Title
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 75585e20-928a-4ad6-bd1c-9ba1d22258ba
+            userCondition: null
+            warning: null
+            width: 100
+        name: Contenu
+        uid: a1580147-362c-4013-aa8e-27b14b2bdb92
+        userCondition: null
+    thumbFieldKey: null
+handle: visitpage
+hasTitleField: false
+icon: null
+name: VisitPage
+showSlugField: true
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: null
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+uiLabelFormat: '{title}'

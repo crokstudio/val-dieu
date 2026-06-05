@@ -1,0 +1,22 @@
+defaultPlacement: end
+enableVersioning: true
+entryTypes:
+  -
+    uid: fe64b30e-099f-4c45-8e44-ccc429c0a52e # VisitPage
+handle: visit
+maxAuthors: 1
+minAuthors: 1
+name: Visit
+previewTargets:
+  -
+    label: 'Page d‘entrée primaire'
+    refresh: '1'
+    urlFormat: '{url}'
+propagationMethod: all
+siteSettings:
+  6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: # Val-Dieu
+    enabledByDefault: true
+    hasUrls: true
+    template: null
+    uriFormat: visit
+type: single

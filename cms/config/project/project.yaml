@@ -1,0 +1,37 @@
+dateModified: 1780675853
+email:
+  fromEmail: contact@matestudio.be
+  fromName: Val-Dieu
+  transportType: craft\mail\transportadapters\Sendmail
+meta:
+  __names__:
+    5d86d922-44c8-4310-b47d-369cfaa59133: Val-Dieu # Val-Dieu
+    6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: Val-Dieu # Val-Dieu
+    8dfa60dc-cc4d-44d3-a3a7-0d4b8506e33e: 'Page Title' # Page Title
+    81bb436b-a731-48ff-8771-aba37f45bcb5: Homepage # Homepage
+    88aec23d-2859-462d-972f-13a376bfad97: 'Intro text' # Intro text
+    729fa3d6-b330-4ce5-a627-c155d66097f9: Homepage # Homepage
+    934f3468-70a4-4805-802d-23cc36e22aff: Visit # Visit
+    fe64b30e-099f-4c45-8e44-ccc429c0a52e: VisitPage # VisitPage
+plugins:
+  element-api:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  webhooks:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.4.0
+system:
+  edition: solo
+  live: true
+  name: Val-Dieu
+  schemaVersion: 5.10.0.0
+  timeZone: America/Los_Angeles
+users:
+  allowPublicRegistration: false
+  defaultGroup: null
+  photoSubpath: null
+  photoVolumeUid: null
+  require2fa: false
+  requireEmailVerification: true

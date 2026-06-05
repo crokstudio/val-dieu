@@ -1,0 +1,16 @@
+columnSuffix: null
+handle: introText
+instructions: 'Editable intro paragraph displayed on the homepage.'
+name: 'Intro text'
+searchable: true
+settings:
+  byteLimit: null
+  charLimit: null
+  code: false
+  initialRows: 6
+  multiline: true
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\PlainText
