@@ -152,7 +152,7 @@ footer{
     }
 }
 
-.footer-button:last-of-type{
+a:last-of-type .footer-button{
     background-color: var(--color-green-100);
     & p{
         color: var(--color-white-100);

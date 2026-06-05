@@ -26,6 +26,12 @@
     margin-inline: auto;
 }
 
+@media all and (max-width: 767px) {
+    .section:first-of-type {
+        padding-block-start: calc(var(--section-spacing) + var(--sp-5));
+    }
+}
+
 .section--dark{
     background-image: url("/assets/medias/svg/section-green-texture2.svg");
     background-repeat: repeat;
@@ -46,5 +52,3 @@
 .section:last-of-type {
     padding-block-end: calc(var(--section-spacing)*2 + var(--br-m));
 }
-
-

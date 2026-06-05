@@ -1,0 +1,152 @@
+.guided-visits--intro {
+    row-gap: var(--sp-5);
+}
+
+.guided-visits--intro-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    gap: var(--sp-3);
+
+    grid-column: 1/-1;
+}
+
+@media all and (min-width: 768px) {
+    .guided-visits--intro-title {
+        grid-column: 2/-2;
+    }
+}
+
+.guided-visits--intro-title h1 {
+    text-align: center;
+}
+
+.guided-visits--intro-txt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    grid-column: 1/-1;
+
+    text-align: center;
+}
+
+@media all and (min-width: 768px) {
+    .guided-visits--intro-txt {
+        grid-column: 2/-2;
+    }
+}
+
+.guided-visits--book h2 {
+    padding-block-end: var(--sp-2);
+}
+
+.book--smallGroups {
+    grid-column: 2 / -2;
+}
+.book--bigGroups {
+    grid-column: 2 / -2;
+}
+
+@media all and (min-width: 1024px) {
+    .guided-visits--book h2 {
+        padding-block-end: var(--sp-6);
+    }
+    .book--smallGroups {
+        grid-column: 2 / 6;
+    }
+    .book--bigGroups {
+        grid-column: 7 / -2;
+    }
+}
+
+@media all and (min-width: 1440px) {
+    .guided-visits--book h2 {
+    }
+    .book--smallGroups {
+        grid-column: 2 / 7;
+    }
+    .book--bigGroups {
+        grid-column: 8 / -2;
+    }
+}
+
+
+.guided-visits--eat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    background-image: url(../medias/img/casse-croute.jpg);
+    background-size: cover;
+    background-position: center;
+
+    padding: var(--sp-10) var(--sp-2);
+    border-radius: var(--br-m);
+
+    grid-column: 2 / -2;
+}
+
+.guided-visits--eat-link {
+    
+    background-color: var(--color-white-100);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--br-l);
+
+    transition: all 0.2s ease;
+
+    text-align: center;
+    
+}
+
+.guided-visits--eat-link * {
+    color: var(--color-red-100);
+    font-size: var(--txt-2);
+    
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+@media all and (min-width: 768px) {
+    .guided-visits--eat {
+        grid-column: 3 / -3;
+    }
+
+    .guided-visits--eat-link {
+        padding: var(--sp-3) var(--sp-5);
+    }
+
+    .guided-visits--eat-link * {
+        font-size: var(--txt-3);
+    }
+}
+
+@media all and (min-width: 1024px) {
+    .guided-visits--eat {
+        padding: calc(var(--sp-10) * 2) var(--sp-2);
+    }
+}
+
+/* DYNAMIC */ 
+
+.guided-visits--eat-link:hover {
+    
+    background-color: var(--color-red-100);
+    
+}
+
+.guided-visits--eat-link:hover * {
+    color: var(--color-white-100);
+
+    font-weight: 700;
+}
+
+
+
+.guided-visits--book {
+    background-color: var(--color-olive-500);
+}

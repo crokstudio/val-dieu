@@ -110,12 +110,147 @@
 }
 
 
-.discover--structur-abbaye {
-    grid-column: 6/-6;
+/* ============= DIAGRAM ============= */
+
+.discover--diagram {
+    padding-block-start: 0;
+}
+
+@media all and (min-width: 1024px) { 
+    .discover--diagram {
+        row-gap: 0;
+    }
+}
+
+.diagram--abbaye {
+    
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+}
+
+@media all and (min-width: 1024px) {
+    .diagram--abbaye::after {
+        content: "";
+        display: block;
+        
+        width: 2px;
+        height: calc(var(--sp-10) * 4 );
+        background-color: var(--color-red-100);
+        margin-block-start: var(--sp-3);
+    }
+}
+
+.diagram--diagonals {
+    display: none;
+}
+
+@media all and (min-width: 1024px) {
+    .diagram--diagonals {
+        width: 100%;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        
+        grid-column: 3 / 10;
+
+        box-sizing: border-box;
+    }
+
+    .diagram--diagonals img {
+        max-width: 50%;
+        min-width: 50%;
+        box-sizing: border-box;
+    }
+    .diagram--diagonals img:first-child {
+        padding-inline-start: calc((100vw - (var(--sp-3)*2) - (var(--spacing-grid-gap)*10))/18);
+    }
+
+    .diagram--diagonals img:last-child {
+        padding-inline-end: calc((100vw - (var(--sp-3)*2) - (var(--spacing-grid-gap)*10))/18);
+    }
+}
+@media all and (min-width: 1440px) {
+    .diagram--diagonals img:first-child {
+        padding-inline-start: calc((100vw - (var(--sp-3)*2) - (var(--spacing-grid-gap)*10))/28);
+    }
+
+    .diagram--diagonals img:last-child {
+        padding-inline-end: calc((100vw - (var(--sp-3)*2) - (var(--spacing-grid-gap)*10))/28);
+    }
+}
+
+.diagram--step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-2);
+
+    text-align: center;
+}
+
+.diagram--step::before {
+    content: "";
+    display: block;
+    
+    width: 2px;
+    height: var(--sp-10);
+    margin-block-end: var(--spacing-grid-row-gap);
+    background-color: var(--color-red-100);
+}
+
+.diagram--step img {
+    width: var(--sp-6);
+}
+
+@media all and (min-width: 1024px) {
+    .diagram--step::before {
+        height: calc(var(--sp-10) * 2 );
+        margin-block-start: calc(var(--sp-10) * -2 );
+        margin-block-end: var(--sp-3);
+    }
+
+    .diagram--step-brasserie::before,
+    .diagram--step-fromagerie::before {
+        height: calc(var(--sp-10) * 4 );
+        margin-block-start: -2px;
+    }
+    .diagram--step img {
+        width: var(--sp-8);
+    }
+}
+
+
+@media all and (min-width: 1024px) {
+    .diagram--diagonals {
+        grid-column: 3 / 10;
+    }
+    .diagram--step-abbaye {
+        grid-column: 5/ 8;
+    }
+    .diagram--step-brasserie {
+        grid-column: 2/ 5;
+        grid-row: 3 / 5;
+    }
+    .diagram--step-fromagerie {
+        grid-column: 8 / 11;
+    }
+}
+
+@media all and (min-width: 1440px) {
+    .diagram--diagonals {
+        grid-column: 4 / 12;
+    }
+    .diagram--step-abbaye {
+        grid-column: 6/ 10;
+    }
+    .diagram--step-brasserie {
+        grid-column: 3/ 6;
+    }
+    .diagram--step-fromagerie {
+        grid-column: 10 / 13;
+    }
 }
 
 /* TIMELINE */
@@ -145,7 +280,7 @@
 
     grid-column: 2 / -2;
 
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 @media all and (min-width: 768px) {
