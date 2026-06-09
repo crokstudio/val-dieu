@@ -1,0 +1,58 @@
+columnSuffix: null
+handle: communityAgendaWednesday
+instructions: 'Créneaux horaires pour Agenda - Mercredi.'
+name: 'Agenda - Mercredi'
+searchable: true
+settings:
+  addRowLabel: 'Ajouter un créneau'
+  columns:
+    __assoc__:
+      -
+        - col1
+        -
+          __assoc__:
+            -
+              - heading
+              - Horaire
+            -
+              - handle
+              - time
+            -
+              - type
+              - singleline
+      -
+        - col2
+        -
+          __assoc__:
+            -
+              - heading
+              - Texte
+            -
+              - handle
+              - title
+            -
+              - type
+              - singleline
+  defaults:
+    -
+      __assoc__:
+        -
+          - time
+          - 8h
+        -
+          - title
+          - Laudes
+    -
+      __assoc__:
+        -
+          - time
+          - 18h-18h40
+        -
+          - title
+          - 'Vêpres + Eucharistie'
+  maxRows: null
+  minRows: null
+  staticRows: false
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Table

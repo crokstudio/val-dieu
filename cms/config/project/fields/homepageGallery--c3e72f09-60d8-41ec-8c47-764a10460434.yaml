@@ -1,0 +1,26 @@
+columnSuffix: null
+handle: homepageGallery
+instructions: 'Les 5 photos de la galerie de la page index.njk.'
+name: 'Homepage gallery'
+searchable: false
+settings:
+  createButtonLabel: 'Ajouter une photo'
+  defaultIndexViewMode: cards
+  enableVersioning: true
+  entryTypes:
+    -
+      __assoc__:
+        -
+          - uid
+          - 5cfad61b-f02e-4808-b56d-9da217084e8f # Photo galerie
+  includeTableView: false
+  maxEntries: 5
+  minEntries: 5
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: cards
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

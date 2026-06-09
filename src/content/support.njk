@@ -28,29 +28,15 @@ permalink: support.html
 
 <div class="section grid-layout support--projects">
 
+    {% for project in support.projects %}
     <div class="grid-layout support--projects-item">
-        <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="" class="fluid-img">
+        <img src="{{ project.image }}" alt="{{ project.alt }}" class="fluid-img">
         <div>
-            <h3>Projet en cours</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.text | safe }}</p>
         </div>
     </div>
-
-    <div class="grid-layout support--projects-item">
-        <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="" class="fluid-img">
-        <div>
-            <h3>Projet en cours</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        </div>
-    </div>
-
-    <div class="grid-layout support--projects-item">
-        <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="" class="fluid-img">
-        <div>
-            <h3>Projet en cours</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        </div>
-    </div>
+    {% endfor %}
 
 </div>
 

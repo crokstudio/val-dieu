@@ -2,7 +2,7 @@ defaultPlacement: end
 enableVersioning: true
 entryTypes:
   -
-    uid: 81bb436b-a731-48ff-8771-aba37f45bcb5 # Homepage
+    uid: eabc238e-1645-4484-b447-25ab581402db # Homepage
 handle: homepage
 maxAuthors: 1
 minAuthors: 1

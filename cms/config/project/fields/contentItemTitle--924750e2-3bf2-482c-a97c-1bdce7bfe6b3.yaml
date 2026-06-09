@@ -1,14 +1,14 @@
 columnSuffix: null
-handle: introText
-instructions: 'Editable intro paragraph displayed on the homepage.'
-name: 'Intro text'
+handle: contentItemTitle
+instructions: null
+name: Titre
 searchable: true
 settings:
   byteLimit: null
   charLimit: null
   code: false
-  initialRows: 6
-  multiline: true
+  initialRows: 1
+  multiline: false
   placeholder: null
   uiMode: normal
 translationKeyFormat: null

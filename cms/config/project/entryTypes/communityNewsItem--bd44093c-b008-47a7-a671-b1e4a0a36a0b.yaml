@@ -1,0 +1,106 @@
+allowLineBreaksInTitles: false
+color: null
+description: null
+fieldLayouts:
+  c46ef436-ffd8-44da-b5d3-e574213e72b4:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 15575776-3920-4648-9955-8fb2cde68a22 # Image
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 014e2fc3-38a4-45a4-9828-85d9ed02555d
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: cf3d5e2d-01e3-4d49-91c7-df55b352f90c # Alt
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 34875051-8331-48b2-bb60-fb132e845313
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 924750e2-3bf2-482c-a97c-1bdce7bfe6b3 # Titre
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ec38db38-d4d2-4f15-9bc5-0baa0ef520a4
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: dd50dd4d-918d-4fdc-a864-03406a157c2b # Texte
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 09da1ad7-72bc-4ed1-8bd0-f7b63caa574d
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 2a3d76cc-0686-4a0f-9a0e-ae072b0c09ed # Date
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c8f5f11b-d7aa-417a-b249-d9c90a265f32
+            userCondition: null
+            warning: null
+            width: 100
+        name: Contenu
+        uid: 6c9e0a0b-4e5f-4296-a2af-6dab9875daed
+        userCondition: null
+    thumbFieldKey: null
+handle: communityNewsItem
+hasTitleField: false
+icon: null
+name: Actualité
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: Actualité
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+uiLabelFormat: '{title}'

@@ -16,7 +16,7 @@ permalink: index.html
             <h1>l'Abbaye de Val-Dieu</h1>
         </div>
         <div class="hp-intro-img"></div>
-        <p>{{ homepage.introText }}</p>
+        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sint voluptates corrupti distinctio similique praesentium id aliquid a deleniti, quasi illo ad ipsam eos ea in repellat minus accusantium. Error, quos?</p>
         <button class="hp-intro-button"><p>Découvrir</p></button>
     </div>
 
@@ -25,21 +25,11 @@ permalink: index.html
 <div class="section grid-layout">
 
     <ul class="hp-gallery">
+        {% for item in homepage.gallery %}
         <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_basilique.jpg" alt="gallery image">
+            <img class="hp--gallery-img fluid-img" src="{{ item.image }}" alt="{{ item.alt }}">
         </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_parc.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cloche.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cassecroute.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_brasserie.jpg" alt="gallery image">
-        </li>
+        {% endfor %}
     </ul>
 
 </div>

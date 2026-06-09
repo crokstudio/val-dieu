@@ -5,10 +5,11 @@ Craft lives in this `cms/` folder and is only responsible for content editing an
 ## What It Provides
 
 - Craft control panel at `/admin`.
-- A `Homepage` Single entry with one editable field: `Intro text`.
-- A JSON endpoint at `/api/homepage.json`.
-- Eleventy reads that endpoint during `npm run build` through `src/_data/homepage.js`.
-- If Craft is unavailable, Eleventy keeps using the hard-coded fallback lorem text so builds do not break.
+- `Homepage`, `Discover`, `Community`, and `Support` Single entries for the editable repeated content.
+- A `Content images` asset volume for images uploaded from those entries.
+- JSON endpoints at `/api/homepage.json`, `/api/discover.json`, `/api/community.json`, and `/api/support.json`.
+- Eleventy reads those endpoints during `npm run build` through the files in `src/_data`.
+- If Craft is unavailable, Eleventy keeps using local fallback content so builds do not break.
 
 ## Local Setup
 
@@ -27,7 +28,12 @@ php craft serve --port=8080
 ```
 
 4. Open `http://localhost:8080/admin`.
-5. Edit `Entries -> Homepage -> Intro text`.
+5. Edit the Craft Singles:
+   - `Homepage -> Homepage gallery`: upload/edit the 5 gallery images.
+   - `Discover -> Discover timeline`: add, remove, or edit timeline dates, texts, and images.
+   - `Community -> Agenda` and `Community news`
+   - `Community -> Community news`: add, remove, or edit news photos, dates, titles, and texts.
+   - `Support -> Support projects`: add, remove, or edit project titles, images, and texts.
 6. In the repo root, create `.env` from `.env.example`:
 
 ```bash
@@ -40,7 +46,7 @@ CRAFT_API_URL=http://localhost:8080/api/homepage.json
 npm run build
 ```
 
-The homepage intro paragraph in `dist/index.html` should now come from Craft.
+The homepage gallery, discover timeline, community agenda/news, and support projects should now come from Craft.
 
 ## OVH Shape
 
@@ -49,6 +55,7 @@ Recommended setup:
 - Public website: static Eleventy output from `dist`.
 - CMS: Craft hosted separately, ideally `cms.your-domain.be`, with web root set to `cms/web`.
 - Build environment: set `CRAFT_API_URL=https://cms.your-domain.be/api/homepage.json`.
+  Eleventy uses that URL to derive the other Craft API endpoints on the same CMS host.
 
 For automatic rebuilds, install the Webhooks plugin, then configure a webhook in Craft that fires when entries are saved. Point it to a GitHub Actions `repository_dispatch` or `workflow_dispatch` URL. GitHub Actions can then run `npm ci`, `npm run build`, and deploy `dist` to OVH.
 

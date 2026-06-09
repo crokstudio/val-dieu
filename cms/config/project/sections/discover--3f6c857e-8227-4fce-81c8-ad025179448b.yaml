@@ -2,21 +2,16 @@ defaultPlacement: end
 enableVersioning: true
 entryTypes:
   -
-    uid: fe64b30e-099f-4c45-8e44-ccc429c0a52e # VisitPage
-handle: visit
+    uid: 968d2f33-cd74-4446-805c-f6aaa56406e7 # Discover
+handle: discover
 maxAuthors: 1
 minAuthors: 1
-name: Visit
-previewTargets:
-  -
-    label: 'Page d‘entrée primaire'
-    refresh: '1'
-    urlFormat: '{url}'
+name: Discover
 propagationMethod: all
 siteSettings:
   6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: # Val-Dieu
     enabledByDefault: true
-    hasUrls: true
+    hasUrls: false
     template: null
-    uriFormat: visit
+    uriFormat: null
 type: single

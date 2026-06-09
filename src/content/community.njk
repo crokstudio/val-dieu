@@ -41,129 +41,26 @@ permalink: community.html
 
         <ul class="section--dark grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--agenda">
 
+            {% for day in community.agenda %}
             <li class="community--agenda-item">
-                <h3>Lundi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>18h40-19h15</p>
-                        <p>Lectio Divina</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Mardi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>17h30-18h</p>
-                        <p>Adoration</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Mercredi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Jeudi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>18h40-19h15</p>
-                        <p>Lectio Divina</p>
-                    </li>
-                    <li>
-                        <p>20h30</p>
-                        <p>Assamblée de prière</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Vendredi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>17h30-18h</p>
-                        <p>Adoration</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Samedi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
+                {% if day.subtitle %}
                 <div>
-                    <h3>Dimanche</h3>
-                    <h4>et fêtes</h4>
+                    <h3>{{ day.day }}</h3>
+                    <h4>{{ day.subtitle }}</h4>
                 </div>
+                {% else %}
+                <h3>{{ day.day }}</h3>
+                {% endif %}
                 <ul>
+                    {% for slot in day.slots %}
                     <li>
-                        <p>8h30</p>
-                        <p>Laudes</p>
+                        <p>{{ slot.time }}</p>
+                        <p>{{ slot.title }}</p>
                     </li>
-                    <li>
-                        <p>11h-12h</p>
-                        <p>Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>16h-16h15</p>
-                        <p>Bénédiction</p>
-                    </li>
-                    <li>
-                        <p>16h15-16h40</p>
-                        <p>Vêpres</p>
-                    </li>
+                    {% endfor %}
                 </ul>
             </li>
-
+            {% endfor %}
 
         </ul>
 
@@ -189,24 +86,14 @@ permalink: community.html
         <h2 class="community--news-title">Actualités</h2>
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--news">
             <ul>
+                {% for item in community.news %}
                 <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
+                    <img src="{{ item.image }}" alt="{{ item.alt }}">
+                    <h5>{{ item.title }}</h5>
+                    <p>{{ item.text | safe }}</p>
+                    <p>{{ item.date }}</p>
                 </li>
-                <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
-                </li>
-                <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>

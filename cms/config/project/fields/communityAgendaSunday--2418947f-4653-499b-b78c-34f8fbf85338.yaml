@@ -1,0 +1,74 @@
+columnSuffix: null
+handle: communityAgendaSunday
+instructions: 'Créneaux horaires pour Agenda - Dimanche et fêtes.'
+name: 'Agenda - Dimanche et fêtes'
+searchable: true
+settings:
+  addRowLabel: 'Ajouter un créneau'
+  columns:
+    __assoc__:
+      -
+        - col1
+        -
+          __assoc__:
+            -
+              - heading
+              - Horaire
+            -
+              - handle
+              - time
+            -
+              - type
+              - singleline
+      -
+        - col2
+        -
+          __assoc__:
+            -
+              - heading
+              - Texte
+            -
+              - handle
+              - title
+            -
+              - type
+              - singleline
+  defaults:
+    -
+      __assoc__:
+        -
+          - time
+          - 8h30
+        -
+          - title
+          - Laudes
+    -
+      __assoc__:
+        -
+          - time
+          - 11h-12h
+        -
+          - title
+          - Eucharistie
+    -
+      __assoc__:
+        -
+          - time
+          - 16h-16h15
+        -
+          - title
+          - Bénédiction
+    -
+      __assoc__:
+        -
+          - time
+          - 16h15-16h40
+        -
+          - title
+          - Vêpres
+  maxRows: null
+  minRows: null
+  staticRows: false
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Table

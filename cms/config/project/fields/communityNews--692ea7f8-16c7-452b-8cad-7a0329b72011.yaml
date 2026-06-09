@@ -1,0 +1,26 @@
+columnSuffix: null
+handle: communityNews
+instructions: 'Actualités de community.njk : photo, titre, texte et date.'
+name: 'Community news'
+searchable: false
+settings:
+  createButtonLabel: 'Ajouter une actualité'
+  defaultIndexViewMode: cards
+  enableVersioning: true
+  entryTypes:
+    -
+      __assoc__:
+        -
+          - uid
+          - bd44093c-b008-47a7-a671-b1e4a0a36a0b # Actualité
+  includeTableView: false
+  maxEntries: null
+  minEntries: null
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: cards
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

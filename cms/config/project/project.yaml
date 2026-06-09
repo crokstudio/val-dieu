@@ -1,18 +1,49 @@
-dateModified: 1780675853
+dateModified: 1781013822
 email:
   fromEmail: contact@matestudio.be
   fromName: Val-Dieu
   transportType: craft\mail\transportadapters\Sendmail
+fs:
+  contentImages:
+    hasUrls: true
+    name: 'Content images'
+    settings:
+      path: '@webroot/uploads'
+    type: craft\fs\Local
+    url: '@web/uploads'
 meta:
   __names__:
+    0b557883-5ba9-4d6e-b5bc-21a347def43a: 'Support projects' # Support projects
+    1c3966e3-e51e-49d0-92aa-75fee07926a8: 'Agenda - Mercredi' # Agenda - Mercredi
+    1f237afe-3bfa-4039-8e3e-da2abd290b6f: 'Agenda - Vendredi' # Agenda - Vendredi
+    2a3d76cc-0686-4a0f-9a0e-ae072b0c09ed: Date # Date
+    2adc7866-8fd6-4ce0-8fd1-103361fd5fe6: Support # Support
+    3c9861c9-c543-4d75-a770-170c5d7211fe: Homepage # Homepage
+    3f6c857e-8227-4fce-81c8-ad025179448b: Discover # Discover
+    5cfad61b-f02e-4808-b56d-9da217084e8f: 'Photo galerie' # Photo galerie
     5d86d922-44c8-4310-b47d-369cfaa59133: Val-Dieu # Val-Dieu
+    5f37645e-9bbc-4941-886a-c1153ea350a0: 'Agenda - Mardi' # Agenda - Mardi
+    6d620738-1ad6-4f2a-96df-271060822ba3: 'Date timeline' # Date timeline
     6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: Val-Dieu # Val-Dieu
-    8dfa60dc-cc4d-44d3-a3a7-0d4b8506e33e: 'Page Title' # Page Title
-    81bb436b-a731-48ff-8771-aba37f45bcb5: Homepage # Homepage
-    88aec23d-2859-462d-972f-13a376bfad97: 'Intro text' # Intro text
-    729fa3d6-b330-4ce5-a627-c155d66097f9: Homepage # Homepage
-    934f3468-70a4-4805-802d-23cc36e22aff: Visit # Visit
-    fe64b30e-099f-4c45-8e44-ccc429c0a52e: VisitPage # VisitPage
+    49a80872-a204-456a-9de2-9c432c1cf23e: Community # Community
+    068ee5b9-ade5-4e9e-8de6-d175dc708285: 'Discover timeline' # Discover timeline
+    692ea7f8-16c7-452b-8cad-7a0329b72011: 'Community news' # Community news
+    968d2f33-cd74-4446-805c-f6aaa56406e7: Discover # Discover
+    1379fcb2-2291-4ca0-bce7-ea4522893a98: 'Agenda - Jeudi' # Agenda - Jeudi
+    8967cd95-57b3-4082-85cc-5cbd2d0e2849: 'Agenda - Lundi' # Agenda - Lundi
+    56818ff0-3a04-460f-a168-83158695e004: 'Agenda - Samedi' # Agenda - Samedi
+    924750e2-3bf2-482c-a97c-1bdce7bfe6b3: Titre # Titre
+    2418947f-4653-499b-b78c-34f8fbf85338: 'Agenda - Dimanche et fêtes' # Agenda - Dimanche et fêtes
+    7797905d-b385-4ce0-8362-32f63178f4f5: Community # Community
+    15575776-3920-4648-9955-8fb2cde68a22: Image # Image
+    a245c26b-00ad-4d66-8af5-238484f2c3a3: Support # Support
+    b842d5b4-0a7c-4c89-9cec-9a2d85cda48c: 'Content images' # Content images
+    bd44093c-b008-47a7-a671-b1e4a0a36a0b: Actualité # Actualité
+    be642f72-b543-43ca-b77d-f6c9eae527e6: 'Projet support' # Projet support
+    c3e72f09-60d8-41ec-8c47-764a10460434: 'Homepage gallery' # Homepage gallery
+    cf3d5e2d-01e3-4d49-91c7-df55b352f90c: Alt # Alt
+    dd50dd4d-918d-4fdc-a864-03406a157c2b: Texte # Texte
+    eabc238e-1645-4484-b447-25ab581402db: Homepage # Homepage
 plugins:
   element-api:
     edition: standard

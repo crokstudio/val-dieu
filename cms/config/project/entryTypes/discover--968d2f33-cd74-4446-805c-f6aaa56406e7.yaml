@@ -2,7 +2,7 @@ allowLineBreaksInTitles: false
 color: null
 description: null
 fieldLayouts:
-  4c1e0cb8-3735-4dab-82ce-b53abfea4d54:
+  c69da2c2-921e-4cb3-932a-770b442d3f61:
     cardThumbAlignment: end
     tabs:
       -
@@ -32,7 +32,7 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\TitleField
-            uid: c697874e-61e1-486a-8aa5-ce2a498bbc94
+            uid: 69d36bcb-4919-4bbd-9088-e2c7fc844709
             userCondition: null
             warning: null
             width: 100
@@ -41,25 +41,25 @@ fieldLayouts:
             editCondition: null
             elementCondition: null
             elementEditCondition: null
-            fieldUid: 88aec23d-2859-462d-972f-13a376bfad97 # Intro text
+            fieldUid: 068ee5b9-ade5-4e9e-8de6-d175dc708285 # Discover timeline
             handle: null
             instructions: null
             label: null
-            required: true
+            required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: af1e5ee1-02d8-4ff5-831a-5e26ee9db2eb
+            uid: aaa43660-9b09-4cbb-83b0-f74050b54322
             userCondition: null
             warning: null
             width: 100
-        name: Content
-        uid: 6addbd71-051a-4980-a08b-ddbf90d6bb49
+        name: Timeline
+        uid: 20a0b909-6377-4ec6-9bdd-aa70ddab14a0
         userCondition: null
     thumbFieldKey: null
-handle: homepage
+handle: discover
 hasTitleField: true
 icon: null
-name: Homepage
+name: Discover
 showSlugField: true
 showStatusField: true
 slugTranslationKeyFormat: null
