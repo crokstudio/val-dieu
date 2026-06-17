@@ -137,6 +137,3 @@ dist
 
 # Email info
 config.php
-
-# Craft cms
-/cms
