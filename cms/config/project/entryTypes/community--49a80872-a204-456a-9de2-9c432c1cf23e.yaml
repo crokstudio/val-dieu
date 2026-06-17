@@ -1,0 +1,188 @@
+allowLineBreaksInTitles: false
+color: null
+description: null
+fieldLayouts:
+  cba44ee2-f9a1-498e-a10c-99f3376ed4a0:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            dateAdded: null
+            disabled: false
+            elementCondition: null
+            id: null
+            inputType: null
+            instructions: null
+            label: 'Internal title'
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\TitleField
+            uid: 5affcee8-33a7-4931-b1cb-c0fa87866a18
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 8967cd95-57b3-4082-85cc-5cbd2d0e2849 # Agenda - Lundi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1c76ff5e-9cfc-4245-a8e0-022a2bc89b11
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 5f37645e-9bbc-4941-886a-c1153ea350a0 # Agenda - Mardi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: d0411955-794a-4729-812b-b045a1d5a892
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 1c3966e3-e51e-49d0-92aa-75fee07926a8 # Agenda - Mercredi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8f20796e-dfdc-4bb0-bdd6-5f1b52526b5c
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 1379fcb2-2291-4ca0-bce7-ea4522893a98 # Agenda - Jeudi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 548ecfb8-e19b-43f7-9cd8-fb9768dd68bc
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 1f237afe-3bfa-4039-8e3e-da2abd290b6f # Agenda - Vendredi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 57af1751-d049-41b4-8d6e-3377350d6b75
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 56818ff0-3a04-460f-a168-83158695e004 # Agenda - Samedi
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 173b8ab6-3744-48a5-b151-76c70707c0b0
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 2418947f-4653-499b-b78c-34f8fbf85338 # Agenda - Dimanche et fêtes
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 9330232f-0aac-40ec-92db-409598c00207
+            userCondition: null
+            warning: null
+            width: 100
+        name: Agenda
+        uid: dc2f3724-6709-44fe-9c7b-aa001608a744
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 692ea7f8-16c7-452b-8cad-7a0329b72011 # Community news
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2090a8b2-8606-4fcb-8f86-aa717cfdc1b4
+            userCondition: null
+            warning: null
+            width: 100
+        name: Actualités
+        uid: 8b82f02e-c6d8-4a00-a297-1c44d01a96b1
+        userCondition: null
+    thumbFieldKey: null
+handle: community
+hasTitleField: true
+icon: null
+name: Community
+showSlugField: true
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: null
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+uiLabelFormat: '{title}'

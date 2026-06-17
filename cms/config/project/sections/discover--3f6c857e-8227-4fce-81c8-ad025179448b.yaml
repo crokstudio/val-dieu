@@ -1,0 +1,17 @@
+defaultPlacement: end
+enableVersioning: true
+entryTypes:
+  -
+    uid: 968d2f33-cd74-4446-805c-f6aaa56406e7 # Discover
+handle: discover
+maxAuthors: 1
+minAuthors: 1
+name: Discover
+propagationMethod: all
+siteSettings:
+  6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: # Val-Dieu
+    enabledByDefault: true
+    hasUrls: false
+    template: null
+    uriFormat: null
+type: single

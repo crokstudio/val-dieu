@@ -1,0 +1,58 @@
+allowLineBreaksInTitles: false
+color: null
+description: null
+fieldLayouts:
+  771c3af3-0658-4884-adbf-6ba30b1fd263:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 15575776-3920-4648-9955-8fb2cde68a22 # Image
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: b218f6af-05c4-49e1-a75d-2d5b26ab8fb8
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: cf3d5e2d-01e3-4d49-91c7-df55b352f90c # Alt
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: be3eec5b-2eef-4063-a712-0d37a2380999
+            userCondition: null
+            warning: null
+            width: 100
+        name: Contenu
+        uid: 7784dbed-6995-4365-8778-95eba973e7ef
+        userCondition: null
+    thumbFieldKey: null
+handle: homepageGalleryItem
+hasTitleField: false
+icon: null
+name: 'Photo galerie'
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: 'Photo galerie'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+uiLabelFormat: '{title}'

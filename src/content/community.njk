@@ -15,7 +15,10 @@ permalink: community.html
                 <img src="/assets/medias/svg/LOGO_Croix.svg" alt="">
                 <h1>La vie spirituelle de l'abbaye</h1>
             </div>
-            <p class="community--intro-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p class="community--intro-txt">Cultiver le silence, laisser ainsi une place à l’autre, à l’écoute. Vivre simplement de la prière et du travail, en communauté, en fraternité. Ces principes sont cultivés à
+            l’abbaye du Val-Dieu depuis ses origines. Après le départ des moines cisterciens en
+            2001, une association de fidèles des environs s’est créée pour poursuivre une vie
+            communautaire inspirée de la spiritualité cistercienne, ancrée dans l’évangile.</p>
         </div>
 
     </div>
@@ -25,7 +28,11 @@ permalink: community.html
             <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
             <div>
                 <h3>La vie aujourd'hui</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>La communauté chrétienne du Val-Dieu est une association de fidèles reconnue par
+                le diocèse de Liège et en lien avec les moines cisterciens de l’abbaye de Lérins
+                (Côte d’Azur). La communauté organise des temps de prière ouverts à tous et
+                d’autres activités spirituelles ou de volontariat pour maintenir l’accueil à l’abbaye,
+                notamment l’entretien du parc et des espaces de l’abbaye.</p>
             </div>
         </div>
     </div>
@@ -41,129 +48,26 @@ permalink: community.html
 
         <ul class="section--dark grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--agenda">
 
+            {% for day in community.agenda %}
             <li class="community--agenda-item">
-                <h3>Lundi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>18h40-19h15</p>
-                        <p>Lectio Divina</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Mardi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>17h30-18h</p>
-                        <p>Adoration</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Mercredi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Jeudi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>18h40-19h15</p>
-                        <p>Lectio Divina</p>
-                    </li>
-                    <li>
-                        <p>20h30</p>
-                        <p>Assamblée de prière</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Vendredi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>17h30-18h</p>
-                        <p>Adoration</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres + Eucharistie</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
-                <h3>Samedi</h3>
-                <ul>
-                    <li>
-                        <p>8h</p>
-                        <p>Laudes</p>
-                    </li>
-                    <li>
-                        <p>18h-18h40</p>
-                        <p>Vêpres</p>
-                    </li>
-                </ul>
-            </li>
-            <li class="community--agenda-item">
+                {% if day.subtitle %}
                 <div>
-                    <h3>Dimanche</h3>
-                    <h4>et fêtes</h4>
+                    <h3>{{ day.day }}</h3>
+                    <h4>{{ day.subtitle }}</h4>
                 </div>
+                {% else %}
+                <h3>{{ day.day }}</h3>
+                {% endif %}
                 <ul>
+                    {% for slot in day.slots %}
                     <li>
-                        <p>8h30</p>
-                        <p>Laudes</p>
+                        <p>{{ slot.time }}</p>
+                        <p>{{ slot.title }}</p>
                     </li>
-                    <li>
-                        <p>11h-12h</p>
-                        <p>Eucharistie</p>
-                    </li>
-                    <li>
-                        <p>16h-16h15</p>
-                        <p>Bénédiction</p>
-                    </li>
-                    <li>
-                        <p>16h15-16h40</p>
-                        <p>Vêpres</p>
-                    </li>
+                    {% endfor %}
                 </ul>
             </li>
-
+            {% endfor %}
 
         </ul>
 
@@ -175,11 +79,23 @@ permalink: community.html
             <div class="community--more-content">
                 <div>
                     <h4>La vie à l'époque</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>Les moines cisterciens du Val-Dieu menaient une vie simple, rythmée par la prière, le
+                    travail et la vie fraternelle. Leur journée suivait strictement la liturgie des Heures, des
+                    matines avant l’aube jusqu’aux complies du soir. Entre les offices, ils travaillaient aux
+                    champs, dans les ateliers ou à l’entretien du monastère. Les repas étaient pris en
+                    commun dans le réfectoire, souvent dans le silence, tandis qu’un moine faisait une
+                    lecture spirituelle.</p>
                 </div>
                 <div>
                     <h4>Les cisterciens</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>À la fin du XIᵉ siècle, dans le mouvement de la réforme grégorienne, des moines
+                    bénédictins souhaitent revenir aux sources de leur tradition. En 1098, ils quittent leur
+                    monastère de Molesme avec leur Père Abbé, saint Robert, pour fonder l’abbaye de
+                    Cîteaux, près de Dijon. Ils sont à l’origine d’un ordre qui se répand rapidement dans
+                    toute l’Europe. Par une vie de prière marquée par la pauvreté, la simplicité et la
+                    séparation du monde, les moines cisterciens cherchent à retrouver la pureté de
+                    l’esprit de la Règle de saint Benoît. C’est cet esprit qui présida à la fondation de
+                    l’abbaye du Val-Dieu.</p>
                 </div>
             </div>
         </div>
@@ -189,24 +105,14 @@ permalink: community.html
         <h2 class="community--news-title">Actualités</h2>
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--news">
             <ul>
+                {% for item in community.news %}
                 <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
+                    <img src="{{ item.image }}" alt="{{ item.alt }}">
+                    <h5>{{ item.title }}</h5>
+                    <p>{{ item.text | safe }}</p>
+                    <p>{{ item.date }}</p>
                 </li>
-                <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
-                </li>
-                <li class="community--news-item">
-                    <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
-                    <h5>La billeterie pour les concerts de printemps est ouverte!</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    <p>18/03/2026</p>
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>
@@ -214,7 +120,7 @@ permalink: community.html
     <div class="section grid-layout">
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--charte">
             <h2>Charte de la communauté chrétienne du Val-Dieu</h2>
-            <button> <p>Voir la charte</p> </button>
+            <a href="/assets/medias/pdf/CharteDeLaCommunautéChrétienneDuVal-Dieu.pdf"><button> <p>Voir la charte</p> </button></a>
             <div>
                 <p>L'écoute de Dieu passe aussi par la fréquentation des « trésors cachés » de toute la tradition chrétienne et du monachisme (les écrits des Pères de l'Église, des Pères cisterciens et des auteurs chrétiens). Ces trésors du christianisme ouvrent des chemins de conversion et de réconciliation. En se mettant à l'école de la miséricorde , l'être tout entier avec ses pauvretés, ses limites accepte de se laisser sauver par le Christ !
                 Il n'y a pas de communion sans conversion et celle-ci est nécessairement le fruit de la Croix du Christ et de l'action de l'Esprit Saint dans chaque personne ainsi que dans la Communauté.

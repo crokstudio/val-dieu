@@ -1,0 +1,26 @@
+columnSuffix: null
+handle: supportProjects
+instructions: 'Projets de support.njk : titre, image et texte.'
+name: 'Support projects'
+searchable: false
+settings:
+  createButtonLabel: 'Ajouter un projet'
+  defaultIndexViewMode: cards
+  enableVersioning: true
+  entryTypes:
+    -
+      __assoc__:
+        -
+          - uid
+          - be642f72-b543-43ca-b77d-f6c9eae527e6 # Projet support
+  includeTableView: false
+  maxEntries: null
+  minEntries: null
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: cards
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

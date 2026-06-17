@@ -15,7 +15,8 @@ permalink: discover.html
                 <img src="/assets/medias/svg/LOGO_Abbaye.svg" alt="" class="discover--intro-icon">
                 <h1>Au coeur de l'Abbaye</h1>
             </div>
-            <p class="discover--intro-txt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p class="discover--intro-txt">L’abbaye du Val-Dieu constitue un ensemble écrin de verdure, bâtiments anciens
+            préservés, beau parc, brasserie promenades.</p>
         </div>
 
     </div>
@@ -26,7 +27,14 @@ permalink: discover.html
                 <div class="discover--history-content section--dark grid-layout-desktop-7">
                     <h2>800 ans d’histoire</h2>
                     <h5>Plongez dans l’histoire de l’abbaye et découvrez les grandes étapes qui ont façonné ce lieu au fil des siècles.</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
+                    <p>Fondée en 1216 par des moines cisterciens venus de l’abbaye de Hocht, l’Abbaye
+                    du Val-Dieu est née dans une vallée à la frontière du comté de Dalhem et du duché
+                    de Limbourg. Son nom, Vallée de Dieu, témoigne de la volonté des moines d’y bâtir
+                    un lieu de paix, de prière et de travail. Au fil des siècles, l’abbaye s’est développée
+                    autour de la vie monastique, de l’agriculture et du savoir-faire artisanal, devenant un
+                    acteur important de la région. Depuis le départ des moines cisterciens en 2001, la
+                    communauté chrétienne du Val-Dieu perpétue la tradition de prière et d&#39;accueil à
+                    l&#39;abbaye, en lien avec les moines de l&#39;abbaye de Lérins (côte d&#39;Azur).</p></div>
                 <div class="discover--history-image"></div>
 
             </div>
@@ -50,12 +58,25 @@ permalink: discover.html
         <div class="diagram--step diagram--step-brasserie">
             <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="">
             <h4 class="diagram-step-title">Brasserie</h4>
-            <p class="diagram--step-txt">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consectetur quia perspiciatis unde. Optio accusamus placeat labore? Eaque harum vitae officiis magnam, accusamus nemo quo distinctio illum incidunt nobis esse tenetur.</p>
+            <p class="diagram--step-txt">La brasserie de l&#39;Abbaye du Val-Dieu propose une gamme de bières de qualité
+            reconnue et exclusivement brassée au sein de l&#39;Abbaye.
+            La gamme se compose de plusieurs bières ; 4 tradition et 3 hors-série ainsi que d&#39;1
+            édition limitée &quot;Excellence&quot; vieillie en bariques de chêne à caractère unique. Les
+            brasseurs perpétuent ce savoir-faire exigeant depuis de nombreuses années.</p>
         </div>
         <div class="diagram--step diagram--step-fromagerie">
             <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="">
             <h4 class="diagram-step-title">Fromage</h4>
-            <p class="diagram--step-txt">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consectetur quia perspiciatis unde. Optio accusamus placeat labore? Eaque harum vitae officiis magnam, accusamus nemo quo distinctio illum incidunt nobis esse tenetur.</p>
+            <p class="diagram--step-txt">Partenaire historique de l’Abbaye du Val-Dieu, Terre de fromages fabrique et affine
+            les fromages Val-Dieu au cœur du Pays de Herve. Héritière d’une histoire née de la
+            collaboration entre les moines cisterciens et une fromagerie locale, elle perpétue un
+            savoir-faire authentique à travers une gamme de fromages de caractère, élaborés à
+            partir du lait collecté directement auprès d’agriculteurs partenaires de la région.
+            Chaque jour, ses fromagers mettent leur expertise au service des richesses du terroir
+            pour faire vivre une tradition gourmande intimement liée à l’histoire et aux valeurs de
+            l’abbaye.
+            <br> <br>
+            <a href="https://www.fromages-abbaye-du-val-dieu.be/fr/"><b>Découvrez les fromages Val-Dieu</b></a></p>
         </div>
 
     </div>
@@ -64,56 +85,28 @@ permalink: discover.html
         <h2 class="discover--timeline-title">Au fil du temps...</h2>
         <div class="discover--timeline-content grid-layout">
             <ul class="timeline--dates">
+                {% for item in discover.timeline %}
                 <li class="timeline--date-item">
-                    <label for="timeline-0" class="timeline--date-label">
-                        <h5>530</h5>
+                    <label for="timeline-{{ loop.index0 }}" class="timeline--date-label">
+                        <h5>{{ item.date }}</h5>
                     </label>
                 </li>
-                <li class="timeline--date-item">
-                    <label for="timeline-1" class="timeline--date-label">
-                        <h5>1098</h5>
-                    </label>
-                </li>
-                <li class="timeline--date-item">
-                    <label for="timeline-2" class="timeline--date-label">
-                        <h5>1115</h5>
-                    </label>
-                </li>
+                {% endfor %}
             </ul>
             <ul class="timeline--cards">
+                {% for item in discover.timeline %}
                 <li class="timeline--card-item">
-                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-0" checked>
+                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
                     <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
                         <div class="timeline--card-header">
-                            <h3>530</h3>
-                            <h4>La règle de saint Benoît</h4>
-                            <p>Ora et Labora, prie et travaille. On résume ainsi la règle écrite par Benoît de Nursie vers 530 au mont Cassin. C’est la règle de vie monastique la plus suivie aujourd’hui.</p>
+                            <h3>{{ item.date }}</h3>
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.text | safe }}</p>
                         </div>
-                        <img src="assets/medias/img/timeline_530.jpg" alt="" class="timeline--card-img fluid-img">
+                        <img src="{{ item.image }}" alt="{{ item.alt }}" class="timeline--card-img fluid-img">
                     </div>
                 </li>
-                <li class="timeline--card-item">
-                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-1">
-                    <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
-                        <div class="timeline--card-header">
-                            <h3>1098</h3>
-                            <h4>Fondation de l’abbaye de Cîteaux (Bourgogne)</h4>
-                            <p>En 1098, le moine bénédictin Robert de Molesmes fonde un nouveau monastère en Bourgogne : l’abbaye de Cîteaux. Il souhaite réformer la vie monastique en encourageant un retour strict à la Règle de saint Benoît : pauvreté, simplicité, travail manuel.</p>
-                        </div>
-                        <img src="assets/medias/img/timeline_1098.png" alt="" class="timeline--card-img fluid-img">
-                    </div>
-                </li>
-                <li class="timeline--card-item">
-                    <input type="radio" class="timeline--card-input" name="timeline" id="timeline-2">
-                    <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
-                        <div class="timeline--card-header">
-                            <h3>1115</h3>
-                            <h4>De Cîteaux au Val-Dieu</h4>
-                            <p>Au 12e siècle, le modèle de vie monacale des cisterciens connait une expansion fulgurante. Plus de 700 abbayes masculines sont fondées à travers l’Europe. Elles sont installées dans des vallées isolées, à proximité de l’eau. Leurs plans sont toujours similaires et rassemblent toutes les fonctions utiles aux moines : réfectoire, dortoir, jardin, caves, bibliothèque, zones d’artisanat et agricoles (forge, moulin, brasserie, etc.) <br> Ainsi, un groupe de moines guidés par Bernard fonde l’abbaye de Clairvaux en 1115. Bernard de Clairvaux aura un grand rayonnement à travers ses écrits et sa vie. Il participe à la fondation de 68 abbayes. Parmi elles, l’abbaye d’Eberbach près de Mayence en Allemagne. Vers 1180, Eberbach envoie un groupe de moines fonder l’abbaye de Hocht (Lanaken, nord de Maastricht). Ces moines cisterciens quittent quelques années plus tard Hocht pour s’installer définitivement au Val-Dieu.</p>
-                        </div>
-                        <img src="assets/medias/img/timeline_1115.png" alt="" class="timeline--card-img fluid-img">
-                    </div>
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>

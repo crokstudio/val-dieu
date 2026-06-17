@@ -1,0 +1,17 @@
+defaultPlacement: end
+enableVersioning: true
+entryTypes:
+  -
+    uid: eabc238e-1645-4484-b447-25ab581402db # Homepage
+handle: homepage
+maxAuthors: 1
+minAuthors: 1
+name: Homepage
+propagationMethod: all
+siteSettings:
+  6f1c52ab-18f0-43de-953c-d0beb8e1fbf8: # Val-Dieu
+    enabledByDefault: true
+    hasUrls: false
+    template: null
+    uriFormat: null
+type: single

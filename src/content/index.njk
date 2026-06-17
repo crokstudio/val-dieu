@@ -16,8 +16,14 @@ permalink: index.html
             <h1>l'Abbaye de Val-Dieu</h1>
         </div>
         <div class="hp-intro-img"></div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        <button class="hp-intro-button"><p>Découvrir</p></button>
+        <p>Fondée en 1216 par des moines cisterciens, l’abbaye Notre-Dame du Val-Dieu est
+        un havre de paix au cœur du Pays de Herve. Elle se trouve au centre du triangle
+        formé par les villes de Liège, Maastricht et Aix-la-Chapelle, dans un écrin de nature.
+        Depuis le départ des trois derniers moines en 2001, l’abbaye connaît un renouveau
+        assuré par la Communauté Chrétienne du Val-Dieu.</p>
+        <a href="/discover" class="hp-intro-button">
+            <button ><p>Découvrir</p></button>
+        </a>
     </div>
 
 </div>
@@ -25,21 +31,11 @@ permalink: index.html
 <div class="section grid-layout">
 
     <ul class="hp-gallery">
+        {% for item in homepage.gallery %}
         <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_basilique.jpg" alt="gallery image">
+            <img class="hp--gallery-img fluid-img" src="{{ item.image }}" alt="{{ item.alt }}">
         </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_parc.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cloche.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_cassecroute.jpg" alt="gallery image">
-        </li>
-        <li class="hp--gallery-item">
-            <img class="hp--gallery-img fluid-img" src="assets/medias/img/gallery-home_brasserie.jpg" alt="gallery image">
-        </li>
+        {% endfor %}
     </ul>
 
 </div>
@@ -48,7 +44,12 @@ permalink: index.html
 
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-9 grid-layout-wide-12 hp-explore">
         <h2>Explorer l'Abbaye</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p>Découvrez l&#39;abbaye et plongez dans un lieu chargé d&#39;histoire, de spiritualité et de
+        patrimoine. Lors de votre visite, explorez l&#39;architecture remarquable, les jardins
+        paisibles et laissez-vous porter par le calme et la sérénité de ce monastère de plus
+        de 800 ans.  Pour que l’expérience sois complète, venez déguster nos bières et nos
+        fromages d’Abbaye que vous pourrez emmener chez vous pour prolonger
+        l’expérience.</p>
         <a href="/visit">
             <button><p>Préparer ma visite</p></button>
         </a>
@@ -63,7 +64,9 @@ permalink: index.html
                 <h5>Visites</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Découvrez l'abbaye et plongez dans un lieu chargé d'histoire, de spiritualité et de patrimoine. Lors de votre visite, explorez l'architecture remarquable, les jardins paisibles et les différents.</p>
+                <p>Vous souhaitez venir découvrir les mystères et l’histoire de notre abbaye ?  Vous
+                souhaitez découvrir les secrets de fabrication de nos délicieuses bières d’abbaye ? 
+                Réservez une visite combinée de l’abbaye et de la brasserie.</p>
             </div>
         </li>
 
@@ -74,7 +77,9 @@ permalink: index.html
                 <h5>Se promener</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Découvrez l'abbaye et plongez dans un lieu chargé d'histoire, de spiritualité et de patrimoine. Lors de votre visite, explorez l'architecture remarquable, les jardins paisibles et les différents.</p>
+                <p>Venez découvrir les nombreux sentiers de promenades balisés qui débutent juste en
+                face de l’abbaye du Val-Dieu.  Ils vous feront découvrir la région vallonée, les
+                bocages et les richesses de notre belle région.</p>
             </div>
         </li>
 
@@ -85,7 +90,10 @@ permalink: index.html
                 <h5>Magasin</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Découvrez l'abbaye et plongez dans un lieu chargé d'histoire, de spiritualité et de patrimoine. Lors de votre visite, explorez l'architecture remarquable, les jardins paisibles et les différents.</p>
+                <p>Vous souhaitez prolonger l’expérience de l’abbaye du Val-Dieu chez vous alors
+                venez découvrir nos bières et nos fromages de l’abbaye du Val-Dieu ainsi que de
+                nombreux articles religieux et produits du terroir au magasin.  Il est ouvert tous les
+                jours de 10 à 18h.</p>
             </div>
         </li>
 
@@ -96,7 +104,9 @@ permalink: index.html
                 <h5>Se restaurer</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Découvrez l'abbaye et plongez dans un lieu chargé d'histoire, de spiritualité et de patrimoine. Lors de votre visite, explorez l'architecture remarquable, les jardins paisibles et les différents.</p>
+                <p>Vous souhaitez venir vous restaurer dans un endroit chaleureux et chargé d’histoire. 
+                Le Casse-Croûte de l’abbaye du Val-Dieu, vous accueille tous jours de 10h30 à 19h
+                pour venir partager un repas ou un verre dans les murs de l’abbaye..</p>
             </div>
         </li>
 

@@ -1,0 +1,26 @@
+columnSuffix: null
+handle: discoverTimeline
+instructions: 'Dates, images, titres et textes de la timeline de discover.njk.'
+name: 'Discover timeline'
+searchable: false
+settings:
+  createButtonLabel: 'Ajouter une date'
+  defaultIndexViewMode: cards
+  enableVersioning: true
+  entryTypes:
+    -
+      __assoc__:
+        -
+          - uid
+          - 6d620738-1ad6-4f2a-96df-271060822ba3 # Date timeline
+  includeTableView: false
+  maxEntries: null
+  minEntries: null
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: cards
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

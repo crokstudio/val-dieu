@@ -1,0 +1,106 @@
+allowLineBreaksInTitles: false
+color: null
+description: null
+fieldLayouts:
+  1152ac0a-e17e-4d4e-9ae1-f8e6cfb7499b:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 2a3d76cc-0686-4a0f-9a0e-ae072b0c09ed # Date
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 470e5e8c-0553-4510-9c07-8dc5f4da8674
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 924750e2-3bf2-482c-a97c-1bdce7bfe6b3 # Titre
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2cc8fbe2-e9f5-42c8-8148-7c0c2380dc73
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: dd50dd4d-918d-4fdc-a864-03406a157c2b # Texte
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 0bad27de-3ccc-444a-95b3-cc1317f76df1
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: 15575776-3920-4648-9955-8fb2cde68a22 # Image
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: e3f33d7d-03ed-4fa1-b476-126cd0048b3b
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: null
+            editCondition: null
+            elementCondition: null
+            elementEditCondition: null
+            fieldUid: cf3d5e2d-01e3-4d49-91c7-df55b352f90c # Alt
+            handle: null
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 92a3d079-9b95-41cc-b7d8-1b454a172e49
+            userCondition: null
+            warning: null
+            width: 100
+        name: Contenu
+        uid: 5412b717-c13a-4af2-8b55-90b976e6fbd5
+        userCondition: null
+    thumbFieldKey: null
+handle: discoverTimelineItem
+hasTitleField: false
+icon: null
+name: 'Date timeline'
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: 'Date timeline'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+uiLabelFormat: '{title}'
