@@ -5,6 +5,7 @@ html {
 body {
     margin: 0;
     background-color: var(--color-white-100);
+    overflow-x: hidden;
 }
 
 @media all and (max-width: 767px) {

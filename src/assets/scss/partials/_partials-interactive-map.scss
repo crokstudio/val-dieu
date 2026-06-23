@@ -28,7 +28,6 @@
 .map--info{
     display: flex;
     flex-direction: row;
-    gap: var(--sp-1);
     align-items: center;
     pointer-events: none;
 
@@ -94,6 +93,10 @@
     border-radius: var(--br-m);
 
     text-wrap: nowrap;
+
+    position: absolute;
+    top: 0;
+    left: calc(100% + var(--sp-1) );
 }
 
 .map--info-link:hover + .map--info-txt{

@@ -1,3 +1,7 @@
+.section:has(.guided-visits--intro) {
+    padding-top: calc(var(--section-spacing) * 2);
+}
+
 .guided-visits--intro {
     row-gap: var(--sp-5);
 }

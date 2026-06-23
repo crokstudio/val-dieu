@@ -287,7 +287,7 @@
 
 @media all and (min-width: 768px) {
     .timeline--dates {
-        grid-column: 2 / 3;
+        grid-column: 2 / 4;
         flex-direction: column;
         justify-content: center;
         gap: var(--sp-1);
@@ -298,6 +298,8 @@
     margin: 0;
     font-weight: 400;
     cursor: pointer;
+
+    text-wrap: nowrap;
 }
 
 @media all and (min-width: 768px) {

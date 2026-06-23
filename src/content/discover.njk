@@ -53,7 +53,9 @@ permalink: discover.html
         <div class="diagram--step diagram--step-abbaye">
             <img src="assets/medias/svg/LOGO_Abbaye.svg" alt="">
             <h4 class="diagram-step-title">Abbaye</h4>
-            <p class="diagram--step-txt">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consectetur quia perspiciatis unde. Optio accusamus placeat labore? Eaque harum vitae officiis magnam, accusamus nemo quo distinctio illum incidunt nobis esse tenetur.</p>
+            <p class="diagram--step-txt">L’abbaye du Val-Dieu a été fondée en 1216 par des moines cisterciens de la filiation de l’abbaye d’Eberbach, en Allemagne. Elle constitue un bel ensemble de bâtiments préservés,
+            où chaque fonction traditionnelle subsiste encore aujourd’hui : église, brasserie,
+            communauté de prière, accueil et gastronomie.</p>
         </div>
         <div class="diagram--step diagram--step-brasserie">
             <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="">
@@ -112,16 +114,9 @@ permalink: discover.html
     </div>
 
     <style>
-        .discover--timeline-content:has(#timeline-0:checked) .timeline--date-item:nth-child(1) h5,
-        .discover--timeline-content:has(#timeline-1:checked) .timeline--date-item:nth-child(2) h5,
-        .discover--timeline-content:has(#timeline-2:checked) .timeline--date-item:nth-child(3) h5,
-        .discover--timeline-content:has(#timeline-3:checked) .timeline--date-item:nth-child(4) h5,
-        .discover--timeline-content:has(#timeline-4:checked) .timeline--date-item:nth-child(5) h5,
-        .discover--timeline-content:has(#timeline-5:checked) .timeline--date-item:nth-child(6) h5,
-        .discover--timeline-content:has(#timeline-6:checked) .timeline--date-item:nth-child(7) h5,
-        .discover--timeline-content:has(#timeline-7:checked) .timeline--date-item:nth-child(8) h5,
-        .discover--timeline-content:has(#timeline-8:checked) .timeline--date-item:nth-child(9) h5
-         {
+        {% for item in discover.timeline %}
+        .discover--timeline-content:has(#timeline-{{ loop.index0 }}:checked) .timeline--date-item:nth-child({{ loop.index }}) h5{% if not loop.last %},{% endif %}
+        {% endfor %} {
             text-decoration: underline;
             font-weight: 500;
         }
