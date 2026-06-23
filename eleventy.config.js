@@ -153,6 +153,7 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/assets/medias/img");
   eleventyConfig.addPassthroughCopy("./src/assets/medias/icons");
   eleventyConfig.addPassthroughCopy({ "./src/assets/medias/pdf": "assets/medias/pdf" });
+  eleventyConfig.addPassthroughCopy({ "./cms/web/uploads": "uploads" });
   
   // Eleventy dev server config
   eleventyConfig.setServerOptions({

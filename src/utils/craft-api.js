@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
+const LOCAL_CRAFT_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
 const readCraftPayload = (payload) => {
   if (payload?.data?.attributes) {
@@ -12,6 +13,42 @@ const readCraftPayload = (payload) => {
   }
 
   return payload;
+};
+
+const isLocalCraftUrl = (value) => {
+  try {
+    return LOCAL_CRAFT_HOSTS.has(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+};
+
+const normalizeCraftAssetUrl = (value) => {
+  if (typeof value !== "string" || !/^https?:\/\//.test(value) || !isLocalCraftUrl(value)) {
+    return value;
+  }
+
+  const url = new URL(value);
+
+  if (!url.pathname.startsWith("/uploads/")) {
+    return value;
+  }
+
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
+const normalizeCraftAssetUrls = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(normalizeCraftAssetUrls);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entryValue]) => [key, normalizeCraftAssetUrls(entryValue)])
+    );
+  }
+
+  return normalizeCraftAssetUrl(value);
 };
 
 export const getCraftEndpointUrl = (endpoint) => {
@@ -69,7 +106,7 @@ export const fetchCraftEntry = async (endpoint, fallback, label = endpoint) => {
 
     return {
       ...fallbackData,
-      ...payload,
+      ...normalizeCraftAssetUrls(payload),
       source: "craft",
     };
   } catch (error) {
