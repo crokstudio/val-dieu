@@ -29,13 +29,93 @@ permalink: guided-visits.html
             <h3 class="book--title">
                 Groupe < 15
 
-                IFRAME
+                <div id="ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef" style="width:100%" title="Abbaye du Val-Dieu" data-id-projet='0073a4a97782427da499c7f760733bef'>Chargement en cours...</div> <script type="text/javascript" src="https://reservation.elloha.com/Scripts/widget-loader.min.js?v=42"></script> <script type="text/javascript">var constellationWidgetUrl0073a4a97782427da499c7f760733bef, constellationTypeModule0073a4a97782427da499c7f760733bef; constellationWidgetUrl0073a4a97782427da499c7f760733bef = 'https://reservation.elloha.com/Widget/BookingEngine/0073a4a9-7782-427d-a499-c7f760733bef?idoi=86fae45e-deec-4e8b-bc38-6d0dc4bc8f45&culture=fr-FR'; constellationTypeModule0073a4a97782427da499c7f760733bef=1; constellationWidgetLoad('ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef'); constellationWidgetAddEvent(window, "resize", function () { constellationWidgetSetAppearance('ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef'); });</script>
             </h3>
         </div>
         <div class="book--bigGroups">
             <h3 class="book--title">Groupe > 15</h3>
-            <form action="" class="guided-visits--form">
-                form
+            <form action="mailto:infotourist@val-dieu.net" method="post" enctype="text/plain" class="guided-visits--form">
+                <fieldset>
+                     <legend>Demande de réservation</legend>
+
+                    <p>
+                        <label class="form--label" for="visit-date">Date souhaitée</label>
+                        <input type="date" id="visit-date" name="Date souhaitée" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="visit-time">Heure souhaitée</label>
+                        <input type="time" id="visit-time" name="Heure souhaitée" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="group-name">Nom du groupe</label>
+                        <input type="text" id="group-name" name="Nom du groupe" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="adult-count">Nombre d'adultes (+/- 5 personnes)</label>
+                        <input type="number" id="adult-count" name="Nombre d'adultes" min="0" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="teen-count">Nombre de jeunes (12-17 ans)</label>
+                        <input type="number" id="teen-count" name="Nombre de jeunes 12-17 ans" min="0" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="child-count">Nombre d'enfants (moins de 12 ans)</label>
+                        <input type="number" id="child-count" name="Nombre d'enfants moins de 12 ans" min="0" required>
+                    </p>
+
+                    <fieldset class="form--visit-type">
+                        <legend>Type de visite</legend>
+
+                        <p>
+                            <input type="radio" id="visit-abbey" name="Type de visite" value="Visite de l'abbaye" required>
+                            <label for="visit-abbey">Visite de l'abbaye - 1 h</label>
+                        </p>
+
+                        <p>
+                            <input type="radio" id="visit-combined" name="Type de visite" value="Visite combinée abbaye et brasserie">
+                            <label for="visit-combined">Visite combinée de l'abbaye et de la brasserie - +/- 2 h 15</label>
+                        </p>
+                    </fieldset>
+
+                    <p>
+                        <label class="form--label" for="phone">Numéro de téléphone</label>
+                        <input type="tel" id="phone" name="Numéro de téléphone" required>
+                    </p>
+
+                    <p>
+                        <label class="form--label" for="message">Message complémentaire</label>
+                        <textarea id="message" name="Message complémentaire" rows="5"></textarea>
+                    </p>
+                </fieldset>
+
+                <section aria-labelledby="visit-prices-title">
+                    <h4 id="visit-prices-title">Tarifs et informations</h4>
+
+                    <p>
+                        <strong>Visite de l'abbaye - 1 h</strong><br>
+                        6€/adultes - 4€/jeunes 5-17 ans - Gratuit pour les 0-4 ans
+                    </p>
+
+                    <p>
+                        <strong>Visite combinée de l'abbaye et de la brasserie - +/- 2 h 15</strong><br>
+                        Avec dégustation de 2 bières ou jus de pomme et fromage d'abbaye<br>
+                        14€/adultes - 7€/jeunes 5-17 ans (sans bière) - Gratuit pour les 0-4 ans
+                    </p>
+
+                    <p>
+                        <strong>Informations :</strong><br>
+                        Tél : <a href="tel:+3287692828">+32(0)87 69 28 28</a><br>
+                        Email : <a href="mailto:infotourist@val-dieu.net">infotourist@val-dieu.net</a><br>
+                        Val-Dieu, 227 à 4880 Aubel
+                    </p>
+                </section>
+
+                <button type="submit">Envoyer la demande</button>
             </form>
         </div>
 

@@ -154,3 +154,64 @@
 .guided-visits--book {
     background-color: var(--color-olive-500);
 }
+
+/* Form */ 
+
+.guided-visits--form fieldset{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: var(--sp-3);
+
+    border: 0;
+}
+
+.guided-visits--form fieldset legend {
+    font-family: var(--font-family-h5);
+    font-size: var(--font-size-h5);
+    font-weight: var(--font-weight-h5);
+    line-height: var(--font-line-height-h5);
+    color: var(--text-color-100);
+
+    padding-block: var(--sp-2);
+}
+
+.guided-visits--form fieldset p {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-0);
+
+    width: 100%;
+}
+
+.guided-visits--form fieldset p input {
+    width: 100%;
+    border: 0;
+    padding: var(--sp-1) var(--sp-2);
+
+    box-sizing: border-box;
+}
+
+.form--label {
+    font-family: var(--font-family-p);
+    font-size: var(--font-size-p);
+    font-weight: var(--font-weight-p);
+
+    line-height: var(--font-line-height-p);
+    
+    color: var(--text-color-100);
+}
+
+.form--visit-type p {
+    flex-direction: row !important;
+    gap: var(--sp-2) !important;
+
+    
+}
+
+.form--visit-type p input {
+    width: auto !important;
+    cursor: pointer;
+}
