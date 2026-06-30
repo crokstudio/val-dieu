@@ -1,5 +1,13 @@
 ---
-permalink: support.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}support/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/support"
 ---
 
 {% extends "layouts/base.njk" %}
@@ -8,30 +16,18 @@ permalink: support.html
 
 <div class="section grid-layout">
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 support--intro">
-        <h1 class="community--intro-title">Soutenir l'abbaye</h1>
-        <p class="community--intro-txt">Votre contribution permet de soutenir concrètement :la restauration et la conservation
-        du patrimoine ; la sécurisation des bâtiments historiques ;les travaux d’entretien
-        indispensables et la mise en valeur du site pour les générations futures.
-        Chaque don, quel que soit son montant, participe directement à la préservation de ce
-        lieu exceptionnel.
-        Toute contribution est précieuse pour financer les travaux urgents de sauvegarde de
-        l’Abbaye !
-        Aidez-nous à transmettre ce lieu de paix aux générations futures.</p>
+        <h1 class="community--intro-title">{{ 'SP-introTitle' | t(currentLocale) }}</h1>
+        <p class="community--intro-txt">{{ 'SP-introText' | t(currentLocale) }}</p>
     </div>
 </div>
 
 <div class="section grid-layout">
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 support--history">
         <div>
-            <h3 class="community--intro-title">800 ans d'histoire à préserver</h3>
-            <p class="community--intro-txt">Entretenir et restaurer un lieu chargé de plus de huit siècles d’histoire demande une
-            attention constante. Chaque pierre, chaque structure nécessite des soins réguliers
-            pour que l’abbaye puisse continuer à accueillir visiteurs, promeneurs et passionnés
-            de patrimoine.
-            Chaque don, quel que soit son montant, contribue concrètement à préserver ce lieu
-            unique pour les générations futures.</p>
+            <h3 class="community--intro-title">{{ 'SP-historyTitle' | t(currentLocale) }}</h3>
+            <p class="community--intro-txt">{{ 'SP-historyText' | t(currentLocale) }}</p>
             <button> <a href="/donation">
-                <p>Faire un don</p>
+                <p>{{ 'SP-introCAT' | t(currentLocale) }}</p>
             </a> </button>
         </div>
 
@@ -40,7 +36,7 @@ permalink: support.html
 
 <div class="section grid-layout support--projects">
 
-    {% for project in support.projects %}
+    {% for project in support[currentLocale].projects %}
     <div class="grid-layout support--projects-item">
         <img src="{{ project.image }}" alt="{{ project.alt }}" class="fluid-img">
         <div>

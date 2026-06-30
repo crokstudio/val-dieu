@@ -6,6 +6,8 @@ import slugify from "slugify";
 import Image from "@11ty/eleventy-img"; 
 //node path module
 import path from "path";
+import locales from "./src/_data/locales.js";
+import { translate } from "./src/utils/craft-translations.js";
 
 const RESPONSIVE_IMAGE_WIDTHS = [320, 480, 768, 1024, 1440, 1920];
 const BACKGROUND_IMAGE_WIDTHS = [640, 1280];
@@ -69,6 +71,56 @@ const renderPlainImageTag = (src, attributes = {}) => {
   return `<img src="${escapeAttribute(src)}"${htmlAttributes ? ` ${htmlAttributes}` : ""}>`;
 };
 
+const localeByCode = new Map(locales.map((locale) => [locale.code, locale]));
+const localeByOutputPath = (outputPath = "") => {
+  const normalizedPath = outputPath.replace(/\\/g, "/");
+  const localizedMatch = normalizedPath.match(/\/(fr|de|nl)\//);
+
+  if (localizedMatch) {
+    return localeByCode.get(localizedMatch[1]);
+  }
+
+  return localeByCode.get("en");
+};
+
+const localizeUrl = (href, locale) => {
+  if (!href || href.startsWith("#") || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/i.test(href)) {
+    return href;
+  }
+
+  if (
+    href.startsWith("/assets/") ||
+    href.startsWith("/uploads/") ||
+    href.startsWith("/api/") ||
+    href.startsWith("/admin")
+  ) {
+    return href;
+  }
+
+  const [pathPart, suffix = ""] = href.split(/(?=[?#])/);
+  const hashOrQuery = href.slice(pathPart.length);
+  const normalizedPath = pathPart === "/" ? "/" : `${pathPart.replace(/\/$/, "")}/`;
+
+  if (locale.code === "en") {
+    return `${normalizedPath}${hashOrQuery}`;
+  }
+
+  const withoutLocale = normalizedPath.replace(/^\/(fr|de|nl)\//, "/");
+  return `${locale.prefix.replace(/\/$/, "")}${withoutLocale}${hashOrQuery}`;
+};
+
+const rewriteInternalUrls = (html, locale) =>
+  html
+    .replace(/\s(href|src)=["']\.\.\/assets\//g, ' $1="/assets/')
+    .replace(/\s(href|src)=["']assets\//g, ' $1="/assets/')
+    .replace(/<a\b([^>]*?)\shref=(["'])(\/(?!\/)[^"']*)\2([^>]*)>/g, (match, before, quote, href, after) => {
+      if (`${before}${after}`.includes("data-locale-url")) {
+        return match;
+      }
+
+      return `<a${before} href=${quote}${localizeUrl(href, locale)}${quote}${after}>`;
+    });
+
 const generateResponsiveMetadata = async (src, widths, options = {}) => {
   return Image(getImageSourcePath(src), {
     widths,
@@ -80,6 +132,20 @@ const generateResponsiveMetadata = async (src, widths, options = {}) => {
 };
 
 export default async function (eleventyConfig) {
+  eleventyConfig.addFilter("localeUrl", (href, localeCode = "en") => {
+    return localizeUrl(href, localeByCode.get(localeCode) ?? localeByCode.get("en"));
+  });
+
+  eleventyConfig.addFilter("t", (key, localeCode = "en") => translate(key, localeCode));
+
+  eleventyConfig.addTransform("localize-html", function (content) {
+    if (!this.page.outputPath?.endsWith(".html")) {
+      return content;
+    }
+
+    const locale = localeByOutputPath(this.page.outputPath);
+    return rewriteInternalUrls(content, locale);
+  });
 
   eleventyConfig.addNunjucksAsyncShortcode("responsiveImage", async (src, alt = "", sizes = "100vw", className = "", loading = "lazy", decoding = "async", fetchpriority = "") => {
     if (!src) {

@@ -18,8 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+      DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      DEEPL_API_HOST: ${{ vars.DEEPL_API_HOST }}
 
     steps:
+      - name: Debounce Craft rebuild
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        env:
+          CRAFT_REBUILD_DEBOUNCE_SECONDS: ${{ vars.CRAFT_REBUILD_DEBOUNCE_SECONDS }}
+        run: sleep "${CRAFT_REBUILD_DEBOUNCE_SECONDS:-180}"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -31,6 +39,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Restore DeepL translation cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/deepl-translations.json
+          key: deepl-translations-${{ github.run_id }}
+          restore-keys: |
+            deepl-translations-
 
       - name: Build
         run: npm run build
@@ -72,4 +88,4 @@ jobs:
           OVH_TARGET_DIR: ${{ secrets.OVH_TARGET_DIR }}
           OVH_USER: ${{ secrets.OVH_USER }}
         run: |
-          rsync -az --delete dist/ "$OVH_USER@$OVH_HOST:$OVH_TARGET_DIR/"
+          rsync -az --delete --exclude "cms/" --exclude ".ovhconfig" dist/ "$OVH_USER@$OVH_HOST:$OVH_TARGET_DIR/"

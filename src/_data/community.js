@@ -1,4 +1,5 @@
 import { fetchCraftEntry } from "../utils/craft-api.js";
+import { translateDynamicEntry } from "../utils/dynamic-translations.js";
 
 const FALLBACK_NEWS_TEXT =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
@@ -95,5 +96,5 @@ const FALLBACK_COMMUNITY = {
 };
 
 export default async function () {
-  return fetchCraftEntry("community", FALLBACK_COMMUNITY, "community");
+  return translateDynamicEntry(await fetchCraftEntry("community", FALLBACK_COMMUNITY, "community"), "community");
 }

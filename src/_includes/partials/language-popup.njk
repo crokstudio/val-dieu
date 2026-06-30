@@ -1,0 +1,27 @@
+<dialog id="language-popup" style="border: 0; padding: 1.25rem; max-width: 22rem; width: calc(100% - 2rem); border-radius: 6px;">
+    <form method="dialog" style="display: grid; gap: 1rem;">
+        <div>
+            <h2 style="margin: 0 0 .35rem; font-size: 1.25rem;">Language</h2>
+            <p style="margin: 0;">Choose your preferred language.</p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: .5rem;">
+            {% for item in locales %}
+            <a href="{{ currentPath | localeUrl(item.code) }}" data-locale-url data-language-choice style="display: inline-block; padding: .55rem .75rem; border: 1px solid currentColor; border-radius: 4px; text-decoration: none;"{% if item.code == currentLocale %} aria-current="page"{% endif %}>{{ item.label }}</a>
+            {% endfor %}
+        </div>
+        <button type="submit" style="justify-self: start;">Close</button>
+    </form>
+</dialog>
+
+<script>
+(() => {
+  const key = "valdieu-language-popup-date";
+  const today = new Date().toISOString().slice(0, 10);
+  const popup = document.getElementById("language-popup");
+  if (!popup || localStorage.getItem(key) === today) return;
+  const seen = () => localStorage.setItem(key, today);
+  popup.addEventListener("close", seen, { once: true });
+  popup.querySelectorAll("[data-language-choice]").forEach((link) => link.addEventListener("click", seen));
+  popup.showModal();
+})();
+</script>

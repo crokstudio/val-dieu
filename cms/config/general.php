@@ -12,6 +12,10 @@
 use craft\config\GeneralConfig;
 use craft\helpers\App;
 
+$webroot = App::env('CRAFT_WEB_ROOT') ?: dirname(__DIR__) . '/web';
+$resourceBasePath = App::env('CRAFT_RESOURCE_BASE_PATH') ?: '@webroot/cpresources';
+$resourceBaseUrl = App::env('CRAFT_RESOURCE_BASE_URL') ?: '@web/cpresources';
+
 return GeneralConfig::create()
     // Set the default week start day for date pickers (0 = Sunday, 1 = Monday, etc.)
     ->defaultWeekStartDay(1)
@@ -27,10 +31,12 @@ return GeneralConfig::create()
     ->cpTrigger('admin')
     ->headlessMode(App::parseBooleanEnv('$CRAFT_HEADLESS_MODE') ?? true)
     ->allowAdminChanges(App::parseBooleanEnv('$CRAFT_ALLOW_ADMIN_CHANGES') ?? false)
+    ->resourceBasePath($resourceBasePath)
+    ->resourceBaseUrl($resourceBaseUrl)
     // Enable the Twig sandbox for system messages, etc.
     ->enableTwigSandbox()
     // Set the @webroot alias so the clear-caches command knows where to find CP resources
     ->aliases([
-        '@webroot' => dirname(__DIR__) . '/web',
+        '@webroot' => $webroot,
     ])
 ;

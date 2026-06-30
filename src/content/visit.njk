@@ -1,70 +1,68 @@
 ---
-permalink: visit.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}visit/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/visit"
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
 
-{{ banner("assets/medias/img/Banner_Visit.jpeg", "Image abbaye", "banner--small") }}
+{{ banner("/assets/medias/img/Banner_Visit.jpeg", "Image abbaye", "banner--small") }}
 
     <div class="section grid-layout">
 
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 discover--intro">
             <div class="discover--intro-title">
                 <img src="/assets/medias/svg/LOGO_Map.svg" alt="" class="discover--intro-icon">
-                <h1>Visiter l'abbaye</h1>
+                <h1>{{ 'VP-introTitle' | t(currentLocale) }}</h1>
             </div>
-            <p class="discover--intro-txt">Découvrez gratuitement le parc arboré, la grande cour et la basilique de l’Abbaye du
-            Val-Dieu. Pour vous accompagner dans la visite, un livret-jeu gratuit est disponible
-            au magasin. Pour entrer dans le cloitre et la brasserie, des visites guidées sont
-            organisées sur réservation, avec dégustation de bière. De 10h30 à 18h30, le
-            restaurant Le Casse-Croûte du Val-Dieu vous accueille dans les anciennes étables
-            de l’abbaye. N’oubliez pas de faire un détour par le magasin de l’abbaye, qui
-            propose des produits du terroir, des souvenirs et des articles religieux. Enfin,
-            plusieurs promenades balisées prennent leur départ depuis l’abbaye et invitent à
-            découvrir les paysages de la région.</p>
+            <p class="discover--intro-txt">{{ 'VP-introText' | t(currentLocale) }}</p>
         </div>
 
     </div>
 
     <div class="section grid-layout visit--activites">
         <div class="visit--activites-header grid-layout-desktop-12 grid-layout-tablet-8">
-            <p class="activites--header-what">Que faire ?</p>
-            <h2 class="activites--header-title">Activités de l’abbaye du Val-Dieu</h2>
-            <p class="activites--header-txt">Découvrez tout ce que l’abbaye a à offrir à travers une variété d’activités accessibles
-            à tous. Entre patrimoine, nature et moments de détente, explorez le site à votre
-            rythme et vivez une expérience unique au cœur du Val-Dieu.</p>
+            <p class="activites--header-what">{{ 'VP-activitiesLabel' | t(currentLocale) }}</p>
+            <h2 class="activites--header-title">{{ 'VP-activitiesTitle' | t(currentLocale) }}</h2>
+            <p class="activites--header-txt">{{ 'VP-activitiesText' | t(currentLocale) }}</p>
         </div>
         <ul class="visit--activities-list">
             <a href="#visits" class="visit--activities-card visit--activities-visit">
                 <div class="activities--card-content">
-                    <h4 class="activities--card-title">Visites Guidées</h4>
-                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                    <h4 class="activities--card-title">{{ 'Guided Visits' | t(currentLocale) }}</h4>
+                    <p class="activities--card-txt">{{ 'VP-activitiesDes-01' | t(currentLocale) }}</p>
                 </div>
             </a>
             <a href="#eat" class="visit--activities-card visit--activities-eat">
                 <div class="activities--card-content">
-                    <h4 class="activities--card-title">Se restaurer</h4>
-                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                    <h4 class="activities--card-title">{{ 'Dining' | t(currentLocale) }}</h4>
+                    <p class="activities--card-txt">{{ 'VP-activitiesDes-02' | t(currentLocale) }}</p>
                 </div>
             </a>
             <a href="#shop" class="visit--activities-card visit--activities-shop">
                 <div class="activities--card-content">
-                    <h4 class="activities--card-title">Magasin</h4>
-                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                    <h4 class="activities--card-title">{{ 'Shop' | t(currentLocale) }}</h4>
+                    <p class="activities--card-txt">{{ 'VP-activitiesDes-03' | t(currentLocale) }}</p>
                 </div>
             </a>
                 <a href="#walk" class="visit--activities-card visit--activities-walk">
                 <div class="activities--card-content">
-                    <h4 class="activities--card-title">Promenades</h4>
-                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                    <h4 class="activities--card-title">{{ 'Walks' | t(currentLocale) }}</h4>
+                    <p class="activities--card-txt">{{ 'VP-activitiesDes-04' | t(currentLocale) }}</p>
                 </div>
             </a>
             <a href="#parc" class="visit--activities-card visit--activities-parc">
                 <div class="activities--card-content">
-                    <h4 class="activities--card-title">Parc</h4>
-                    <p class="activities--card-txt">Description de l'activité 1.</p>
+                    <h4 class="activities--card-title">{{ 'Park' | t(currentLocale) }}</h4>
+                    <p class="activities--card-txt">{{ 'VP-activitiesDes-05' | t(currentLocale) }}</p>
                 </div>
             </a>
             <a href="#" class="visit--activities-card activities--card--disabled">
@@ -81,49 +79,39 @@ permalink: visit.html
             <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8" id="visits">
                 <img src="/assets/medias/img/VISITE GUIDEE 2.jpg" alt="" class="visit--details-img fluid-img">
                 <div class="visit--details-content">
-                    <h3 class="visit--details-title">Visites Guidées</h3>
-                    <p class="visit--details-txt">Vous souhaitez venir découvrir les mystères et l’histoire de notre abbaye ?  Vous souhaitez
-                    découvrir les secrets de fabrication de nos délicieuses bières d’abbaye ? 
-                    <br>Réservez une visite guidée de l’abbaye et de la brasserie.</p>
-                    <a href="/guided-visits"><button> <p>Réserver</p> </button></a>
+                    <h3 class="visit--details-title">{{ 'Guided Visits' | t(currentLocale) }}</h3>
+                    <p class="visit--details-txt">{{ 'VP-detailsDes-01' | t(currentLocale) }}</p>
+                    <a href="/guided-visits"><button> <p>{{ 'Book' | t(currentLocale) }}</p> </button></a>
                 </div>
             </li>
             <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8" id="eat">
                 <img src="/assets/medias/img/image_Eat.png" alt="" class="visit--details-img fluid-img">
                 <div class="visit--details-content">
-                    <h3 class="visit--details-title">Se Restaurer</h3>
-                    <p class="visit--details-txt">Vous souhaitez partager un verre ou un repas dans un endroit chaleureux et chargé
-                    d’histoire ? Le Casse-Croûte de l’abbaye du Val-Dieu vous accueille tous jours de 10h30 à
-                    19h pour venir partager un repas ou un verre dans les murs de l’abbaye..</p>
+                    <h3 class="visit--details-title">{{ 'Dining' | t(currentLocale) }}</h3>
+                    <p class="visit--details-txt">{{ 'VP-detailsDes-02' | t(currentLocale) }}</p>
                     <a href="https://www.val-dieu.com/casse-croute/"><button> <p>Casse Croûte</p> </button></a>
                 </div>
             </li>
             <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8" id="shop">
                 <img src="/assets/medias/img/image_Shop.png" alt="" class="visit--details-img fluid-img">
                 <div class="visit--details-content">
-                    <h3 class="visit--details-title">Magasin</h3>
-                    <p class="visit--details-txt">Vous souhaitez prolonger l’expérience de l’abbaye du Val-Dieu chez vous alors venez
-                    découvrir nos bières et nos fromages de l’abbaye du Val-Dieu ainsi que de nombreux articles
-                    religieux et produits du terroir au magasin. Il est ouvert tous les jours de 10 à 18h.</p>
-                    <a href="https://shop.val-dieu.com/"><button> <p>Magasin</p> </button></a>
+                    <h3 class="visit--details-title">{{ 'Shop' | t(currentLocale) }}</h3>
+                    <p class="visit--details-txt">{{ 'VP-detailsDes-03' | t(currentLocale) }}</p>
+                    <a href="https://shop.val-dieu.com/"><button> <p>{{ 'Shop' | t(currentLocale) }}</p> </button></a>
                 </div>
             </li>
             <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8" id="walk">
                 <img src="/assets/medias/img/image_Walk.png" alt="" class="visit--details-img fluid-img">
                 <div class="visit--details-content">
-                    <h3 class="visit--details-title">Se Promener</h3>
-                    <p class="visit--details-txt">Venez découvrir les nombreux sentiers de promenades balisés qui débutent juste en face de
-                    l’abbaye du Val-Dieu.  Ils vous feront découvrir la région vallonnée, les bocages et les
-                    richesses de notre belle région.</p>
+                    <h3 class="visit--details-title">{{ 'Walking' | t(currentLocale) }}</h3>
+                    <p class="visit--details-txt">{{ 'VP-detailsDes-04' | t(currentLocale) }}</p>
                 </div>
             </li>
             <li class="visit--details-item grid-layout-desktop-12 grid-layout-tablet-8" id="parc">
                 <img src="/assets/medias/img/image_Parc.png" alt="" class="visit--details-img fluid-img">
                 <div class="visit--details-content">
-                    <h3 class="visit--details-title">Parc</h3>
-                    <p class="visit--details-txt">À l’arrière des bâtiments de l’abbaye se cache un grand parc arboré accessible gratuitement
-                aux promeneurs et entretenu par des bénévoles. C’est un lieu de calme où un parcours de
-                vie invite à la méditation au travers d’extraits de la Bible.</p>
+                    <h3 class="visit--details-title">{{ 'Park' | t(currentLocale) }}</h3>
+                    <p class="visit--details-txt">{{ 'VP-detailsDes-05' | t(currentLocale) }}</p>
                 </div>
             </li>
         </ul>

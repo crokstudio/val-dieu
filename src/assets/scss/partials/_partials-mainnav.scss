@@ -133,7 +133,7 @@ body:has(.mainnav__toggle:checked) {
 
 }
 
-.mainnav__list:last-of-type{
+.mainnav__list:nth-of-type(2){
     position: absolute;
     bottom: 0;
     height: fit-content;
@@ -283,12 +283,13 @@ body:has(.mainnav__toggle:checked) {
         
     }
     
-    .mainnav__list:last-of-type{
+    .mainnav__list:nth-of-type(2){
         position: relative;
         justify-content: right;
         width: fit-content;
         padding-bottom: 0;
     }
+
 
     .mainnav__item h2{
 

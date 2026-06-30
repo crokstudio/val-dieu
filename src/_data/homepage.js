@@ -1,4 +1,5 @@
 import { fetchCraftEntry } from "../utils/craft-api.js";
+import { translateDynamicEntry } from "../utils/dynamic-translations.js";
 
 const FALLBACK_HOMEPAGE = {
   gallery: [
@@ -26,5 +27,5 @@ const FALLBACK_HOMEPAGE = {
 };
 
 export default async function () {
-  return fetchCraftEntry("homepage", FALLBACK_HOMEPAGE, "homepage");
+  return translateDynamicEntry(await fetchCraftEntry("homepage", FALLBACK_HOMEPAGE, "homepage"), "homepage");
 }

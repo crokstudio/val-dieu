@@ -1,24 +1,29 @@
 ---
-permalink: community.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}community/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/community"
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
 
-{{ banner("assets/medias/img/Banner_Community.jpg", "Image abbaye", "banner--medium") }}
+{{ banner("/assets/medias/img/Banner_Community.jpg", "Image abbaye", "banner--medium") }}
 
     <div class="section grid-layout">
 
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--intro">
             <div class="community--intro-title">
                 <img src="/assets/medias/svg/LOGO_Croix.svg" alt="">
-                <h1>La vie spirituelle de l'abbaye</h1>
+                <h1>{{ 'CP-introTitle' | t(currentLocale) }}</h1>
             </div>
-            <p class="community--intro-txt">Cultiver le silence, laisser ainsi une place à l’autre, à l’écoute. Vivre simplement de la prière et du travail, en communauté, en fraternité. Ces principes sont cultivés à
-            l’abbaye du Val-Dieu depuis ses origines. Après le départ des moines cisterciens en
-            2001, une association de fidèles des environs s’est créée pour poursuivre une vie
-            communautaire inspirée de la spiritualité cistercienne, ancrée dans l’évangile.</p>
+            <p class="community--intro-txt">{{ 'CP-introText' | t(currentLocale) }}</p>
         </div>
 
     </div>
@@ -27,12 +32,8 @@ permalink: community.html
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--life">
             <img src="/assets/medias/img/gallery-home_basilique.jpg" alt="">
             <div>
-                <h3>La vie aujourd'hui</h3>
-                <p>La communauté chrétienne du Val-Dieu est une association de fidèles reconnue par
-                le diocèse de Liège et en lien avec les moines cisterciens de l’abbaye de Lérins
-                (Côte d’Azur). La communauté organise des temps de prière ouverts à tous et
-                d’autres activités spirituelles ou de volontariat pour maintenir l’accueil à l’abbaye,
-                notamment l’entretien du parc et des espaces de l’abbaye.</p>
+                <h3>{{ 'CP-lifeTitle' | t(currentLocale) }}</h3>
+                <p>{{ 'CP-lifeText' | t(currentLocale) }}</p>
             </div>
         </div>
     </div>
@@ -41,16 +42,14 @@ permalink: community.html
 
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--pray">
             <div class="community--pray-title">
-                <h1>Temps de prière</h1>
+                <h1>{{ 'CP-prayTitle' | t(currentLocale) }}</h1>
             </div>
-            <p class="community--pray-txt">Venez vivre un temps de prière avec la communauté chrétienne du Val-Dieu. Ce sont des parenthèses ressourçantes de silence, d’introspection et d’ouverture aux autres et à Dieu.
-            Les temps de prière de l’abbaye sont célébrés en français, ils sont accessibles à tous en
-            entrant par la basilique.</p>
+            <p class="community--pray-txt">{{ 'CP-prayText' | t(currentLocale) }}</p>
         </div>
 
         <ul class="section--dark grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--agenda">
 
-            {% for day in community.agenda %}
+            {% for day in community[currentLocale].agenda %}
             <li class="community--agenda-item">
                 {% if day.subtitle %}
                 <div>
@@ -89,25 +88,18 @@ permalink: community.html
                     lecture spirituelle.</p>
                 </div>
                 <div>
-                    <h4>Les cisterciens</h4>
-                    <p>À la fin du XIᵉ siècle, dans le mouvement de la réforme grégorienne, des moines
-                    bénédictins souhaitent revenir aux sources de leur tradition. En 1098, ils quittent leur
-                    monastère de Molesme avec leur Père Abbé, saint Robert, pour fonder l’abbaye de
-                    Cîteaux, près de Dijon. Ils sont à l’origine d’un ordre qui se répand rapidement dans
-                    toute l’Europe. Par une vie de prière marquée par la pauvreté, la simplicité et la
-                    séparation du monde, les moines cisterciens cherchent à retrouver la pureté de
-                    l’esprit de la Règle de saint Benoît. C’est cet esprit qui présida à la fondation de
-                    l’abbaye du Val-Dieu.</p>
+                    <h4>{{ 'CP-cisterTitle' | t(currentLocale) }}</h4>
+                    <p>{{ 'CP-cisterText' | t(currentLocale) }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="section grid-layout">
-        <h2 class="community--news-title">Actualités</h2>
+        <h2 class="community--news-title">{{ 'CP-newsTitle' | t(currentLocale) }}</h2>
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--news">
             <ul>
-                {% for item in community.news %}
+                {% for item in community[currentLocale].news %}
                 <li class="community--news-item">
                     <img src="{{ item.image }}" alt="{{ item.alt }}">
                     <h5>{{ item.title }}</h5>
@@ -121,8 +113,8 @@ permalink: community.html
 
     <div class="section grid-layout">
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 community--charte">
-            <h2>Charte de la communauté chrétienne du Val-Dieu</h2>
-            <a href="/assets/medias/pdf/CharteDeLaCommunautéChrétienneDuVal-Dieu.pdf" target="_blank"><button> <p>Voir la charte</p> </button></a>
+            <h2>{{ 'CP-charteTitle' | t(currentLocale) }}</h2>
+            <a href="/assets/medias/pdf/CharteDeLaCommunautéChrétienneDuVal-Dieu.pdf" target="_blank"><button> <p>{{ 'CP-charteCAT' | t(currentLocale) }}</p> </button></a>
             <div>
                 <p>L'écoute de Dieu passe aussi par la fréquentation des « trésors cachés » de toute la tradition chrétienne et du monachisme (les écrits des Pères de l'Église, des Pères cisterciens et des auteurs chrétiens). Ces trésors du christianisme ouvrent des chemins de conversion et de réconciliation. En se mettant à l'école de la miséricorde , l'être tout entier avec ses pauvretés, ses limites accepte de se laisser sauver par le Christ !
                 Il n'y a pas de communion sans conversion et celle-ci est nécessairement le fruit de la Croix du Christ et de l'action de l'Esprit Saint dans chaque personne ainsi que dans la Communauté.

@@ -1,5 +1,13 @@
 ---
-permalink: 404.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code == 'en' %}404.html{% else %}{{ locale.code }}/404.html{% endif %}"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/"
 ---
 
 {% extends "layouts/base.njk" %}

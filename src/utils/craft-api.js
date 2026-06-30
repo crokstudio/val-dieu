@@ -60,11 +60,7 @@ export const getCraftEndpointUrl = (endpoint) => {
 
   const endpointName = endpoint.replace(/^\/?api\//, "").replace(/\.json$/, "");
   const endpointPath = `/api/${endpointName}.json`;
-  const cleanUrl = configuredUrl.replace(/\/$/, "");
-
-  if (/\/api\/[^/]+\.json$/.test(cleanUrl)) {
-    return cleanUrl.replace(/\/api\/[^/]+\.json$/, endpointPath);
-  }
+  const cleanUrl = configuredUrl.replace(/\/api\/[^/]+\.json.*$/, "").replace(/\/api\/?$/, "").replace(/\/$/, "");
 
   if (/\/api$/.test(cleanUrl)) {
     return `${cleanUrl}/${endpointName}.json`;

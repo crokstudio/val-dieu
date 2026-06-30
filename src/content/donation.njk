@@ -1,33 +1,41 @@
 ---
-permalink: donation.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}donation/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/donation"
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
 
-{{ banner("assets/medias/img/Banner_Donation.png", "Image abbaye", "banner--small") }}
+{{ banner("/assets/medias/img/Banner_Donation.png", "Image abbaye", "banner--small") }}
 
 <div class="section grid-layout">
     <div class="donation--intro">
-        <h3>Faire un don</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h3>{{ 'DoP-introTitle' | t(currentLocale) }}</h3>
+        <p>{{ 'DoP-introText' | t(currentLocale) }}</p>
     </div>
 </div>
 
 <div class="section grid-layout">
     <div class="donation--info">
-        <h4>Coordonnées</h4>
+        <h4>{{ 'Details' | t(currentLocale) }}</h4>
         <ul>
             <li><p>Fondation Roi Baudouin</p></li>
-            <li><p>Compte : <span>BE10 0000 0000 0404</span></p></li>
+            <li><p>{{ 'Account' | t(currentLocale) }} : <span>BE10 0000 0000 0404</span></p></li>
             <li><p>BIC : <span>GEBABEBB</span></p></li>
-            <li><p>Communication structurée : <span>623/3891/80075</span></p></li>
+            <li><p>{{ 'Strucutred communication' | t(currentLocale) }} : <span>623/3891/80075</span></p></li>
         </ul>
     </div>
     <hr>
     <img src="/assets/medias/svg/donation_qr.svg" alt="QR code pour faire un don">
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>{{ 'DoP-detailsText' | t(currentLocale) }}</p>
 </div>
 
 {% endblock %}

@@ -1,0 +1,7 @@
+<ul class="{{ listClass }}">
+    {% for item in locales %}
+    <li>
+        <a href="{{ currentPath | localeUrl(item.code) }}" data-locale-url class="{{ linkClass }}{% if item.code == currentLocale %} selected-lang{% endif %}"{% if item.code == currentLocale %} aria-current="page"{% endif %}><p>{{ item.label }}</p></a>
+    </li>
+    {% endfor %}
+</ul>

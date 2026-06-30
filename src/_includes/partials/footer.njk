@@ -4,7 +4,7 @@
         <h2>Abbaye<br>du Val-Dieu</h2>
 
         <div class="footer-content">
-            <h5>Contact</h5>
+            <h5>{{ 'Contact' | t(currentLocale) }}</h5>
             <div class="footer-list">
                 <a href="/" class="footer-item"><p>Val-Dieu 227, 4880 Aubel</p></a>
                 <a href="/" class="footer-item"><p>+(32) 87 69 28 28</p></a>
@@ -14,43 +14,32 @@
         </div>
 
         <div class="footer-content">
-            <h5>Aller Vers</h5>
+            <h5>{{ 'Go to' | t(currentLocale) }}</h5>
             <div class="footer-list">
-                <a href="/discover" class="footer-item"><p>Découvrir</p></a>
-                <a href="/" class="footer-item"><p>Visiter</p></a>
-                <a href="/community" class="footer-item"><p>Communauté</p></a>
-                <a href="/info-contact" class="footer-item"><p>Info & Contact</p></a>
+                <a href="/discover" class="footer-item"><p>{{ 'Discover' | t(currentLocale) }}</p></a>
+                <a href="/" class="footer-item"><p>{{ 'Visit' | t(currentLocale) }}</p></a>
+                <a href="/community" class="footer-item"><p>{{ 'Community' | t(currentLocale) }}</p></a>
+                <a href="/info-contact" class="footer-item"><p>{{ 'Info&Contact' | t(currentLocale) }}</p></a>
             </div>
         </div>
         
         <div class="footer-content footer-buttons">
             <a href="/guided-visits">
                 <button  class="footer-button">
-                    <p>Réserver</p>
+                    <p>{{ 'Book' | t(currentLocale) }}</p>
                 </button>
             </a>
             <a href="/support">
                 <button href="/support" class="footer-button">
-                    <p>Soutenir</p>
+                    <p>{{ 'Support' | t(currentLocale) }}</p>
                 </button>
             </a>
         </div>
 
         <div class="footer-content footer-langs">
-            <ul>
-                <li>
-                    <a href="/" class="footer-lang selected-lang"><p>FR</p></a>
-                </li>
-                <li>
-                    <a href="/" class="footer-lang"><p>NL</p></a>
-                </li>
-                <li>
-                    <a href="/" class="footer-lang"><p>EN</p></a>
-                </li>
-                <li>
-                    <a href="/" class="footer-lang"><p>DE</p></a>
-                </li>
-            </ul>
+            {% set listClass = "" %}
+            {% set linkClass = "footer-lang" %}
+            {% include "partials/language-switcher.njk" %}
         </div>
 
         <div class="footer-content footer-legals">

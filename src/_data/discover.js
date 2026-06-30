@@ -1,4 +1,5 @@
 import { fetchCraftEntry } from "../utils/craft-api.js";
+import { translateDynamicEntry } from "../utils/dynamic-translations.js";
 
 const FALLBACK_DISCOVER = {
   timeline: [
@@ -27,5 +28,5 @@ const FALLBACK_DISCOVER = {
 };
 
 export default async function () {
-  return fetchCraftEntry("discover", FALLBACK_DISCOVER, "discover");
+  return translateDynamicEntry(await fetchCraftEntry("discover", FALLBACK_DISCOVER, "discover"), "discover");
 }

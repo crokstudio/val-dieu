@@ -1,22 +1,29 @@
 ---
-permalink: discover.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}discover/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/discover"
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
 
-{{ banner("assets/medias/img/Banner_Discover.webp", "Image abbaye", "banner--medium") }}
+{{ banner("/assets/medias/img/Banner_Discover.webp", "Image abbaye", "banner--medium") }}
 
     <div class="section grid-layout">
 
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 discover--intro">
             <div class="discover--intro-title">
                 <img src="/assets/medias/svg/LOGO_Abbaye.svg" alt="" class="discover--intro-icon">
-                <h1>Au coeur de l'Abbaye</h1>
+                <h1>{{ 'DiP-introTitle' | t(currentLocale) }}</h1>
             </div>
-            <p class="discover--intro-txt">L’abbaye du Val-Dieu constitue un ensemble écrin de verdure, bâtiments anciens
-            préservés, beau parc, brasserie promenades.</p>
+            <p class="discover--intro-txt">{{ 'DiP-introText' | t(currentLocale) }}</p>
         </div>
 
     </div>
@@ -25,16 +32,9 @@ permalink: discover.html
 
             <div class="discover--history grid-layout-desktop-12">
                 <div class="discover--history-content section--dark grid-layout-desktop-7">
-                    <h2>800 ans d’histoire</h2>
-                    <h5>Plongez dans l’histoire de l’abbaye et découvrez les grandes étapes qui ont façonné ce lieu au fil des siècles.</h5>
-                    <p>Fondée en 1216 par des moines cisterciens venus de l’abbaye de Hocht, l’Abbaye
-                    du Val-Dieu est née dans une vallée à la frontière du comté de Dalhem et du duché
-                    de Limbourg. Son nom, Vallée de Dieu, témoigne de la volonté des moines d’y bâtir
-                    un lieu de paix, de prière et de travail. Au fil des siècles, l’abbaye s’est développée
-                    autour de la vie monastique, de l’agriculture et du savoir-faire artisanal, devenant un
-                    acteur important de la région. Depuis le départ des moines cisterciens en 2001, la
-                    communauté chrétienne du Val-Dieu perpétue la tradition de prière et d&#39;accueil à
-                    l&#39;abbaye, en lien avec les moines de l&#39;abbaye de Lérins (côte d&#39;Azur).</p></div>
+                    <h2>{{ 'DiP-historyTitle' | t(currentLocale) }}</h2>
+                    <h5>{{ 'DiP-historySubtitle' | t(currentLocale) }}</h5>
+                    <p>{{ 'DiP-historyText' | t(currentLocale) }}</p></div>
                 <div class="discover--history-image"></div>
 
             </div>
@@ -52,42 +52,29 @@ permalink: discover.html
         </div>
         <div class="diagram--step diagram--step-abbaye">
             <img src="assets/medias/svg/LOGO_Abbaye.svg" alt="">
-            <h4 class="diagram-step-title">Abbaye</h4>
-            <p class="diagram--step-txt">L’abbaye du Val-Dieu a été fondée en 1216 par des moines cisterciens de la filiation de l’abbaye d’Eberbach, en Allemagne. Elle constitue un bel ensemble de bâtiments préservés,
-            où chaque fonction traditionnelle subsiste encore aujourd’hui : église, brasserie,
-            communauté de prière, accueil et gastronomie.</p>
+            <h4 class="diagram-step-title">{{ 'DiP-diagramTitle-01' | t(currentLocale) }}</h4>
+            <p class="diagram--step-txt">{{ 'DiP-diagramText-01' | t(currentLocale) }}</p>
         </div>
         <div class="diagram--step diagram--step-brasserie">
             <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="">
-            <h4 class="diagram-step-title">Brasserie</h4>
-            <p class="diagram--step-txt">La brasserie de l&#39;Abbaye du Val-Dieu propose une gamme de bières de qualité
-            reconnue et exclusivement brassée au sein de l&#39;Abbaye.
-            La gamme se compose de plusieurs bières ; 4 tradition et 3 hors-série ainsi que d&#39;1
-            édition limitée &quot;Excellence&quot; vieillie en bariques de chêne à caractère unique. Les
-            brasseurs perpétuent ce savoir-faire exigeant depuis de nombreuses années.</p>
+            <h4 class="diagram-step-title">{{ 'DiP-diagramTitle-02' | t(currentLocale) }}</h4>
+            <p class="diagram--step-txt">{{ 'DiP-diagramText-02' | t(currentLocale) }}</p>
         </div>
         <div class="diagram--step diagram--step-fromagerie">
             <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="">
-            <h4 class="diagram-step-title">Fromage</h4>
-            <p class="diagram--step-txt">Partenaire historique de l’Abbaye du Val-Dieu, Terre de fromages fabrique et affine
-            les fromages Val-Dieu au cœur du Pays de Herve. Héritière d’une histoire née de la
-            collaboration entre les moines cisterciens et une fromagerie locale, elle perpétue un
-            savoir-faire authentique à travers une gamme de fromages de caractère, élaborés à
-            partir du lait collecté directement auprès d’agriculteurs partenaires de la région.
-            Chaque jour, ses fromagers mettent leur expertise au service des richesses du terroir
-            pour faire vivre une tradition gourmande intimement liée à l’histoire et aux valeurs de
-            l’abbaye.
+            <h4 class="diagram-step-title">{{ 'DiP-diagramTitle-03' | t(currentLocale) }}</h4>
+            <p class="diagram--step-txt">{{ 'DiP-diagramText-03' | t(currentLocale) }}
             <br> <br>
-            <a href="https://www.fromages-abbaye-du-val-dieu.be/fr/"><b>Découvrez les fromages Val-Dieu</b></a></p>
+            <a href="https://www.fromages-abbaye-du-val-dieu.be/fr/"><b>{{ 'DiP-diagramCAT-03' | t(currentLocale) }}</b></a></p>
         </div>
 
     </div>
 
     <div class="section section--dark discover--timeline">
-        <h2 class="discover--timeline-title">Au fil du temps...</h2>
+        <h2 class="discover--timeline-title">{{ 'DiP-timelineTitle' | t(currentLocale) }}</h2>
         <div class="discover--timeline-content grid-layout">
             <ul class="timeline--dates">
-                {% for item in discover.timeline %}
+                {% for item in discover[currentLocale].timeline %}
                 <li class="timeline--date-item">
                     <label for="timeline-{{ loop.index0 }}" class="timeline--date-label">
                         <h5>{{ item.date }}</h5>
@@ -96,7 +83,7 @@ permalink: discover.html
                 {% endfor %}
             </ul>
             <ul class="timeline--cards">
-                {% for item in discover.timeline %}
+                {% for item in discover[currentLocale].timeline %}
                 <li class="timeline--card-item">
                     <input type="radio" class="timeline--card-input" name="timeline" id="timeline-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
                     <div class="timeline--card-content grid-layout-desktop-8 grid-layout-wide-10 grid-layout-tablet-6 grid-layout-5">
@@ -114,7 +101,7 @@ permalink: discover.html
     </div>
 
     <style>
-        {% for item in discover.timeline %}
+        {% for item in discover[currentLocale].timeline %}
         .discover--timeline-content:has(#timeline-{{ loop.index0 }}:checked) .timeline--date-item:nth-child({{ loop.index }}) h5{% if not loop.last %},{% endif %}
         {% endfor %} {
             text-decoration: underline;

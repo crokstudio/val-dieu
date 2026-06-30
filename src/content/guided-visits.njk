@@ -1,5 +1,13 @@
 ---
-permalink: guided-visits.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}guided-visits/index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/guided-visits"
 ---
 
 {% extends "layouts/base.njk" %}
@@ -10,20 +18,16 @@ permalink: guided-visits.html
 
         <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-10 grid-layout-wide-12 guided-visits--intro">
             <div class="guided-visits--intro-title">
-                <h1>Visites Guidées</h1>
+                <h1>{{ 'Guided Visits' | t(currentLocale) }}</h1>
             </div>
-            <p class="guided-visits--intro-txt">Cette visite guidée vous permet de découvrir le cloître et la nouvelle brasserie. Votre parcours débutera à l&#39;accueil, au fond de cour intérieure de l&#39;abbaye. En chemin,
-            vous entrerez dans le jardin du cloître, la salle du chapitre et le réfectoire. Après
-            l&#39;abbaye, la visite se poursuivra dans la brasserie où vous découvrirez la fabrication
-            de la bière dans des bâtiments du 17ème siècle. L&#39;histoire du Val-Dieu et le brassage
-            de la bière n&#39;auront (presque) plus de secrets pour vous !</p>
+            <p class="guided-visits--intro-txt">{{ 'BP-introText' | t(currentLocale) }}</p>
         </div>
 
     </div>
 
     <div class="section grid-layout guided-visits--book">
 
-        <h2>Formulaire de réservation</h2>
+        <h2>{{ 'BP-formTitle' | t(currentLocale) }}</h2>
 
         <div class="book--smallGroups">
             <h3 class="book--title">
@@ -127,7 +131,7 @@ permalink: guided-visits.html
     <div class="section grid-layout">
         <div class="guided-visits--eat">
             <a href="https://www.val-dieu.com/casse-croute/" class="guided-visits--eat-link">
-                <h4>Réserver au Casse Croûte</h4>
+                <h4>{{ 'BP-bookRestaurant' | t(currentLocale) }}</h4>
             </a>
         </div>
     </div>

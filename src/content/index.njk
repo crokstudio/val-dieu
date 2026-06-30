@@ -1,28 +1,32 @@
 ---
-permalink: index.html
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+permalink: "{% if locale.code != 'en' %}{{ locale.code }}/{% endif %}index.html"
+eleventyComputed:
+  language: "{{ locale.language }}"
+  currentLocale: "{{ locale.code }}"
+  currentPath: "/"
 ---
 
 {% extends "layouts/base.njk" %}
 
 {% block content %}
 
-{{ banner("assets/medias/img/Banner_Home.png", "Image abbaye", "banner--large") }}
+{{ banner("/assets/medias/img/Banner_Home.png", "Image abbaye", "banner--large") }}
 
 <div class="section grid-layout">
 
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-9 grid-layout-wide-12 hp-intro">
         <div class="hp-intro-txt">
-            <h2>Bienvenue à</h2>
-            <h1>l'Abbaye de Val-Dieu</h1>
+            <h2>{{ 'HP-introTitle-01' | t(currentLocale) }}</h2>
+            <h1>{{ 'HP-introTitle-02' | t(currentLocale) }}</h1>
         </div>
         <div class="hp-intro-img"></div>
-        <p>Fondée en 1216 par des moines cisterciens, l’abbaye Notre-Dame du Val-Dieu est
-        un havre de paix au cœur du Pays de Herve. Elle se trouve au centre du triangle
-        formé par les villes de Liège, Maastricht et Aix-la-Chapelle, dans un écrin de nature.
-        Depuis le départ des trois derniers moines en 2001, l’abbaye connaît un renouveau
-        assuré par la Communauté Chrétienne du Val-Dieu.</p>
+        <p>{{ 'HP-introText' | t(currentLocale) }}</p>
         <a href="/discover" class="hp-intro-button">
-            <button ><p>Découvrir</p></button>
+            <button ><p>{{ 'Discover' | t(currentLocale) }}</p></button>
         </a>
     </div>
 
@@ -31,7 +35,7 @@ permalink: index.html
 <div class="section grid-layout">
 
     <ul class="hp-gallery">
-        {% for item in homepage.gallery %}
+        {% for item in homepage[currentLocale].gallery %}
         <li class="hp--gallery-item">
             <img class="hp--gallery-img fluid-img" src="{{ item.image }}" alt="{{ item.alt }}">
         </li>
@@ -43,15 +47,10 @@ permalink: index.html
 <div class="section grid-layout">
 
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-9 grid-layout-wide-12 hp-explore">
-        <h2>Explorer l'Abbaye</h2>
-        <p>Découvrez l&#39;abbaye et plongez dans un lieu chargé d&#39;histoire, de spiritualité et de
-        patrimoine. Lors de votre visite, explorez l&#39;architecture remarquable, les jardins
-        paisibles et laissez-vous porter par le calme et la sérénité de ce monastère de plus
-        de 800 ans.  Pour que l’expérience sois complète, venez déguster nos bières et nos
-        fromages d’Abbaye que vous pourrez emmener chez vous pour prolonger
-        l’expérience.</p>
+        <h2>{{ 'HP-exploreTitle' | t(currentLocale) }}</h2>
+        <p>{{ 'HP-exploreText' | t(currentLocale) }}</p>
         <a href="/visit">
-            <button><p>Préparer ma visite</p></button>
+            <button><p>{{ 'Prepare visit' | t(currentLocale) }}</p></button>
         </a>
     </div>
 
@@ -61,12 +60,10 @@ permalink: index.html
             <input class="hp-explore-input" type="checkbox" id="hp-explore--visit">
             <label class="hp-explore-label" for="hp-explore--visit">
                 <img src="../assets/medias/svg/ICON_Parc.svg" alt="nature icon">
-                <h5>Visites</h5>
+                <h5>{{ 'Visits' | t(currentLocale) }}</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Vous souhaitez venir découvrir les mystères et l’histoire de notre abbaye ?  Vous
-                souhaitez découvrir les secrets de fabrication de nos délicieuses bières d’abbaye ? 
-                Réservez une visite combinée de l’abbaye et de la brasserie.</p>
+                <p>{{ 'Visits-text' | t(currentLocale) }}</p>
             </div>
         </li>
 
@@ -74,12 +71,10 @@ permalink: index.html
             <input class="hp-explore-input" type="checkbox" id="hp-explore--walk">
             <label class="hp-explore-label" for="hp-explore--walk">
                 <img src="../assets/medias/svg/ICON_Promenade.svg" alt="nature icon">
-                <h5>Se promener</h5>
+                <h5>{{ 'Walking' | t(currentLocale) }}</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Venez découvrir les nombreux sentiers de promenades balisés qui débutent juste en
-                face de l’abbaye du Val-Dieu.  Ils vous feront découvrir la région vallonée, les
-                bocages et les richesses de notre belle région.</p>
+                <p>{{ 'Walking-text' | t(currentLocale) }}</p>
             </div>
         </li>
 
@@ -87,13 +82,10 @@ permalink: index.html
             <input class="hp-explore-input" type="checkbox" id="hp-explore--shop">
             <label class="hp-explore-label" for="hp-explore--shop">
                 <img src="../assets/medias/svg/ICON_Shop.svg" alt="nature icon">
-                <h5>Magasin</h5>
+                <h5>{{ 'Shop' | t(currentLocale) }}</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Vous souhaitez prolonger l’expérience de l’abbaye du Val-Dieu chez vous alors
-                venez découvrir nos bières et nos fromages de l’abbaye du Val-Dieu ainsi que de
-                nombreux articles religieux et produits du terroir au magasin.  Il est ouvert tous les
-                jours de 10 à 18h.</p>
+                <p>{{ 'Shop-text' | t(currentLocale) }}</p>
             </div>
         </li>
 
@@ -101,12 +93,10 @@ permalink: index.html
             <input class="hp-explore-input" type="checkbox" id="hp-explore--eat">
             <label class="hp-explore-label" for="hp-explore--eat">
                 <img src="../assets/medias/svg/ICON_Food.svg" alt="nature icon">
-                <h5>Se restaurer</h5>
+                <h5>{{ 'Dining' | t(currentLocale) }}</h5>
             </label>
             <div class="hp-explore-content">
-                <p>Vous souhaitez venir vous restaurer dans un endroit chaleureux et chargé d’histoire. 
-                Le Casse-Croûte de l’abbaye du Val-Dieu, vous accueille tous jours de 10h30 à 19h
-                pour venir partager un repas ou un verre dans les murs de l’abbaye..</p>
+                <p>{{ 'Dining-text' | t(currentLocale) }}</p>
             </div>
         </li>
 
@@ -119,8 +109,8 @@ permalink: index.html
 <div class="section section--dark grid-layout">
 
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-9 grid-layout-wide-12 hp-book">
-        <h5>Choisissez votre date et réservez facilement votre visite de l'abbaye.</h5>
-        <a href="/guided-visits"><button> <p>Réserver</p> </button></a>
+        <h5>{{ 'HP-bookTitle' | t(currentLocale) }}</h5>
+        <a href="/guided-visits"><button> <p>{{ 'Book' | t(currentLocale) }}</p> </button></a>
     </div>
 
 </div>
@@ -128,10 +118,10 @@ permalink: index.html
 <div class="section grid-layout">
     <div class="grid-layout-5 grid-layout-tablet-8 grid-layout-desktop-9 grid-layout-wide-12 hp-community">
         <div>
-            <h2>La communauté</h2>
+            <h2>{{ 'HP-communityTitle' | t(currentLocale) }}</h2>
         </div>
-        <p>Pendant des siècles, l'abbaye a été marquée par la présence des moines cisterciens, dont la vie était rythmée par la prière, le travail et le silence. Leur spiritualité et leur manière de vivre ont profondément façonné ce lieu. Aujourd'hui encore, cet héritage continue d'imprégner l'abbaye et ses temps de recueillement.</p>
-        <a href="/community"><button><p>Découvrir la communauté</p></button></a>
+        <p>{{ 'HP-communityText' | t(currentLocale) }}</p>
+        <a href="/community"><button><p>{{ 'HP-communityCTA' | t(currentLocale) }}</p></button></a>
     </div>
 </div>
 

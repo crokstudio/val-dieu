@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ language or 'en' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acceuil - Abbaye de Val-Dieu</title>
+  <title>Abbaye de Val-Dieu</title>
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="icon" href="/assets/medias/icons/Val-Dieu-Logo.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />  
@@ -19,6 +19,8 @@
   {% block content %}{% endblock %}
 
   {% include "partials/footer.njk" %}
+
+  {% include "partials/language-popup.njk" %}
 
   <script type="module" src="/assets/js/main.bundle.js" defer> </script>
 </body>
