@@ -12,6 +12,8 @@ eleventyComputed:
 
 {% extends "layouts/base.njk" %}
 
+{% set pageTitle = ('Community' | t(currentLocale)) %}
+
 {% block content %}
 
 {{ banner("/assets/medias/img/Banner_Community.jpg", "Image abbaye", "banner--medium") }}
@@ -79,13 +81,8 @@ eleventyComputed:
             <img src="/assets/medias/img/image_Religious.webp" alt="">
             <div class="community--more-content">
                 <div>
-                    <h4>La vie à l'époque</h4>
-                    <p>Les moines cisterciens du Val-Dieu menaient une vie simple, rythmée par la prière, le
-                    travail et la vie fraternelle. Leur journée suivait strictement la liturgie des Heures, des
-                    matines avant l’aube jusqu’aux complies du soir. Entre les offices, ils travaillaient aux
-                    champs, dans les ateliers ou à l’entretien du monastère. Les repas étaient pris en
-                    commun dans le réfectoire, souvent dans le silence, tandis qu’un moine faisait une
-                    lecture spirituelle.</p>
+                    <h4>{{ 'CP-lifeTitle' | t(currentLocale) }}</h4>
+                    <p>{{ 'CP-lifeText' | t(currentLocale) }}</p>
                 </div>
                 <div>
                     <h4>{{ 'CP-cisterTitle' | t(currentLocale) }}</h4>

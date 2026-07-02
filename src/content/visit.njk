@@ -12,6 +12,8 @@ eleventyComputed:
 
 {% extends "layouts/base.njk" %}
 
+{% set pageTitle = ('Visit' | t(currentLocale)) %}
+
 {% block content %}
 
 {{ banner("/assets/medias/img/Banner_Visit.jpeg", "Image abbaye", "banner--small") }}

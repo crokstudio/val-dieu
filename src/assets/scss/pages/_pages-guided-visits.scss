@@ -50,9 +50,15 @@
 
 .book--smallGroups {
     grid-column: 2 / -2;
+    h3{
+        padding-bottom: var(--sp-5);
+    }
 }
 .book--bigGroups {
     grid-column: 2 / -2;
+    h3{
+        padding-bottom: var(--sp-2);
+    }
 }
 
 @media all and (min-width: 1024px) {
@@ -68,8 +74,6 @@
 }
 
 @media all and (min-width: 1440px) {
-    .guided-visits--book h2 {
-    }
     .book--smallGroups {
         grid-column: 2 / 7;
     }
@@ -78,6 +82,9 @@
     }
 }
 
+.section:has(.guided-visits--eat) {
+    padding-block-end: calc(var(--section-spacing) * 2 + var(--br-m));
+}
 
 .guided-visits--eat {
     display: flex;
@@ -156,6 +163,28 @@
 }
 
 /* Form */ 
+
+.guided-visits--form {
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--sp-5);
+
+    section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+    }
+
+    button {
+        color: var(--color-red-100);
+        font-family: var(--font-family-p);
+
+    }
+    button:hover {
+        color: var(--color-white-100);
+    }
+}
 
 .guided-visits--form fieldset{
     display: flex;

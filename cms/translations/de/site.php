@@ -2,6 +2,7 @@
 
 return [
     //Navigation Links
+    'Home' => 'Heim',
     'Discover' => 'Entdecken',
     'Visit' => 'Besuchen',
     'Community' => 'Gemeinschaft',
@@ -169,6 +170,7 @@ return [
     //Info & Contact page
     'Brewery' => 'Brauerei',
     'CheeseShop' => 'Käseladen',
+    'Abbey' => 'Abtei',
 
     'Accessibility' => 'Barrierefreiheit',
     'Stroller' => 'Kinderwagen',
@@ -182,6 +184,35 @@ return [
     EOT,
 
     'BP-formTitle' => 'Reservierungsformular',
+
+    'Group' => 'Gruppe',
+    'BookingRequest' => 'Buchungsanfrage',
+    'PreferredDate' => 'Wunschdatum',
+    'PreferredTime' => 'Wunschuhrzeit',
+    'GroupName' => 'Gruppenname',
+    'AdultNumber' => 'Anzahl der Erwachsenen (+/- 5 Personen)',
+    'YoungNumber' => 'Anzahl der Jugendlichen (12–17 Jahre)',
+    'KidsNumber' => 'Anzahl der Kinder (unter 12 Jahren)',
+
+    'TourType' => 'Art der Führung',
+    'AbbeyTour' => 'Abteiführung – 1 Stunde',
+    'AbbeyBreweryTour' => 'Kombinierte Führung durch die Abtei und die Brauerei – 2 Stunden',
+
+    'PhoneNumber' => 'Telefonnummer',
+    'AdditionalMessage' => 'Zusätzliche Nachricht',
+
+    'Prices&Info' => 'Preise und Informationen',
+    'AbbeyTourInfo' => <<<EOT
+    6 € / Erwachsene – 4 € / Kinder von 5–17 Jahren – Kostenlos für Kinder von 0–4 Jahren
+    EOT,
+    'AbbeyBreweryTourInfo' => <<<EOT
+    Mit Verkostung von 2 Bieren oder Apfelsaft und Abteikäse 
+    EOT,
+    'AbbeyBreweryTourInfo2' => <<<EOT
+    14 € / Erwachsene – 7 € / Kinder von 5–17 Jahren (ohne Bier) – Kostenlos für Kinder von 0–4 Jahren
+    EOT,
+    'Information' => 'Informationen',
+    'SendRequest' => 'Anfrage senden',
 
     'BP-bookRestaurant' => 'Bei Le Casse-Croûte reservieren',
 

@@ -2,6 +2,7 @@
 
 return [
     //Navigation Links
+    'Home' => 'Accueil',
     'Discover' => 'Découvrir',
     'Visit' => 'Visiter',
     'Community' => 'Communauté',
@@ -168,6 +169,7 @@ return [
     //Info & Contact page
     'Brewery' => 'Brasserie',
     'CheeseShop' => 'Fromagerie',
+    'Abbey' => 'Abbaye',
 
     'Accessibility' => 'Accessibilité',
     'Stroller' => 'Poussette',
@@ -181,6 +183,35 @@ return [
     EOT,
 
     'BP-formTitle' => 'Formulaire de réservation',
+
+    'Group' => 'Groupe',
+    'BookingRequest' => 'Demande de réservation',
+    'PreferredDate' => 'Date souhaitée',
+    'PreferredTime' => 'Heure souhaitée',
+    'GroupName' => 'Nom du groupe',
+    'AdultNumber' => 'Nombre d\'adultes (+/- 5 personnes)',
+    'YoungNumber' => 'Nombre de jeunes (12-17 ans)',
+    'KidsNumber' => 'Nombre d\'enfants (moins de 12 ans)',
+
+    'TourType' => 'Type de visite',
+    'AbbeyTour' => 'Visite de l\'abbaye - 1 heure',
+    'AbbeyBreweryTour' => 'Visite de l\'abbaye et de la brasserie - 2 heures',
+
+    'PhoneNumber' => 'Numéro de téléphone',
+    'AdditionalMessage' => 'Message complémentaire',
+
+    'Prices&Info' => 'Tarifs & Informations',
+    'AbbeyTourInfo' => <<<EOT
+    6€ / adultes - 4€ / jeunes 5-17 ans - Gratuit pour les 0-4 ans
+    EOT,
+    'AbbeyBreweryTourInfo' => <<<EOT
+    Avec dégustation de 2 bières ou jus de pomme et fromage d'abbaye 
+    EOT,
+    'AbbeyBreweryTourInfo2' => <<<EOT
+    14€ / adultes - 7€ / jeunes 5-17 ans (sans bière) - Gratuit pour les 0-4 ans
+    EOT,
+    'Information' => 'Informations',
+    'SendRequest' => 'Envoyer la demande',
 
     'BP-bookRestaurant' => 'Réserver au Casse Croûte',
 

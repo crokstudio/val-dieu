@@ -12,6 +12,8 @@ eleventyComputed:
 
 {% extends "layouts/base.njk" %}
 
+{% set pageTitle = ('Discover' | t(currentLocale)) %}
+
 {% block content %}
 
 {{ banner("/assets/medias/img/Banner_Discover.webp", "Image abbaye", "banner--medium") }}

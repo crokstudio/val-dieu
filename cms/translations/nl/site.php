@@ -2,6 +2,7 @@
 
 return [
     //Navigation Links
+    'Home' => 'Thuis',
     'Discover' => 'Ontdekken',
     'Visit' => 'Bezoeken',
     'Community' => 'Gemeenschap',
@@ -168,6 +169,7 @@ return [
     //Info & Contact page
     'Brewery' => 'Brouwerij',
     'CheeseShop' => 'Kaas Winkel',
+    'Abbey' => 'Abdij',
 
     'Accessibility' => 'Toegankelijkheid',
     'Stroller' => 'Kinderwagen',
@@ -181,6 +183,35 @@ return [
     EOT,
 
     'BP-formTitle' => 'Reservatieformulier',
+
+    'Group' => 'Groep',
+    'BookingRequest' => 'Reserveringsaanvraag',
+    'PreferredDate' => 'Gewenste datum',
+    'PreferredTime' => 'Gewenste tijdstip',
+    'GroupName' => 'Naam van de groep',
+    'AdultNumber' => 'Aantal volwassenen (+/- 5 personen)',
+    'YoungNumber' => 'Aantal jongeren (12-17 jaar)',
+    'KidsNumber' => 'Aantal kinderen (onder de 12 jaar)',
+
+    'TourType' => 'Type bezoek',
+    'AbbeyTour' => 'Rondleiding door de abdij – 1 uur',
+    'AbbeyBreweryTour' => 'Gecombineerde rondleiding door de abdij en de brouwerij – 2 uren',
+
+    'PhoneNumber' => 'Telefoonnummer',
+    'AdditionalMessage' => 'Aanvullend bericht',
+
+    'Prices&Info' => 'Tarieven en informatie',
+    'AbbeyTourInfo' => <<<EOT
+    €6 / volwassenen – €4 / kinderen van 5–17 jaar – Gratis voor kinderen van 0–4 jaar
+    EOT,
+    'AbbeyBreweryTourInfo' => <<<EOT
+    Inclusief proeverij van 2 bieren of appelsap en abdijkaas 
+    EOT,
+    'AbbeyBreweryTourInfo2' => <<<EOT
+    €14 / volwassenen – €7 / kinderen van 5–17 jaar (zonder bier) – Gratis voor kinderen van 0–4 jaar
+    EOT,
+    'Information' => 'Informatie',
+    'SendRequest' => 'Aanvraag verzenden',    
 
     'BP-bookRestaurant' => 'Reserveren bij Le Casse-Croûte',
 

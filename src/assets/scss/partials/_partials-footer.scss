@@ -1,6 +1,8 @@
 /* FOOTER MAIN CHANGES */
 
 footer{
+    position: relative;
+
     max-width: var(--max-width);
     width: 100%;
     justify-self: center;
@@ -20,7 +22,6 @@ footer{
 }
 
 .footer h2{
-    padding-top: var(--sp-10);
     color: var(--color-white-100);
     grid-column: 3 / -3;
     text-align: center;
@@ -38,6 +39,10 @@ footer{
 }
 
 @media all and (min-width: 768px) {
+
+    .footer h2{
+        padding-top: var(--sp-10);
+    }
 
     .footer .section {
         padding-block-start: calc(var(--section-spacing)/2);

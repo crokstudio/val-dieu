@@ -6,6 +6,8 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: var(--br-s);
+
+    overflow: hidden; //REMOVE IF BREAKS
 }
 
 @media all and (min-width: 1024px) {

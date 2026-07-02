@@ -1,11 +1,14 @@
+{% set title = (pageTitle |default('Home' | t(currentLocale))) + " | Abbaye du Val-Dieu" %}
+
 <!DOCTYPE html>
 <html lang="{{ language or 'en' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abbaye de Val-Dieu</title>
+  <title>{{ title }}</title>
+  <title>Abbaye du Val-Dieu</title>
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="icon" href="/assets/medias/icons/Val-Dieu-Logo.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/medias/icons/abbaye-val-dieu.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />  
 </head>
 

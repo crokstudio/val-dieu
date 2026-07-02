@@ -2,6 +2,7 @@
 
 return [
     //Navigation Links
+    'Home' => 'Home',
     'Discover' => 'Discover',
     'Visit' => 'Visit',
     'Community' => 'Community',
@@ -169,6 +170,7 @@ return [
     //Info & Contact page
     'Brewery' => 'Brewery',
     'CheeseShop' => 'Cheese Shop',
+    'Abbey' => 'Abbey',
 
     'Accessibility' => 'Accessibility',
     'Stroller' => 'Stroller',
@@ -182,6 +184,35 @@ return [
     EOT,
 
     'BP-formTitle' => 'Booking form',
+
+    'Group' => 'Group',
+    'BookingRequest' => 'Booking Request',
+    'PreferredDate' => 'Preferred Date',
+    'PreferredTime' => 'Preferred Time',
+    'GroupName' => 'Group Name',
+    'AdultNumber' => 'Number of adults (+/- 5 people)',
+    'YoungNumber' => 'Number of teenagers (12-17 years old)',
+    'KidsNumber' => 'Number of children (under 12 years old)',
+
+    'TourType' => 'Tour Type',
+    'AbbeyTour' => 'Abbey Tour - 1 hour',
+    'AbbeyBreweryTour' => 'Abbey & Brewery Tour - 2 hours',
+
+    'PhoneNumber' => 'Phone Number',
+    'AdditionalMessage' => 'Additional Message',
+
+    'Prices&Info' => 'Prices & Information',
+    'AbbeyTourInfo' => <<<EOT
+    €6 / adults – €4 / children aged 5–17 – Free for children aged 0–4
+    EOT,
+    'AbbeyBreweryTourInfo' => <<<EOT
+    Includes a tasting of 2 beers or apple juice and abbey cheese
+    EOT,
+    'AbbeyBreweryTourInfo2' => <<<EOT
+    €14 / adults – €7 / children aged 5–17 (without beer) – Free for children aged 0–4
+    EOT,
+    'Information' => 'Information',
+    'SendRequest' => 'Send Request',
 
     'BP-bookRestaurant' => 'Book at Le Casse-Croûte',
 
