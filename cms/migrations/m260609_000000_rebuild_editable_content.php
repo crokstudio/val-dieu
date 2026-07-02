@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Field;
 use craft\db\Migration;
 use craft\elements\Entry;
+use craft\fields\Matrix;
 use craft\fields\Table;
 use craft\fieldlayoutelements\CustomField;
 use craft\fieldlayoutelements\TitleField;
@@ -37,6 +38,11 @@ class m260609_000000_rebuild_editable_content extends Migration
 
     public function safeUp(): bool
     {
+        if ($this->hasMatrixContentModel()) {
+            echo "Existing Matrix content model detected; skipping destructive rebuild.\n";
+            return true;
+        }
+
         $this->deleteExistingContentModel();
 
         $homepageGallery = $this->createTableField(
@@ -150,6 +156,18 @@ class m260609_000000_rebuild_editable_content extends Migration
     {
         echo "m260609_000000_rebuild_editable_content is destructive and cannot be reverted automatically.\n";
         return false;
+    }
+
+    private function hasMatrixContentModel(): bool
+    {
+        $entries = Craft::$app->getEntries();
+        $fields = Craft::$app->getFields();
+
+        return $entries->getSectionByHandle('discover') !== null
+            && $fields->getFieldByHandle('discoverTimeline') instanceof Matrix
+            && $fields->getFieldByHandle('homepageGallery') instanceof Matrix
+            && $fields->getFieldByHandle('communityNews') instanceof Matrix
+            && $fields->getFieldByHandle('supportProjects') instanceof Matrix;
     }
 
     private function deleteExistingContentModel(): void
