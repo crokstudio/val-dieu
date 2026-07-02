@@ -38,62 +38,72 @@ eleventyComputed:
         </div>
         <div class="book--bigGroups">
             <h3 class="book--title">Groupe > 15</h3>
-            <form action="mailto:infotourist@val-dieu.net" method="post" enctype="text/plain" class="guided-visits--form">
+            <form action="/api/guided-visits.php" method="post" class="guided-visits--form">
+                <input type="hidden" name="locale" value="{{ currentLocale }}">
+                <p hidden aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </p>
                 <fieldset>
                      <legend>Demande de réservation</legend>
 
                     <p>
                         <label class="form--label" for="visit-date">Date souhaitée</label>
-                        <input type="date" id="visit-date" name="Date souhaitée" required>
+                        <input type="date" id="visit-date" name="visit_date" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="visit-time">Heure souhaitée</label>
-                        <input type="time" id="visit-time" name="Heure souhaitée" required>
+                        <input type="time" id="visit-time" name="visit_time" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="group-name">Nom du groupe</label>
-                        <input type="text" id="group-name" name="Nom du groupe" required>
+                        <input type="text" id="group-name" name="group_name" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="adult-count">Nombre d'adultes (+/- 5 personnes)</label>
-                        <input type="number" id="adult-count" name="Nombre d'adultes" min="0" required>
+                        <input type="number" id="adult-count" name="adult_count" min="0" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="teen-count">Nombre de jeunes (12-17 ans)</label>
-                        <input type="number" id="teen-count" name="Nombre de jeunes 12-17 ans" min="0" required>
+                        <input type="number" id="teen-count" name="teen_count" min="0" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="child-count">Nombre d'enfants (moins de 12 ans)</label>
-                        <input type="number" id="child-count" name="Nombre d'enfants moins de 12 ans" min="0" required>
+                        <input type="number" id="child-count" name="child_count" min="0" required>
                     </p>
 
                     <fieldset class="form--visit-type">
                         <legend>Type de visite</legend>
 
                         <p>
-                            <input type="radio" id="visit-abbey" name="Type de visite" value="Visite de l'abbaye" required>
+                            <input type="radio" id="visit-abbey" name="visit_type" value="Visite de l'abbaye" required>
                             <label for="visit-abbey">Visite de l'abbaye - 1 h</label>
                         </p>
 
                         <p>
-                            <input type="radio" id="visit-combined" name="Type de visite" value="Visite combinée abbaye et brasserie">
+                            <input type="radio" id="visit-combined" name="visit_type" value="Visite combinée abbaye et brasserie">
                             <label for="visit-combined">Visite combinée de l'abbaye et de la brasserie - +/- 2 h 15</label>
                         </p>
                     </fieldset>
 
                     <p>
+                        <label class="form--label" for="email">Adresse email</label>
+                        <input type="email" id="email" name="email" required>
+                    </p>
+
+                    <p>
                         <label class="form--label" for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="Numéro de téléphone" required>
+                        <input type="tel" id="phone" name="phone" required>
                     </p>
 
                     <p>
                         <label class="form--label" for="message">Message complémentaire</label>
-                        <textarea id="message" name="Message complémentaire" rows="5"></textarea>
+                        <textarea id="message" name="message" rows="5"></textarea>
                     </p>
                 </fieldset>
 
