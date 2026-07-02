@@ -220,6 +220,7 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/assets/medias/icons");
   eleventyConfig.addPassthroughCopy({ "./src/assets/medias/pdf": "assets/medias/pdf" });
   eleventyConfig.addPassthroughCopy({ "./cms/web/uploads": "uploads" });
+  eleventyConfig.addPassthroughCopy({ "./src/api": "api" });
   
   // Eleventy dev server config
   eleventyConfig.setServerOptions({

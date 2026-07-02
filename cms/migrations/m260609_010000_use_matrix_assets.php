@@ -44,6 +44,11 @@ class m260609_010000_use_matrix_assets extends Migration
 
     public function safeUp(): bool
     {
+        if ($this->hasMatrixContentModel()) {
+            echo "Existing Matrix content model detected; skipping Matrix conversion.\n";
+            return true;
+        }
+
         $existing = $this->captureExistingContent();
         $this->removeDuplicateSingleEntries($existing);
 
@@ -62,6 +67,18 @@ class m260609_010000_use_matrix_assets extends Migration
     {
         echo "m260609_010000_use_matrix_assets is non-destructive only in the forward direction; revert manually if needed.\n";
         return false;
+    }
+
+    private function hasMatrixContentModel(): bool
+    {
+        $entries = Craft::$app->getEntries();
+        $fields = Craft::$app->getFields();
+
+        return $entries->getSectionByHandle('discover') !== null
+            && $fields->getFieldByHandle('discoverTimeline') instanceof Matrix
+            && $fields->getFieldByHandle('homepageGallery') instanceof Matrix
+            && $fields->getFieldByHandle('communityNews') instanceof Matrix
+            && $fields->getFieldByHandle('supportProjects') instanceof Matrix;
     }
 
     private function captureExistingContent(): array
