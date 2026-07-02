@@ -79,18 +79,55 @@ $matrixRows = static function(Entry $entry, string $handle, array $keys) use ($m
     return $rows;
 };
 
+$matrixRowsForSection = static function(string $sectionHandle, string $handle, array $keys) use ($matrixRows): array {
+    $entries = Entry::find()
+        ->section($sectionHandle)
+        ->status(null)
+        ->orderBy(['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC])
+        ->all();
+
+    foreach ($entries as $entry) {
+        $rows = $matrixRows($entry, $handle, $keys);
+
+        if ($rows) {
+            return $rows;
+        }
+    }
+
+    return [];
+};
+
+$tableRowsForSection = static function(string $sectionHandle, string $handle, array $keys) use ($tableRows): array {
+    $entries = Entry::find()
+        ->section($sectionHandle)
+        ->status(null)
+        ->orderBy(['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC])
+        ->all();
+
+    foreach ($entries as $entry) {
+        $rows = $tableRows($entry, $handle, $keys);
+
+        if ($rows) {
+            return $rows;
+        }
+    }
+
+    return [];
+};
+
 return [
     'endpoints' => [
         'api/homepage.json' => [
             'elementType' => Entry::class,
             'criteria' => [
                 'section' => 'homepage',
+                'orderBy' => ['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC],
             ],
             'one' => true,
             'cache' => false,
-            'transformer' => static function(Entry $entry) use ($matrixRows): array {
+            'transformer' => static function(Entry $entry) use ($matrixRowsForSection): array {
                 return [
-                    'gallery' => $matrixRows($entry, 'homepageGallery', ['image', 'alt']),
+                    'gallery' => $matrixRowsForSection('homepage', 'homepageGallery', ['image', 'alt']),
                 ];
             },
         ],
@@ -98,12 +135,13 @@ return [
             'elementType' => Entry::class,
             'criteria' => [
                 'section' => 'discover',
+                'orderBy' => ['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC],
             ],
             'one' => true,
             'cache' => false,
-            'transformer' => static function(Entry $entry) use ($matrixRows): array {
+            'transformer' => static function(Entry $entry) use ($matrixRowsForSection): array {
                 return [
-                    'timeline' => $matrixRows($entry, 'discoverTimeline', ['date', 'title', 'text', 'image', 'alt']),
+                    'timeline' => $matrixRowsForSection('discover', 'discoverTimeline', ['date', 'title', 'text', 'image', 'alt']),
                 ];
             },
         ],
@@ -111,49 +149,50 @@ return [
             'elementType' => Entry::class,
             'criteria' => [
                 'section' => 'community',
+                'orderBy' => ['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC],
             ],
             'one' => true,
             'cache' => false,
-            'transformer' => static function(Entry $entry) use ($agendaRows, $matrixRows): array {
+            'transformer' => static function(Entry $entry) use ($matrixRowsForSection, $tableRowsForSection): array {
                 return [
                     'agenda' => [
                         [
                             'day' => 'Lundi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaMonday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaMonday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Mardi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaTuesday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaTuesday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Mercredi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaWednesday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaWednesday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Jeudi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaThursday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaThursday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Vendredi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaFriday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaFriday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Samedi',
                             'subtitle' => '',
-                            'slots' => $agendaRows($entry, 'communityAgendaSaturday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaSaturday', ['time', 'title']),
                         ],
                         [
                             'day' => 'Dimanche',
                             'subtitle' => 'et fêtes',
-                            'slots' => $agendaRows($entry, 'communityAgendaSunday'),
+                            'slots' => $tableRowsForSection('community', 'communityAgendaSunday', ['time', 'title']),
                         ],
                     ],
-                    'news' => $matrixRows($entry, 'communityNews', ['image', 'alt', 'title', 'text', 'date']),
+                    'news' => $matrixRowsForSection('community', 'communityNews', ['image', 'alt', 'title', 'text', 'date']),
                 ];
             },
         ],
@@ -161,12 +200,13 @@ return [
             'elementType' => Entry::class,
             'criteria' => [
                 'section' => 'support',
+                'orderBy' => ['elements.dateUpdated' => SORT_DESC, 'elements.id' => SORT_DESC],
             ],
             'one' => true,
             'cache' => false,
-            'transformer' => static function(Entry $entry) use ($matrixRows): array {
+            'transformer' => static function(Entry $entry) use ($matrixRowsForSection): array {
                 return [
-                    'projects' => $matrixRows($entry, 'supportProjects', ['image', 'alt', 'title', 'text']),
+                    'projects' => $matrixRowsForSection('support', 'supportProjects', ['image', 'alt', 'title', 'text']),
                 ];
             },
         ],
