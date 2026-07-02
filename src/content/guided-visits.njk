@@ -36,7 +36,7 @@ eleventyComputed:
             <div id="ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef" style="width:100%" title="Abbaye du Val-Dieu" data-id-projet='0073a4a97782427da499c7f760733bef'>Chargement en cours...</div> <script type="text/javascript" src="https://reservation.elloha.com/Scripts/widget-loader.min.js?v=42"></script> <script type="text/javascript">var constellationWidgetUrl0073a4a97782427da499c7f760733bef, constellationTypeModule0073a4a97782427da499c7f760733bef; constellationWidgetUrl0073a4a97782427da499c7f760733bef = 'https://reservation.elloha.com/Widget/BookingEngine/0073a4a9-7782-427d-a499-c7f760733bef?idoi=86fae45e-deec-4e8b-bc38-6d0dc4bc8f45&culture=fr-FR'; constellationTypeModule0073a4a97782427da499c7f760733bef=1; constellationWidgetLoad('ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef'); constellationWidgetAddEvent(window, "resize", function () { constellationWidgetSetAppearance('ConstellationWidgetContainer0073a4a9-7782-427d-a499-c7f760733bef'); });</script>
         </div>
         <div class="book--bigGroups">
-            <h3 class="book--title">Groupe > 15</h3>
+            <h3 class="book--title">{{ 'Group' | t(currentLocale) }} > 15</h3>
             <form action="/api/guided-visits.php" method="post" class="guided-visits--form">
                 <input type="hidden" name="locale" value="{{ currentLocale }}">
                 <p hidden aria-hidden="true">
@@ -47,32 +47,32 @@ eleventyComputed:
                      <legend>{{ 'BookingRequest' | t(currentLocale) }}</legend>
 
                     <p>
-                        <label class="form--label" for="visit-date">Date souhaitée</label>
+                        <label class="form--label" for="visit-date">{{ 'PreferredDate' | t(currentLocale) }}</label>
                         <input type="date" id="visit-date" name="visit_date" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="visit-time">Heure souhaitée</label>
+                        <label class="form--label" for="visit-time">{{ 'PreferredTime' | t(currentLocale) }}</label>
                         <input type="time" id="visit-time" name="visit_time" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="group-name">Nom du groupe</label>
+                        <label class="form--label" for="group-name">{{ 'GroupName' | t(currentLocale) }}</label>
                         <input type="text" id="group-name" name="group_name" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="adult-count">Nombre d'adultes (+/- 5 personnes)</label>
+                        <label class="form--label" for="adult-count">{{ 'AdultNumber' | t(currentLocale) }}</label>
                         <input type="number" id="adult-count" name="adult_count" min="0" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="teen-count">Nombre de jeunes (12-17 ans)</label>
+                        <label class="form--label" for="teen-count">{{ 'YoungNumber' | t(currentLocale) }}</label>
                         <input type="number" id="teen-count" name="teen_count" min="0" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="child-count">Nombre d'enfants (moins de 12 ans)</label>
+                        <label class="form--label" for="child-count">{{ 'KidsNumber' | t(currentLocale) }}</label>
                         <input type="number" id="child-count" name="child_count" min="0" required>
                     </p>
 
@@ -81,27 +81,27 @@ eleventyComputed:
 
                         <p>
                             <input type="radio" id="visit-abbey" name="visit_type" value="Visite de l'abbaye" required>
-                            <label for="visit-abbey">Visite de l'abbaye - 1 h</label>
+                            <label for="visit-abbey">{{ 'AbbeyTour' | t(currentLocale) }}</label>
                         </p>
 
                         <p>
                             <input type="radio" id="visit-combined" name="visit_type" value="Visite combinée abbaye et brasserie">
-                            <label for="visit-combined">Visite combinée de l'abbaye et de la brasserie - +/- 2 h 15</label>
+                            <label for="visit-combined">{{ 'AbbeyBreweryTour' | t(currentLocale) }}</label>
                         </p>
                     </fieldset>
 
                     <p>
-                        <label class="form--label" for="email">Adresse email</label>
+                        <label class="form--label" for="email">{{ 'Email' | t(currentLocale) }}</label>
                         <input type="email" id="email" name="email" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="phone">Numéro de téléphone</label>
+                        <label class="form--label" for="phone">{{ 'PhoneNumber' | t(currentLocale) }}</label>
                         <input type="tel" id="phone" name="phone" required>
                     </p>
 
                     <p>
-                        <label class="form--label" for="message">Message complémentaire</label>
+                        <label class="form--label" for="message">{{ 'AdditionalMessage' | t(currentLocale) }}</label>
                         <textarea id="message" name="message" rows="5"></textarea>
                     </p>
                 </fieldset>
