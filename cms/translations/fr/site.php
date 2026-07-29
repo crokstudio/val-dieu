@@ -18,7 +18,7 @@ return [
 
     //Home page
     'HP-introTitle-01' => 'Bienvenue à',
-    'HP-introTitle-02' => 'l\'Abbaye de Val-Dieu',
+    'HP-introTitle-02' => 'l\'Abbaye du Val-Dieu',
     
     'HP-introText' => <<<EOT
     Fondée en 1216 par des moines cisterciens, l'abbaye Notre-Dame du Val-Dieu est un havre de paix au cœur du Pays de Herve. Elle se trouve au centre du triangle formé par les villes de Liège, Maastricht et Aix-la-Chapelle, dans un écrin de nature. 
@@ -75,7 +75,7 @@ return [
     EOT,
     'DiP-diagramTitle-02' => 'Brasserie',
     'DiP-diagramText-02' => <<<EOT
-    La brasserie de l'Abbaye du Val-Dieu propose une gamme de bières de qualité reconnue et exclusivement brassée au sein de l'Abbaye. La gamme se compose de plusieurs bières ; 4 tradition et 3 hors-série ainsi que d'1 édition limitée "Excellence" vieillie en bariques de chêne à caractère unique. Les brasseurs perpétuent ce savoir-faire exigeant depuis de nombreuses années.
+    La brasserie de l'abbaye du Val-Dieu propose une gamme de bières de qualité reconnue et exclusivement brassée au sein de l'abbaye. La gamme se compose de plusieurs bières ; 4 tradition et 3 hors-série ainsi que d'1 édition limitée "Excellence" vieillie en bariques de chêne à caractère unique. Les brasseurs perpétuent ce savoir-faire exigeant depuis de nombreuses années.
     EOT,
     'DiP-diagramTitle-03' => 'Fromage',
     'DiP-diagramText-03' => <<<EOT
@@ -89,7 +89,7 @@ return [
     //Visit page
     'VP-introTitle' => 'Visiter l\'abbaye',
     'VP-introText' => <<<EOT
-    Découvrez gratuitement le parc arboré, la grande cour et la basilique de l'Abbaye du Val-Dieu. Pour vous accompagner dans la visite, un livret-jeu gratuit est disponible au magasin. Pour entrer dans le cloitre et la brasserie, des visites guidées sont organisées sur réservation, avec dégustation de bière. De 10h30 à 18h30, le restaurant Le Casse-Croûte du Val-Dieu vous accueille dans les anciennes étables de l'abbaye. N'oubliez pas de faire un détour par le magasin de l'abbaye, qui propose des produits du terroir, des souvenirs et des articles religieux. Enfin, plusieurs promenades balisées prennent leur départ depuis l'abbaye et invitent à découvrir les paysages de la région.
+    Découvrez gratuitement le parc arboré, la grande cour et la basilique de l'abbaye du Val-Dieu. Pour vous accompagner dans la visite, un livret-jeu gratuit est disponible au magasin. Pour entrer dans le cloitre et la brasserie, des visites guidées sont organisées sur réservation, avec dégustation de bière. De 10h30 à 18h30, le restaurant Le Casse-Croûte du Val-Dieu vous accueille dans les anciennes étables de l'abbaye. N'oubliez pas de faire un détour par le magasin de l'abbaye, qui propose des produits du terroir, des souvenirs et des articles religieux. Enfin, plusieurs promenades balisées prennent leur départ depuis l'abbaye et invitent à découvrir les paysages de la région.
     EOT,
 
     'VP-activitiesLabel' => 'Que faire?',
@@ -131,8 +131,8 @@ return [
     Cultiver le silence, laisser ainsi une place à l'autre, à l'écoute. Vivre simplement de la prière et du travail, en communauté, en fraternité. Ces principes sont cultivés à l'abbaye du Val-Dieu depuis ses origines. Après le départ des moines cisterciens en 2001, une association de fidèles des environs s'est créée pour poursuivre une vie communautaire inspirée de la spiritualité cistercienne, ancrée dans l'évangile.
     EOT,
 
-    'CP-lifeTitle' => 'La vie aujourd\'hui',
-    'CP-lifeText' => <<<EOT
+    'CP-newLifeTitle' => 'La vie aujourd\'hui',
+    'CP-newLifeText' => <<<EOT
     La communauté chrétienne du Val-Dieu est une association de fidèles reconnue par le diocèse de Liège et en lien avec les moines cisterciens de l'abbaye de Lérins (Côte d'Azur). La communauté organise des temps de prière ouverts à tous et d'autres activités spirituelles ou de volontariat pour maintenir l'accueil à l'abbaye, notamment l'entretien du parc et des espaces de l'abbaye.
     EOT,
 
@@ -150,8 +150,8 @@ return [
     'Sunday' => 'Dimanche',
     'and holidays' => 'et fêtes',
 
-    'CP-lifeTitle' => 'La vie à l\'époque',
-    'CP-lifeText' => <<<EOT
+    'CP-oldLifeTitle' => 'La vie à l\'époque',
+    'CP-oldLifeText' => <<<EOT
     Les moines cisterciens du Val-Dieu menaient une vie simple, rythmée par la prière, le travail et la vie fraternelle. Leur journée suivait strictement la liturgie des Heures, des matines avant l'aube jusqu'aux complies du soir. Entre les offices, ils travaillaient aux champs, dans les ateliers ou à l'entretien du monastère. Les repas étaient pris en commun dans le réfectoire, souvent dans le silence, tandis qu'un moine faisait une lecture spirituelle.
     EOT,
 
@@ -175,6 +175,7 @@ return [
     'Stroller' => 'Poussette',
     'Bicycle' => 'Vélo',
     'PRM' => 'PMR',
+    'Dog' => 'Chien',
 
 
     //Book page

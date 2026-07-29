@@ -49,7 +49,7 @@ eleventyComputed:
                     </div>
                     <div class="POI--infos">
                         <p class="POI--adress">Val-dieu, 227 à 4880 Aubel</p>
-                        <p class="POI--mail">info@val-dieu.com</p>
+                        <p class="POI--mail">info@cassecroutevaldieu.com</p>
                     </div>
                 </li>
                 <li class="POI--item">
@@ -82,8 +82,11 @@ eleventyComputed:
                     <li class="accessibility-points--item accessibility-points--no">
                         <p class="accessibility-points--txt">{{ 'Bicycle' | t(currentLocale) }}</p>
                     </li>
-                    <li class="accessibility-points--item accessibility-points--yes">
+                    <li class="accessibility-points--item accessibility-points--no">
                         <p class="accessibility-points--txt">{{ 'PRM' | t(currentLocale) }}</p>
+                    </li>
+                    <li class="accessibility-points--item accessibility-points--no">
+                        <p class="accessibility-points--txt">{{ 'Dog' | t(currentLocale) }}</p>
                     </li>
                 </ul>
             </li>
@@ -102,22 +105,28 @@ eleventyComputed:
                     <li class="accessibility-points--item accessibility-points--yes">
                         <p class="accessibility-points--txt">{{ 'PRM' | t(currentLocale) }}</p>
                     </li>
+                    <li class="accessibility-points--item accessibility-points--no">
+                        <p class="accessibility-points--txt">{{ 'Dog' | t(currentLocale) }}</p>
+                    </li>
                 </ul>
             </li>
             <li class="accessibility--item">
                 <div class="accessibility--header">
-                    <img src="assets/medias/svg/LOGO_Promenade.svg" alt="" class="accessibility--icon">
-                    <h3 class="accessibility-item--title">{{ 'Walks' | t(currentLocale) }}</h3>
+                    <img src="assets/medias/svg/LOGO_Brasserie.svg" alt="" class="accessibility--icon">
+                    <h3 class="accessibility-item--title">{{ 'Brewery' | t(currentLocale) }}</h3>
                 </div>
                 <ul class="accessibility-points--list">
-                    <li class="accessibility-points--item accessibility-points--no">
+                    <li class="accessibility-points--item accessibility-points--yes">
                         <p class="accessibility-points--txt">{{ 'Stroller' | t(currentLocale) }}</p>
                     </li>
                     <li class="accessibility-points--item accessibility-points--no">
                         <p class="accessibility-points--txt">{{ 'Bicycle' | t(currentLocale) }}</p>
                     </li>
-                    <li class="accessibility-points--item accessibility-points--no">
+                    <li class="accessibility-points--item accessibility-points--yes">
                         <p class="accessibility-points--txt">{{ 'PRM' | t(currentLocale) }}</p>
+                    </li>
+                    <li class="accessibility-points--item accessibility-points--no">
+                        <p class="accessibility-points--txt">{{ 'Dog' | t(currentLocale) }}</p>
                     </li>
                 </ul>
             </li>
@@ -127,14 +136,17 @@ eleventyComputed:
                     <h3 class="accessibility-item--title">{{ 'Guided Visits' | t(currentLocale) }}</h3>
                 </div>
                 <ul class="accessibility-points--list">
-                    <li class="accessibility-points--item accessibility-points--no">
+                    <li class="accessibility-points--item accessibility-points--yes">
                         <p class="accessibility-points--txt">{{ 'Stroller' | t(currentLocale) }}</p>
                     </li>
                     <li class="accessibility-points--item accessibility-points--no">
                         <p class="accessibility-points--txt">{{ 'Bicycle' | t(currentLocale) }}</p>
                     </li>
-                    <li class="accessibility-points--item accessibility-points--no">
+                    <li class="accessibility-points--item accessibility-points--yes">
                         <p class="accessibility-points--txt">{{ 'PRM' | t(currentLocale) }}</p>
+                    </li>
+                    <li class="accessibility-points--item accessibility-points--no">
+                        <p class="accessibility-points--txt">{{ 'Dog' | t(currentLocale) }}</p>
                     </li>
                 </ul>
             </li>

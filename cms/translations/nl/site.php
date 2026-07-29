@@ -131,8 +131,8 @@ return [
     Stilte koesteren en zo ruimte maken voor de ander, voor luisteren. Eenvoudig leven van gebed en werk, in gemeenschap en broederlijkheid. Deze principes worden sinds haar oorsprong in de Abbaye du Val-Dieu gekoesterd. Na het vertrek van de cisterciënzer monniken in 2001 werd door gelovigen uit de omgeving een vereniging opgericht om een gemeenschapsleven voort te zetten dat geïnspireerd is door de cisterciënzer spiritualiteit en geworteld is in het Evangelie.
     EOT,
 
-    'CP-lifeTitle' => 'Het leven vandaag',
-    'CP-lifeText' => <<<EOT
+    'CP-newLifeTitle' => 'Het leven vandaag',
+    'CP-newLifeText' => <<<EOT
     De Christelijke Gemeenschap van Val-Dieu is een vereniging van gelovigen die erkend is door het bisdom Luik en verbonden is met de cisterciënzer monniken van de abdij van Lérins (Côte d'Azur). De gemeenschap organiseert gebedsmomenten die voor iedereen toegankelijk zijn, evenals spirituele activiteiten en vrijwilligerswerk om het onthaal in de Abbaye du Val-Dieu te ondersteunen, onder meer door het park en de abdij ruimtes te onderhouden.
     EOT,
 
@@ -150,8 +150,8 @@ return [
     'Sunday' => 'Zondag',
     'and holidays' => 'en feestdagen',
 
-    'CP-lifeTitle' => 'Het leven vroeger',
-    'CP-lifeText' => <<<EOT
+    'CP-oldLifeTitle' => 'Het leven vroeger',
+    'CP-oldLifeText' => <<<EOT
     De cisterciënzer monniken van Val-Dieu leefden eenvoudig, met een ritme van gebed, werk en broederlijk leven. Hun dag volgde strikt de getijden liturgie, van de metten vóór zonsopgang tot de completen in de avond. Tussen de gebedsdiensten werkten ze op het land, in de ateliers of aan het onderhoud van het klooster. De maaltijden werden samen gebruikt in de refter, vaak in stilte, terwijl een monnik een spirituele lezing gaf.
     EOT,
 
@@ -175,6 +175,7 @@ return [
     'Stroller' => 'Kinderwagen',
     'Bicycle' => 'Fiets',
     'PRM' => 'PBM',
+    'Dog' => 'Hond',
 
 
     //Book page

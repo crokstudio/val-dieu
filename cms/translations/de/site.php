@@ -132,8 +132,8 @@ return [
     Die Stille pflegen und so Raum für den anderen und für das Zuhören schaffen. Einfach aus Gebet und Arbeit leben, in Gemeinschaft und Brüderlichkeit. Diese Grundsätze werden in der Abbaye du Val-Dieu seit ihren Ursprüngen gepflegt. Nach dem Weggang der Zisterziensermönche im Jahr 2001 gründete sich eine Vereinigung von Gläubigen aus der Umgebung, um ein Gemeinschaftsleben fortzuführen, das von der zisterziensischen Spiritualität inspiriert und im Evangelium verwurzelt ist.
     EOT,
 
-    'CP-lifeTitle' => 'Das Leben heute',
-    'CP-lifeText' => <<<EOT
+    'CP-newLifeTitle' => 'Das Leben heute',
+    'CP-newLifeText' => <<<EOT
     Die Christliche Gemeinschaft von Val-Dieu ist eine vom Bistum Lüttich anerkannte Vereinigung von Gläubigen und steht in Verbindung mit den Zisterziensermönchen der Abtei Lérins (Côte d'Azur). Die Gemeinschaft organisiert Gebetszeiten, die allen offenstehen, sowie spirituelle Aktivitäten und Freiwilligenarbeit, um den Empfang in der Abbaye du Val-Dieu aufrechtzuerhalten, insbesondere durch die Pflege des Parks und der Abteiräume.
     EOT,
 
@@ -151,8 +151,8 @@ return [
     'Sunday' => 'Sonntag',
     'and holidays' => 'und Feiertage',
 
-    'CP-lifeTitle' => 'Das Leben früher',
-    'CP-lifeText' => <<<EOT
+    'CP-oldLifeTitle' => 'Das Leben früher',
+    'CP-oldLifeText' => <<<EOT
     Die Zisterziensermönche von Val-Dieu führten ein einfaches Leben, geprägt von Gebet, Arbeit und brüderlichem Zusammenleben. Ihr Tag folgte streng der Liturgie der Stunden, von den Matutin vor Tagesanbruch bis zur Komplet am Abend. Zwischen den Gebetszeiten arbeiteten sie auf den Feldern, in den Werkstätten oder an der Instandhaltung des Klosters. Die Mahlzeiten wurden gemeinsam im Refektorium eingenommen, oft in Stille, während ein Mönch eine geistliche Lesung hielt.
     EOT,
 
@@ -176,6 +176,7 @@ return [
     'Stroller' => 'Kinderwagen',
     'Bicycle' => 'Fahrrad',
     'PRM' => 'PRM',
+    'Dog' => 'Hund',
 
 
     //Book page

@@ -132,8 +132,8 @@ return [
     Cultivating silence, and in doing so making room for others and for listening. Living simply through prayer and work, in community and fraternity. These principles have been nurtured at the Abbaye du Val-Dieu since its origins. After the departure of the Cistercian monks in 2001, an association of local faithful was created to continue a community life inspired by Cistercian spirituality and rooted in the Gospel.
     EOT,
 
-    'CP-lifeTitle' => 'Life today',
-    'CP-lifeText' => <<<EOT
+    'CP-newLifeTitle' => 'Life today',
+    'CP-newLifeText' => <<<EOT
     The Christian Community of Val-Dieu is an association of faithful recognised by the Diocese of Liège and connected with the Cistercian monks of the abbey of Lérins (Côte d'Azur). The community organises times of prayer open to all, as well as spiritual and volunteer activities that help maintain hospitality at the Abbaye du Val-Dieu, including the care of the park and abbey spaces.
     EOT,
 
@@ -151,8 +151,8 @@ return [
     'Sunday' => 'Sunday',
     'and holidays' => 'and holidays',
 
-    'CP-lifeTitle' => 'Life in former times',
-    'CP-lifeText' => <<<EOT
+    'CP-oldLifeTitle' => 'Life in former times',
+    'CP-oldLifeText' => <<<EOT
     The Cistercian monks of Val-Dieu led a simple life shaped by prayer, work and fraternal life. Their day strictly followed the Liturgy of the Hours, from matins before dawn to compline in the evening. Between the offices, they worked in the fields, in the workshops or on the upkeep of the monastery. Meals were taken together in the refectory, often in silence, while one monk offered a spiritual reading.
     EOT,
 
@@ -176,6 +176,7 @@ return [
     'Stroller' => 'Stroller',
     'Bicycle' => 'Bicycle',
     'PRM' => 'PRM',
+    'Dog' => 'Dog',
 
 
     //Book page
