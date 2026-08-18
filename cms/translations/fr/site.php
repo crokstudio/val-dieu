@@ -93,7 +93,7 @@ return [
     EOT,
 
     'VP-activitiesLabel' => 'Que faire?',
-    'VP-activitiesTitle' => 'Activités de l\'abbaye du Val-dieu',
+    'VP-activitiesTitle' => 'Activités de l\'abbaye du Val-Dieu',
     'VP-activitiesText' => <<<EOT
     Découvrez tout ce que l'abbaye a à offrir à travers une variété d'activités accessibles à tous. Entre patrimoine, nature et moments de détente, explorez le site à votre rythme et vivez une expérience unique au cœur du Val-Dieu.
     EOT,
