@@ -1,0 +1,93 @@
+name: Inspect Craft emergency
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: static-site-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Configure SSH
+        env:
+          OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+        run: |
+          set -Eeuo pipefail
+          : "${OVH_DEPLOY_KEY:?Missing OVH_DEPLOY_KEY}"
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid OVH host' >&2; exit 1; }
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$OVH_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Inspect Craft without exporting logs
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid OVH host' >&2; exit 1; }
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid OVH user' >&2; exit 1; }
+
+          ssh "$OVH_USER@$OVH_HOST" 'bash -s' <<'REMOTE'
+          set -Eeuo pipefail
+          CRAFT_DIR="$(cd "$HOME/craft" && pwd -P)"
+          grep -qxF 'val-dieu-craft-root-v1' "$CRAFT_DIR/.val-dieu-craft-root"
+
+          latest="$(find "$CRAFT_DIR/storage/logs" -maxdepth 1 -type f \( -name 'web.log' -o -name 'web-*.log' \) -printf '%T@ %p\n' | LC_ALL=C sort -n | tail -n 1)"
+          LOG_FILE="${latest#* }"
+          test -n "$LOG_FILE"
+          test -f "$LOG_FILE"
+          DIAG_FILE="$(mktemp)"
+          trap 'rm -f "$DIAG_FILE"' EXIT
+          tail -n 1600 "$LOG_FILE" > "$DIAG_FILE"
+
+          if grep -qF 'Invalid path alias: @modules/githubdispatch/controllers' "$DIAG_FILE"; then
+            echo 'diagnosis=stale_app_without_namespace_alias'
+          elif grep -qF 'The GitHub dispatch release link is invalid.' "$DIAG_FILE"; then
+            echo 'diagnosis=release_link_validation_failed'
+          elif grep -qF 'Failed opening required' "$DIAG_FILE"; then
+            echo 'diagnosis=required_module_file_unavailable'
+          elif grep -qF 'modules\\githubdispatch\\Module' "$DIAG_FILE"; then
+            echo 'diagnosis=github_dispatch_module_error'
+          else
+            echo 'diagnosis=unknown'
+          fi
+
+          CURRENT_LINK='absent'
+          if [ -L "$CRAFT_DIR/modules/githubdispatch-current" ]; then
+            candidate="$(basename "$(readlink "$CRAFT_DIR/modules/githubdispatch-current")")"
+            if [[ "$candidate" =~ ^[0-9a-f]{40}$ ]]; then
+              CURRENT_LINK="$candidate"
+            else
+              CURRENT_LINK='invalid'
+            fi
+          fi
+          printf 'current_release=%s\n' "$CURRENT_LINK"
+
+          BACKUP_ROOT="$HOME/.val-dieu-deploy-backups"
+          while IFS= read -r name; do
+            [[ "$name" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]] || continue
+            APP_STATE='absent'
+            LINK_STATE='absent'
+            if [ -f "$BACKUP_ROOT/$name/craft/app.php" ]; then
+              APP_STATE="$(sha256sum "$BACKUP_ROOT/$name/craft/app.php" | cut -d' ' -f1)"
+            fi
+            if [ -f "$BACKUP_ROOT/$name/craft/githubdispatch.previous-link" ]; then
+              LINK_STATE='present'
+            fi
+            printf 'backup=%s app_sha256=%s previous_link=%s\n' "$name" "$APP_STATE" "$LINK_STATE"
+          done < <(find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | LC_ALL=C sort -r | head -n 10)
+          REMOTE
