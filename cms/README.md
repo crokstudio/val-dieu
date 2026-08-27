@@ -24,7 +24,6 @@ cd cms
 composer install
 php craft setup
 php craft plugin/install element-api
-php craft plugin/install webhooks
 php craft migrate/up --interactive=0
 php craft project-config/apply
 php craft serve --port=8080
@@ -84,7 +83,7 @@ GITHUB_DISPATCH_REPOSITORY=crokstudio/val-dieu
 GITHUB_DISPATCH_TOKEN=github_pat_...
 ```
 
-Use a fine-grained GitHub token restricted to this repository with only `Contents: write`. The token is read only while the queued job runs; it is never stored in the job payload or the Webhooks plug-in activity table.
+Use a fine-grained GitHub token restricted to this repository with only `Contents: write`. The token is read only while the queued job runs; it is never serialized in the queue payload or included in application logs. Automatic rebuilds do not use Craft's legacy Webhooks plug-in.
 
 This repo includes `.github/workflows/rebuild-from-craft.yml` for that flow. Add these GitHub secrets before enabling OVH deployment:
 

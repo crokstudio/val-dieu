@@ -19,11 +19,6 @@ jobs:
     concurrency:
       group: static-site-build-${{ github.ref_name }}
       cancel-in-progress: true
-    env:
-      CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
-      CRAFT_REQUIRE_API: "true"
-      DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-      DEEPL_API_HOST: ${{ vars.DEEPL_API_HOST }}
 
     steps:
       - name: Debounce Craft rebuild
@@ -55,6 +50,10 @@ jobs:
             deepl-translations-
 
       - name: Build
+        env:
+          CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+          CRAFT_REQUIRE_API: "true"
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: npm run build
 
       - name: Stamp build
@@ -261,7 +260,7 @@ jobs:
           }
           trap rollback ERR
 
-          ln -s "$RELEASE" "$LIVE.next-$RUN_ID"
+          ln -s "githubdispatch-releases/$RELEASE_ID" "$LIVE.next-$RUN_ID"
           mv -Tf "$LIVE.next-$RUN_ID" "$LIVE"
           install -m 0644 "$STAGE/config/app.php" "$CRAFT_DIR/config/app.php.next"
           mv "$CRAFT_DIR/config/app.php.next" "$CRAFT_DIR/config/app.php"
@@ -271,6 +270,80 @@ jobs:
           php craft exec/exec '(function (): bool { $token = \craft\helpers\App::env("GITHUB_DISPATCH_TOKEN"); $repository = \craft\helpers\App::env("GITHUB_DISPATCH_REPOSITORY") ?: "crokstudio/val-dieu"; if (!is_string($token) || trim($token) === "") { throw new RuntimeException("GITHUB_DISPATCH_TOKEN is missing"); } if (!is_string($repository) || !preg_match("~^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$~", $repository)) { throw new RuntimeException("GITHUB_DISPATCH_REPOSITORY is invalid"); } if (Craft::$app->getModule("github-dispatch") === null) { throw new RuntimeException("github-dispatch module is unavailable"); } return true; })()' --interactive=0 --color=0
           trap - ERR
           REMOTE
+
+      - name: Verify Craft web and roll back on failure
+        env:
+          CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_REMOTE_CRAFT: ${{ steps.ovh.outputs.remote_craft }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${CRAFT_API_URL:?Missing CRAFT_API_URL}"
+          CRAFT_URL_PATTERN='^https?://[A-Za-z0-9.-]+(:[0-9]+)?/[A-Za-z0-9._~%/?&=+-]+$'
+          [[ "$CRAFT_API_URL" =~ $CRAFT_URL_PATTERN ]] || { echo 'Invalid Craft API URL' >&2; exit 1; }
+
+          SEPARATOR='?'
+          case "$CRAFT_API_URL" in *\?*) SEPARATOR='&' ;; esac
+          if curl --proto '=http,https' --proto-redir '=http,https' \
+            --fail --location --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 2 \
+            -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
+            "${CRAFT_API_URL}${SEPARATOR}deploy_health=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          then
+            echo 'Craft web bootstrap is healthy.'
+            exit 0
+          fi
+
+          ssh "$OVH_USER@$OVH_HOST" "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_BACKUP' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+          set -Eeuo pipefail
+          CRAFT_DIR="$(cd "$1" && pwd -P)"
+          BACKUP_DIR="$(cd "$2" && pwd -P)"
+          RUN_ID="$3"
+          HOME_DIR="$(cd "$HOME" && pwd -P)"
+          LIVE="$CRAFT_DIR/modules/githubdispatch-current"
+          RELEASES_REAL="$(cd "$CRAFT_DIR/modules/githubdispatch-releases" && pwd -P)"
+          PREVIOUS_LINK="$BACKUP_DIR/craft/githubdispatch.previous-link"
+
+          [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+          [[ "$CRAFT_DIR" == "$HOME_DIR/craft" ]]
+          [[ "$BACKUP_DIR" == "$HOME_DIR/.val-dieu-deploy-backups/"* ]]
+          [[ "${BACKUP_DIR##*/}" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+          grep -qxF 'val-dieu-craft-root-v1' "$CRAFT_DIR/.val-dieu-craft-root"
+          test -f "$BACKUP_DIR/craft/app.php"
+          php -l "$BACKUP_DIR/craft/app.php" >/dev/null
+
+          RESTORE_TARGET=''
+          if [ -f "$PREVIOUS_LINK" ]; then
+            IFS= read -r OLD_TARGET < "$PREVIOUS_LINK"
+            test -n "$OLD_TARGET"
+            case "$OLD_TARGET" in
+              /*) OLD_PATH="$OLD_TARGET" ;;
+              *) OLD_PATH="$CRAFT_DIR/modules/$OLD_TARGET" ;;
+            esac
+            OLD_REAL="$(cd "$OLD_PATH" && pwd -P)"
+            [[ "$OLD_REAL" == "$RELEASES_REAL/"* ]]
+            OLD_RELEASE="${OLD_REAL#"$RELEASES_REAL/"}"
+            [[ "$OLD_RELEASE" =~ ^[0-9a-f]{40}$ ]]
+            RESTORE_TARGET="githubdispatch-releases/$OLD_RELEASE"
+          fi
+
+          install -m 0644 "$BACKUP_DIR/craft/app.php" "$CRAFT_DIR/config/app.php.rollback-$RUN_ID"
+          mv -f "$CRAFT_DIR/config/app.php.rollback-$RUN_ID" "$CRAFT_DIR/config/app.php"
+          if [ -n "$RESTORE_TARGET" ]; then
+            ln -s "$RESTORE_TARGET" "$LIVE.rollback-$RUN_ID"
+            mv -Tf "$LIVE.rollback-$RUN_ID" "$LIVE"
+          elif [ -L "$LIVE" ]; then
+            mv "$LIVE" "$BACKUP_DIR/craft/githubdispatch.failed-link-$RUN_ID"
+          fi
+
+          cd "$CRAFT_DIR"
+          php craft help --interactive=0 --color=0 >/dev/null
+          REMOTE
+
+          echo 'Craft web verification failed; the previous integration was restored.' >&2
+          exit 1
 
       - name: Deploy to OVH
         env:
