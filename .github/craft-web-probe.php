@@ -10,7 +10,9 @@ $publicKeyPath = dirname(__DIR__) . '/storage/runtime/' . pathinfo(__FILE__, PAT
 try {
     require dirname(__DIR__) . '/bootstrap.php';
     $app = require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';
-    $app->run();
+    if ($app->getModule('github-dispatch') === null) {
+        throw new RuntimeException('The GitHub dispatch module is unavailable in the web bootstrap.');
+    }
     if (ob_get_level() > 0) {
         ob_end_clean();
     }
