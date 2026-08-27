@@ -16,6 +16,11 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
       - name: Configure SSH
         env:
           OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
@@ -109,3 +114,51 @@ jobs:
             printf 'backup=%s app_sha256=%s previous_link=%s\n' "$name" "$APP_STATE" "$LINK_STATE"
           done < <(find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | LC_ALL=C sort -r | head -n 10)
           REMOTE
+
+      - name: Probe the Craft web bootstrap
+        env:
+          CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${CRAFT_API_URL:?Missing CRAFT_API_URL}"
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid OVH host' >&2; exit 1; }
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid OVH user' >&2; exit 1; }
+          [[ "$CRAFT_API_URL" =~ ^https?://[A-Za-z0-9.-]+(:[0-9]+)?/cms/api/ ]] || { echo 'Invalid Craft API URL' >&2; exit 1; }
+
+          RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+          REMOTE_PROBE="craft/web/craft-probe-$RUN_ID.php"
+          REMOTE_KEY="craft/storage/runtime/craft-probe-$RUN_ID.pem"
+          SSH_TARGET="$OVH_USER@$OVH_HOST"
+
+          cleanup() {
+            ssh "$SSH_TARGET" "rm -f -- '$REMOTE_PROBE' '$REMOTE_KEY'"
+          }
+          trap cleanup EXIT
+
+          scp .github/craft-web-probe.php "$SSH_TARGET:$REMOTE_PROBE"
+          scp .github/craft-web-probe-public.pem "$SSH_TARGET:$REMOTE_KEY"
+          ssh "$SSH_TARGET" \
+            "grep -qxF 'val-dieu-craft-root-v1' 'craft/.val-dieu-craft-root' &&
+             chmod 0644 '$REMOTE_PROBE' '$REMOTE_KEY' &&
+             php -l '$REMOTE_PROBE' >/dev/null"
+
+          CRAFT_BASE_URL="${CRAFT_API_URL%%/api/*}"
+          [[ "$CRAFT_BASE_URL" != "$CRAFT_API_URL" ]]
+          RESPONSE="$(curl --silent --show-error --location --max-time 30 \
+            --proto '=http,https' --proto-redir '=http,https' \
+            -H 'Cache-Control: no-cache' \
+            "$CRAFT_BASE_URL/craft-probe-$RUN_ID.php?run=$RUN_ID")"
+
+          if [ "$RESPONSE" = 'ok' ]; then
+            echo 'web_probe=ok'
+          elif [[ "$RESPONSE" =~ ^encrypted_error=([A-Za-z0-9+/=]+)$ ]]; then
+            printf 'encrypted_web_error=%s\n' "${BASH_REMATCH[1]}"
+          else
+            echo 'The Craft web probe returned an unexpected response.' >&2
+            exit 1
+          fi
