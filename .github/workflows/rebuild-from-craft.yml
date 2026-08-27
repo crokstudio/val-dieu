@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - codex/production-diagnostic
   workflow_dispatch:
     inputs:
       diagnostics_only:
@@ -21,7 +22,7 @@ concurrency:
 
 jobs:
   diagnose-ovh:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.diagnostics_only }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.diagnostics_only) || github.ref == 'refs/heads/codex/production-diagnostic' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -80,7 +81,7 @@ jobs:
           REMOTE
 
   build:
-    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.diagnostics_only) }}
+    if: ${{ github.ref != 'refs/heads/codex/production-diagnostic' && !(github.event_name == 'workflow_dispatch' && inputs.diagnostics_only) }}
     runs-on: ubuntu-latest
     env:
       CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
