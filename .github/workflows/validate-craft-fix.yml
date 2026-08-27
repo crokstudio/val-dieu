@@ -50,13 +50,13 @@ jobs:
           : "${OVH_HOST:?Missing OVH_HOST}"
           : "${OVH_USER:?Missing OVH_USER}"
           : "${OVH_TARGET_DIR:?Missing OVH_TARGET_DIR}"
-          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
-          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]]
-          [[ "$OVH_TARGET_DIR" =~ ^/?[A-Za-z0-9._/-]+$ ]]
-          [[ "$OVH_TARGET_DIR" != "/" && "$OVH_TARGET_DIR" != "." && "$OVH_TARGET_DIR" != ".." ]]
-          [[ "$OVH_TARGET_DIR" != *"//"* ]]
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo "invalid OVH_HOST format" >&2; exit 1; }
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "invalid OVH_USER format" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" =~ ^/?[A-Za-z0-9._/-]+$ ]] || { echo "invalid OVH_TARGET_DIR format (length ${#OVH_TARGET_DIR})" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" != "/" && "$OVH_TARGET_DIR" != "." && "$OVH_TARGET_DIR" != ".." ]] || { echo "OVH_TARGET_DIR resolves to an unsafe broad target" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" != *"//"* ]] || { echo "OVH_TARGET_DIR contains a repeated separator" >&2; exit 1; }
           case "$OVH_TARGET_DIR" in
-            ../*|*/../*|*/..|./*|*/./*|*/.) exit 1 ;;
+            ../*|*/../*|*/..|./*|*/./*|*/.) echo "OVH_TARGET_DIR contains path traversal or dot segments" >&2; exit 1 ;;
           esac
 
           SSH_TARGET="${OVH_USER}@${OVH_HOST}"
@@ -64,12 +64,12 @@ jobs:
           REMOTE_TARGET="$(ssh "$SSH_TARGET" "cd -- '$OVH_TARGET_DIR' && pwd -P")"
           REMOTE_CRAFT="$(ssh "$SSH_TARGET" 'cd "$HOME/craft" && pwd -P')"
 
-          [[ "$REMOTE_HOME" =~ ^/[A-Za-z0-9._/-]+$ ]]
-          [[ "$REMOTE_TARGET" =~ ^/[A-Za-z0-9._/-]+$ ]]
-          [[ "$REMOTE_CRAFT" =~ ^/[A-Za-z0-9._/-]+$ ]]
-          [[ "$REMOTE_TARGET" != "$REMOTE_HOME" && "$REMOTE_TARGET" == "$REMOTE_HOME/"* ]]
-          [[ "$REMOTE_CRAFT" == "$REMOTE_HOME/craft" ]]
-          [[ "$REMOTE_TARGET" != "$REMOTE_CRAFT" && "$REMOTE_TARGET" != "$REMOTE_CRAFT/"* && "$REMOTE_CRAFT" != "$REMOTE_TARGET/"* ]]
+          [[ "$REMOTE_HOME" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unexpected resolved remote home" >&2; exit 1; }
+          [[ "$REMOTE_TARGET" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unexpected resolved static target" >&2; exit 1; }
+          [[ "$REMOTE_CRAFT" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "unexpected resolved Craft target" >&2; exit 1; }
+          [[ "$REMOTE_TARGET" != "$REMOTE_HOME" && "$REMOTE_TARGET" == "$REMOTE_HOME/"* ]] || { echo "static target is not a child of remote home" >&2; exit 1; }
+          [[ "$REMOTE_CRAFT" == "$REMOTE_HOME/craft" ]] || { echo "Craft target is not the expected remote-home child" >&2; exit 1; }
+          [[ "$REMOTE_TARGET" != "$REMOTE_CRAFT" && "$REMOTE_TARGET" != "$REMOTE_CRAFT/"* && "$REMOTE_CRAFT" != "$REMOTE_TARGET/"* ]] || { echo "static and Craft targets overlap" >&2; exit 1; }
 
           ssh "$SSH_TARGET" "bash -s -- '$REMOTE_TARGET' '$REMOTE_CRAFT' '${GITHUB_RUN_ID}'" <<'REMOTE'
           set -Eeuo pipefail
