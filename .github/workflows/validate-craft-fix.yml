@@ -103,8 +103,9 @@ jobs:
           printf 'stage=%s\n' "$STAGE"
           REMOTE
 
-          rsync -az cms/config/app.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/config/"
-          rsync -az cms/modules/githubdispatch/ "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/"
+          scp cms/config/app.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/config/app.php"
+          scp cms/modules/githubdispatch/Module.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/Module.php"
+          scp cms/modules/githubdispatch/jobs/DispatchRepository.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/jobs/DispatchRepository.php"
 
       - name: Lint and load the integration on production PHP
         env:
