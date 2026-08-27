@@ -119,21 +119,43 @@ jobs:
         env:
           CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
           OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_TARGET_DIR: ${{ secrets.OVH_TARGET_DIR }}
           OVH_USER: ${{ secrets.OVH_USER }}
         run: |
           set -Eeuo pipefail
           : "${CRAFT_API_URL:?Missing CRAFT_API_URL}"
           : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_TARGET_DIR:?Missing OVH_TARGET_DIR}"
           : "${OVH_USER:?Missing OVH_USER}"
           [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid OVH host' >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" =~ ^(~/|/?)[A-Za-z0-9._/-]+$ ]] || { echo 'Invalid OVH target' >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" != "/" && "$OVH_TARGET_DIR" != "." && "$OVH_TARGET_DIR" != ".." && "$OVH_TARGET_DIR" != *"//"* ]] || { echo 'Unsafe OVH target' >&2; exit 1; }
+          case "$OVH_TARGET_DIR" in
+            ../*|*/../*|*/..|./*|*/./*|*/.) echo 'Unsafe OVH target' >&2; exit 1 ;;
+          esac
           [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid OVH user' >&2; exit 1; }
           [[ "$CRAFT_API_URL" =~ ^https?://[A-Za-z0-9.-]+(:[0-9]+)?/cms/api/ ]] || { echo 'Invalid Craft API URL' >&2; exit 1; }
 
           RUN_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
-          REMOTE_PROBE="craft/web/craft-probe-$RUN_ID.php"
-          REMOTE_KEY="craft/storage/runtime/craft-probe-$RUN_ID.pem"
           SSH_TARGET="$OVH_USER@$OVH_HOST"
+          REMOTE_HOME="$(ssh "$SSH_TARGET" 'cd && pwd -P')"
+          if [[ "$OVH_TARGET_DIR" == "~/"* ]]; then
+            TARGET_FOR_CD="$REMOTE_HOME/${OVH_TARGET_DIR#\~/}"
+          else
+            TARGET_FOR_CD="$OVH_TARGET_DIR"
+          fi
+          REMOTE_TARGET="$(ssh "$SSH_TARGET" "cd -- '$TARGET_FOR_CD' && pwd -P")"
+          [[ "$REMOTE_HOME" =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ "$REMOTE_TARGET" =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ "$REMOTE_TARGET" == "$REMOTE_HOME/"* && "$REMOTE_TARGET" != "$REMOTE_HOME" ]]
+          ssh "$SSH_TARGET" \
+            "grep -qxF 'val-dieu-static-root-v1' '$REMOTE_TARGET/.val-dieu-deploy-root' &&
+             grep -qxF 'val-dieu-craft-root-v1' '$REMOTE_HOME/craft/.val-dieu-craft-root' &&
+             test -f '$REMOTE_TARGET/cms/index.php'"
+
+          REMOTE_PROBE="$REMOTE_TARGET/cms/craft-probe-$RUN_ID.php"
+          REMOTE_KEY="$REMOTE_TARGET/cms/craft-probe-$RUN_ID.pem"
 
           cleanup() {
             ssh "$SSH_TARGET" "rm -f -- '$REMOTE_PROBE' '$REMOTE_KEY'"
@@ -143,8 +165,7 @@ jobs:
           scp .github/craft-web-probe.php "$SSH_TARGET:$REMOTE_PROBE"
           scp .github/craft-web-probe-public.pem "$SSH_TARGET:$REMOTE_KEY"
           ssh "$SSH_TARGET" \
-            "grep -qxF 'val-dieu-craft-root-v1' 'craft/.val-dieu-craft-root' &&
-             chmod 0644 '$REMOTE_PROBE' '$REMOTE_KEY' &&
+            "chmod 0644 '$REMOTE_PROBE' '$REMOTE_KEY' &&
              php -l '$REMOTE_PROBE' >/dev/null"
 
           CRAFT_BASE_URL="${CRAFT_API_URL%%/api/*}"
@@ -158,6 +179,9 @@ jobs:
             echo 'web_probe=ok'
           elif [[ "$RESPONSE" =~ ^encrypted_error=([A-Za-z0-9+/=]+)$ ]]; then
             printf 'encrypted_web_error=%s\n' "${BASH_REMATCH[1]}"
+          elif [ "$RESPONSE" = 'encryption-failed' ]; then
+            echo 'The Craft web probe could not encrypt its diagnostic.' >&2
+            exit 1
           else
             echo 'The Craft web probe returned an unexpected response.' >&2
             exit 1

@@ -5,10 +5,21 @@ declare(strict_types=1);
 header('Content-Type: text/plain; charset=UTF-8');
 ob_start();
 
-$publicKeyPath = dirname(__DIR__) . '/storage/runtime/' . pathinfo(__FILE__, PATHINFO_FILENAME) . '.pem';
+$publicKeyPath = __DIR__ . '/' . pathinfo(__FILE__, PATHINFO_FILENAME) . '.pem';
 
 try {
-    require dirname(__DIR__) . '/bootstrap.php';
+    $craftRoot = null;
+    foreach ([dirname(__DIR__), dirname(__DIR__, 2) . '/craft'] as $candidate) {
+        if (is_file($candidate . '/bootstrap.php')) {
+            $craftRoot = $candidate;
+            break;
+        }
+    }
+    if ($craftRoot === null) {
+        throw new RuntimeException('The Craft application root could not be located.');
+    }
+
+    require $craftRoot . '/bootstrap.php';
     $app = require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';
     if ($app->getModule('github-dispatch') === null) {
         throw new RuntimeException('The GitHub dispatch module is unavailable in the web bootstrap.');
