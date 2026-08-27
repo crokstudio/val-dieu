@@ -71,13 +71,31 @@ jobs:
           fi
 
           cd "$craft_dir"
+          maintenance_dir="$HOME/.val-dieu-maintenance-backups/$(date -u +%Y%m%dT%H%M%SZ)"
+          umask 077
+          mkdir -p "$maintenance_dir"
+          cp "$env_file" "$maintenance_dir/craft.env"
+          tar -czf "$maintenance_dir/craft-config.tar.gz" config composer.json composer.lock
+          if [ -f "$HOME/www/.ovhconfig" ]; then
+            cp "$HOME/www/.ovhconfig" "$maintenance_dir/www.ovhconfig"
+          fi
+          if [ -f "$public_cms/.htaccess" ]; then
+            cp "$public_cms/.htaccess" "$maintenance_dir/cms.htaccess"
+          fi
+          echo "config_backup_created=true"
+
           before_count="$(find storage/backups -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
-          php craft db/backup storage/backups/ --interactive=0 --color=0 >/dev/null
+          if php craft db/backup storage/backups/ --interactive=0 --color=0 >"$maintenance_dir/craft-db-backup.log" 2>&1; then
+            echo "craft_db_backup_command=success"
+          else
+            echo "craft_db_backup_command=failed"
+          fi
           after_count="$(find storage/backups -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
           echo "craft_backup_created=$([ "$after_count" -gt "$before_count" ] && echo true || echo false)"
           echo "craft_backup_count=$after_count"
 
           php craft exec/exec '$db = Craft::$app->getDb(); $out = []; foreach ($db->getSchema()->getTableNames() as $name) { if (str_contains($name, "webhook")) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out);' --interactive=0 --color=0
+          php craft exec/exec '$db = Craft::$app->getDb(); $schema = $db->getSchema(); $out = []; foreach (["users", "entries"] as $name) { if ($schema->getTableSchema($name, true) !== null) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out);' --interactive=0 --color=0
           REMOTE
 
   build:
