@@ -66,6 +66,24 @@ jobs:
             echo 'diagnosis=unknown'
           fi
 
+          ERROR_LINE="$({ grep -Ei '\[(web\.)?(ERROR|CRITICAL)\]' "$DIAG_FILE" || true; } \
+            | tail -n 1 \
+            | sed -E \
+                -e 's#(Authorization: Bearer )[A-Za-z0-9._~-]+#\1[REDACTED]#g' \
+                -e 's#(github_pat_|gh[pousr]_)[A-Za-z0-9_]+#[REDACTED]#g' \
+                -e 's#([A-Za-z0-9_]*(TOKEN|PASSWORD|SECRET|API_KEY)[A-Za-z0-9_]*[=:][[:space:]]*)[^[:space:]]+#\1[REDACTED]#Ig' \
+            | LC_ALL=C cut -c1-400)"
+          test -n "$ERROR_LINE"
+          PUBLIC_KEY_FILE="$(mktemp)"
+          trap 'rm -f "$DIAG_FILE" "$PUBLIC_KEY_FILE"' EXIT
+          printf '%s' 'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAzVbZROTzdBNlIfR4pbyM488pBJB3hBIKeIqZhKXIgQvdYWe/a85kFs+DfsucK3iMHxvy/isvMxoNfZ7WfKA3rHP4naKvrSSXoXx0uQwgW6nzci3fd3YzTqjhzUqgJnXYp3r/6xPIj93uXJcNrmizVEFRmF1uinVbL/OZlyQA4ihdilt4Ix3RHZ4wFjiRj8uJdDsGTpG4cg9ySL+945UYax+01jymvH5WYba5mAmk1VjmYvKKN1BsUZDR8v39BGKzyU3oHfHN/NBb9N8P3/a9kQMOU5yYl7Bx1M3ri8WIy2NsWbGBJIw4mxuQ8BxnZxVkXBUEJg/HFI7es1VGcS38bRnhRL9b3Rz3zjzXQ/rcfgTv9DplgwmniUFjN7OH6Hz1HwgsLAkW3f/OuXcK9qQ0HDT7Vh+eFOXhr1zfiawuSOSVf4kDb9tHe7ChHu5vF1wFGzq6Nkz8d6UUfZFtRolMMA9PSbjkoZK1X9C5ghQaYSVITL2mX9Pxa+kZ3h58LEiEwSYf36MYvxqpH8vuGgFIGYRniDsgbcdZqD0yj8Xtd8jMhbxyydZ2JhfpjhYsA/u6Dc6vIUu7SCRss/9cArbHAQP2950w1+dhVMkzUXsGIOjwQ50vJXkJ6xDhYQuwj3BcFdU+SCJufIy3bOJda5hdhj0myY5zILwAts4ZKjPh9XkCAwEAAQ==' \
+            | base64 -d > "$PUBLIC_KEY_FILE"
+          ENCRYPTED_ERROR="$(printf '%s' "$ERROR_LINE" \
+            | openssl pkeyutl -encrypt -pubin -keyform DER -inkey "$PUBLIC_KEY_FILE" \
+                -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+            | base64 | tr -d '\n')"
+          printf 'encrypted_error=%s\n' "$ENCRYPTED_ERROR"
+
           CURRENT_LINK='absent'
           if [ -L "$CRAFT_DIR/modules/githubdispatch-current" ]; then
             candidate="$(basename "$(readlink "$CRAFT_DIR/modules/githubdispatch-current")")"
