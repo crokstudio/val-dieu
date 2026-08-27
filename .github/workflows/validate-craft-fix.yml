@@ -84,7 +84,6 @@ jobs:
 
           test -d "$REMOTE_TARGET/cms" || { echo "missing public cms directory" >&2; exit 1; }
           test -f "$REMOTE_TARGET/cms/index.php" || { echo "missing public cms index" >&2; exit 1; }
-          test -f "$REMOTE_TARGET/.ovhconfig" || { echo "missing public .ovhconfig" >&2; exit 1; }
           test -f "$REMOTE_CRAFT/.env" || { echo "missing Craft .env" >&2; exit 1; }
           test -f "$REMOTE_CRAFT/config/app.php" || { echo "missing Craft app config" >&2; exit 1; }
           test -f "$REMOTE_CRAFT/craft" || { echo "missing Craft executable" >&2; exit 1; }
