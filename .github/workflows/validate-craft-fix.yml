@@ -1,0 +1,128 @@
+name: Validate Craft rebuild fix
+
+on:
+  push:
+    branches:
+      - codex/fix-validation
+
+permissions:
+  contents: read
+
+jobs:
+  validate-production-shape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure SSH
+        env:
+          OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+        run: |
+          set -Eeuo pipefail
+          : "${OVH_DEPLOY_KEY:?Missing OVH_DEPLOY_KEY}"
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$OVH_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$OVH_HOST" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          ssh-keygen -lf ~/.ssh/known_hosts
+          printf 'known_hosts_b64='
+          base64 -w0 ~/.ssh/known_hosts
+          printf '\n'
+
+      - name: Verify roots and initialize one-time markers
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_TARGET_DIR: ${{ secrets.OVH_TARGET_DIR }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          : "${OVH_TARGET_DIR:?Missing OVH_TARGET_DIR}"
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]]
+          [[ "$OVH_TARGET_DIR" =~ ^/?[A-Za-z0-9._/-]+$ ]]
+          [[ "$OVH_TARGET_DIR" != "/" && "$OVH_TARGET_DIR" != "." && "$OVH_TARGET_DIR" != ".." ]]
+          [[ "$OVH_TARGET_DIR" != *"//"* ]]
+          case "$OVH_TARGET_DIR" in
+            ../*|*/../*|*/..|./*|*/./*|*/.) exit 1 ;;
+          esac
+
+          SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          REMOTE_HOME="$(ssh "$SSH_TARGET" 'cd && pwd -P')"
+          REMOTE_TARGET="$(ssh "$SSH_TARGET" "cd -- '$OVH_TARGET_DIR' && pwd -P")"
+          REMOTE_CRAFT="$(ssh "$SSH_TARGET" 'cd "$HOME/craft" && pwd -P')"
+
+          [[ "$REMOTE_HOME" =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ "$REMOTE_TARGET" =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ "$REMOTE_CRAFT" =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ "$REMOTE_TARGET" != "$REMOTE_HOME" && "$REMOTE_TARGET" == "$REMOTE_HOME/"* ]]
+          [[ "$REMOTE_CRAFT" == "$REMOTE_HOME/craft" ]]
+          [[ "$REMOTE_TARGET" != "$REMOTE_CRAFT" && "$REMOTE_TARGET" != "$REMOTE_CRAFT/"* && "$REMOTE_CRAFT" != "$REMOTE_TARGET/"* ]]
+
+          ssh "$SSH_TARGET" "bash -s -- '$REMOTE_TARGET' '$REMOTE_CRAFT' '${GITHUB_RUN_ID}'" <<'REMOTE'
+          set -Eeuo pipefail
+          REMOTE_TARGET="$1"
+          REMOTE_CRAFT="$2"
+          RUN_ID="$3"
+
+          test -d "$REMOTE_TARGET/cms"
+          test -f "$REMOTE_TARGET/cms/index.php"
+          test -f "$REMOTE_TARGET/.ovhconfig"
+          test -f "$REMOTE_CRAFT/.env"
+          test -f "$REMOTE_CRAFT/config/app.php"
+          test -f "$REMOTE_CRAFT/craft"
+          test -f "$REMOTE_CRAFT/vendor/autoload.php"
+          test "$(sha256sum "$REMOTE_CRAFT/config/app.php" | awk '{print $1}')" = "8df5939ca8625f68ba5a85add3f83222e40d927024127a824240be62c44ad05f"
+
+          if [ -e "$REMOTE_TARGET/.val-dieu-deploy-root" ]; then
+            grep -qxF 'val-dieu-static-root-v1' "$REMOTE_TARGET/.val-dieu-deploy-root"
+          else
+            printf '%s\n' 'val-dieu-static-root-v1' > "$REMOTE_TARGET/.val-dieu-deploy-root"
+            chmod 0644 "$REMOTE_TARGET/.val-dieu-deploy-root"
+          fi
+
+          if [ -e "$REMOTE_CRAFT/.val-dieu-craft-root" ]; then
+            grep -qxF 'val-dieu-craft-root-v1' "$REMOTE_CRAFT/.val-dieu-craft-root"
+          else
+            printf '%s\n' 'val-dieu-craft-root-v1' > "$REMOTE_CRAFT/.val-dieu-craft-root"
+            chmod 0644 "$REMOTE_CRAFT/.val-dieu-craft-root"
+          fi
+
+          STAGE="$HOME/.val-dieu-fix-validation/$RUN_ID"
+          umask 077
+          mkdir -p "$STAGE/config" "$STAGE/modules/githubdispatch/jobs"
+          printf 'stage=%s\n' "$STAGE"
+          REMOTE
+
+          rsync -az cms/config/app.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/config/"
+          rsync -az cms/modules/githubdispatch/ "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/"
+
+      - name: Lint and load the integration on production PHP
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          ssh "$SSH_TARGET" "bash -s -- '${GITHUB_RUN_ID}'" <<'REMOTE'
+          set -Eeuo pipefail
+          STAGE="$HOME/.val-dieu-fix-validation/$1"
+          CRAFT_DIR="$HOME/craft"
+
+          php -l "$STAGE/config/app.php"
+          php -l "$STAGE/modules/githubdispatch/Module.php"
+          php -l "$STAGE/modules/githubdispatch/jobs/DispatchRepository.php"
+
+          cd "$CRAFT_DIR"
+          VALIDATION_STAGE="$STAGE" php craft exec/exec '(function() { $stage = getenv("VALIDATION_STAGE"); require_once $stage . "/modules/githubdispatch/jobs/DispatchRepository.php"; require_once $stage . "/modules/githubdispatch/Module.php"; $job = new modules\githubdispatch\jobs\DispatchRepository(); $module = new modules\githubdispatch\Module("github-dispatch-validation"); return json_encode(["module" => $module::class, "retry_initial" => $job->canRetry(1, null), "retry_transient" => $job->canRetry(1, new modules\githubdispatch\jobs\DispatchFailed(true, "safe")), "retry_permanent" => $job->canRetry(1, new modules\githubdispatch\jobs\DispatchFailed(false, "safe")), "retry_limit" => $job->canRetry(3, null)]); })()' --interactive=0 --color=0
+          php craft exec/exec '(function() { $db = Craft::$app->getDb(); return json_encode(["runQueueAutomatically" => Craft::$app->getConfig()->getGeneral()->runQueueAutomatically, "queueRows" => (int)$db->createCommand("SELECT COUNT(*) FROM {{%queue}}")->queryScalar()]); })()' --interactive=0 --color=0
+          REMOTE
