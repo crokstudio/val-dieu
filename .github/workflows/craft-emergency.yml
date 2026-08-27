@@ -130,10 +130,11 @@ jobs:
           CRAFT_URL_PATTERN='^https?://[A-Za-z0-9.-]+(:[0-9]+)?/[A-Za-z0-9._~%/?&=+-]+$'
           [[ "$CRAFT_API_URL" =~ $CRAFT_URL_PATTERN ]] || { echo 'Invalid Craft API URL' >&2; exit 1; }
 
-          ssh "$OVH_USER@$OVH_HOST" "bash -s -- '$CRAFT_API_URL' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+          REPAIR_STATE_FILE="$(mktemp)"
+          trap 'rm -f "$REPAIR_STATE_FILE"' EXIT
+          ssh "$OVH_USER@$OVH_HOST" "bash -s -- '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" > "$REPAIR_STATE_FILE" <<'REMOTE'
           set -Eeuo pipefail
-          HEALTH_URL="$1"
-          RUN_ID="$2"
+          RUN_ID="$1"
           CRAFT_DIR="$(cd "$HOME/craft" && pwd -P)"
           RELEASES="$CRAFT_DIR/modules/githubdispatch-releases"
           LIVE="$CRAFT_DIR/modules/githubdispatch-current"
@@ -149,6 +150,7 @@ jobs:
 
           OLD_TARGET="$(readlink "$LIVE")"
           NEW_TARGET="githubdispatch-releases/$RELEASE_ID"
+          CHANGED=0
           rollback() {
             status=$?
             trap - ERR
@@ -163,20 +165,52 @@ jobs:
           if [ "$OLD_TARGET" != "$NEW_TARGET" ]; then
             ln -s "$NEW_TARGET" "$LIVE.next-$RUN_ID"
             mv -Tf "$LIVE.next-$RUN_ID" "$LIVE"
+            CHANGED=1
           fi
 
           cd "$CRAFT_DIR"
           php craft help --interactive=0 --color=0 >/dev/null
+          trap - ERR
+          printf '%s\n' "$CHANGED"
+          REMOTE
+          REPAIR_STATE="$(cat "$REPAIR_STATE_FILE")"
+          [[ "$REPAIR_STATE" = '0' || "$REPAIR_STATE" = '1' ]]
+
           SEPARATOR='?'
-          case "$HEALTH_URL" in *\?*) SEPARATOR='&' ;; esac
-          curl --proto '=http,https' --proto-redir '=http,https' \
+          case "$CRAFT_API_URL" in *\?*) SEPARATOR='&' ;; esac
+          restore_previous_link() {
+            ssh "$OVH_USER@$OVH_HOST" "bash -s -- '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'ROLLBACK'
+          set -Eeuo pipefail
+          RUN_ID="$1"
+          CRAFT_DIR="$(cd "$HOME/craft" && pwd -P)"
+          RELEASES_REAL="$(cd "$CRAFT_DIR/modules/githubdispatch-releases" && pwd -P)"
+          LIVE="$CRAFT_DIR/modules/githubdispatch-current"
+          grep -qxF 'val-dieu-craft-root-v1' "$CRAFT_DIR/.val-dieu-craft-root"
+          test -L "$LIVE"
+          CURRENT_REAL="$(cd "$LIVE" && pwd -P)"
+          [[ "$CURRENT_REAL" == "$RELEASES_REAL/"* ]]
+          RELEASE_ID="${CURRENT_REAL#"$RELEASES_REAL/"}"
+          [[ "$RELEASE_ID" =~ ^[0-9a-f]{40}$ ]]
+          ln -s "$CURRENT_REAL" "$LIVE.rollback-$RUN_ID"
+          mv -Tf "$LIVE.rollback-$RUN_ID" "$LIVE"
+          cd "$CRAFT_DIR"
+          php craft help --interactive=0 --color=0 >/dev/null
+          ROLLBACK
+          }
+
+          if ! curl --proto '=http,https' --proto-redir '=http,https' \
             --fail --location --silent --show-error --output /dev/null \
             --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 2 \
             -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
-            "${HEALTH_URL}${SEPARATOR}repair=$RUN_ID"
-          trap - ERR
+            "${CRAFT_API_URL}${SEPARATOR}repair=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          then
+            if [ "$REPAIR_STATE" = '1' ]; then
+              restore_previous_link
+            fi
+            echo 'Craft web verification failed; the previous link was restored.' >&2
+            exit 1
+          fi
           echo 'Craft web bootstrap repaired.'
-          REMOTE
 
       - name: Probe the Craft web bootstrap
         env:
