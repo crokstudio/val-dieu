@@ -27,14 +27,17 @@ use craft\helpers\App;
 $moduleRoot = dirname(__DIR__) . '/modules';
 $releasesRoot = $moduleRoot . '/githubdispatch-releases';
 $currentRelease = $moduleRoot . '/githubdispatch-current';
+clearstatcache(true, $currentRelease);
 if (is_link($currentRelease)) {
     $resolvedReleasesRoot = realpath($releasesRoot);
     $githubDispatchRoot = realpath($currentRelease);
     if (
         !is_string($resolvedReleasesRoot) ||
         !is_string($githubDispatchRoot) ||
+        !is_dir($resolvedReleasesRoot) ||
+        !is_dir($githubDispatchRoot) ||
         !preg_match(
-            '~^' . preg_quote($resolvedReleasesRoot . '/', '~') . '[0-9a-f]{40}$~',
+            '~\\A' . preg_quote($resolvedReleasesRoot, '~') . '/[0-9a-f]{40}\\z~',
             $githubDispatchRoot,
         )
     ) {
