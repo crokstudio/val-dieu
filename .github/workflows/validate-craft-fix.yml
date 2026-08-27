@@ -37,6 +37,9 @@ jobs:
           base64 -w0 ~/.ssh/known_hosts
           printf '\n'
 
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
       - name: Verify roots and initialize one-time markers
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
@@ -74,28 +77,33 @@ jobs:
           REMOTE_CRAFT="$2"
           RUN_ID="$3"
 
-          test -d "$REMOTE_TARGET/cms"
-          test -f "$REMOTE_TARGET/cms/index.php"
-          test -f "$REMOTE_TARGET/.ovhconfig"
-          test -f "$REMOTE_CRAFT/.env"
-          test -f "$REMOTE_CRAFT/config/app.php"
-          test -f "$REMOTE_CRAFT/craft"
-          test -f "$REMOTE_CRAFT/vendor/autoload.php"
-          test "$(sha256sum "$REMOTE_CRAFT/config/app.php" | awk '{print $1}')" = "8df5939ca8625f68ba5a85add3f83222e40d927024127a824240be62c44ad05f"
+          test -d "$REMOTE_TARGET/cms" || { echo "missing public cms directory" >&2; exit 1; }
+          test -f "$REMOTE_TARGET/cms/index.php" || { echo "missing public cms index" >&2; exit 1; }
+          test -f "$REMOTE_TARGET/.ovhconfig" || { echo "missing public .ovhconfig" >&2; exit 1; }
+          test -f "$REMOTE_CRAFT/.env" || { echo "missing Craft .env" >&2; exit 1; }
+          test -f "$REMOTE_CRAFT/config/app.php" || { echo "missing Craft app config" >&2; exit 1; }
+          test -f "$REMOTE_CRAFT/craft" || { echo "missing Craft executable" >&2; exit 1; }
+          test -f "$REMOTE_CRAFT/vendor/autoload.php" || { echo "missing Craft autoloader" >&2; exit 1; }
+          echo "production shape verified"
+
+          APP_HASH="$(sha256sum "$REMOTE_CRAFT/config/app.php" | awk '{print $1}')"
+          test "$APP_HASH" = "8df5939ca8625f68ba5a85add3f83222e40d927024127a824240be62c44ad05f" || { echo "unexpected app config hash: $APP_HASH" >&2; exit 1; }
+          echo "production app config verified"
 
           if [ -e "$REMOTE_TARGET/.val-dieu-deploy-root" ]; then
-            grep -qxF 'val-dieu-static-root-v1' "$REMOTE_TARGET/.val-dieu-deploy-root"
+            grep -qxF 'val-dieu-static-root-v1' "$REMOTE_TARGET/.val-dieu-deploy-root" || { echo "invalid static root marker" >&2; exit 1; }
           else
             printf '%s\n' 'val-dieu-static-root-v1' > "$REMOTE_TARGET/.val-dieu-deploy-root"
             chmod 0644 "$REMOTE_TARGET/.val-dieu-deploy-root"
           fi
 
           if [ -e "$REMOTE_CRAFT/.val-dieu-craft-root" ]; then
-            grep -qxF 'val-dieu-craft-root-v1' "$REMOTE_CRAFT/.val-dieu-craft-root"
+            grep -qxF 'val-dieu-craft-root-v1' "$REMOTE_CRAFT/.val-dieu-craft-root" || { echo "invalid Craft root marker" >&2; exit 1; }
           else
             printf '%s\n' 'val-dieu-craft-root-v1' > "$REMOTE_CRAFT/.val-dieu-craft-root"
             chmod 0644 "$REMOTE_CRAFT/.val-dieu-craft-root"
           fi
+          echo "one-time root markers verified"
 
           STAGE="$HOME/.val-dieu-fix-validation/$RUN_ID"
           umask 077
@@ -103,9 +111,8 @@ jobs:
           printf 'stage=%s\n' "$STAGE"
           REMOTE
 
-          scp cms/config/app.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/config/app.php"
-          scp cms/modules/githubdispatch/Module.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/Module.php"
-          scp cms/modules/githubdispatch/jobs/DispatchRepository.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/jobs/DispatchRepository.php"
+          rsync -az cms/config/app.php "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/config/"
+          rsync -az cms/modules/githubdispatch/ "$SSH_TARGET:.val-dieu-fix-validation/${GITHUB_RUN_ID}/modules/githubdispatch/"
 
       - name: Lint and load the integration on production PHP
         env:
