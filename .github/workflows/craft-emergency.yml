@@ -115,6 +115,69 @@ jobs:
           done < <(find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | LC_ALL=C sort -r | head -n 10)
           REMOTE
 
+      - name: Repair the Craft release link
+        env:
+          CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${CRAFT_API_URL:?Missing CRAFT_API_URL}"
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid OVH host' >&2; exit 1; }
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid OVH user' >&2; exit 1; }
+          CRAFT_URL_PATTERN='^https?://[A-Za-z0-9.-]+(:[0-9]+)?/[A-Za-z0-9._~%/?&=+-]+$'
+          [[ "$CRAFT_API_URL" =~ $CRAFT_URL_PATTERN ]] || { echo 'Invalid Craft API URL' >&2; exit 1; }
+
+          ssh "$OVH_USER@$OVH_HOST" "bash -s -- '$CRAFT_API_URL' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+          set -Eeuo pipefail
+          HEALTH_URL="$1"
+          RUN_ID="$2"
+          CRAFT_DIR="$(cd "$HOME/craft" && pwd -P)"
+          RELEASES="$CRAFT_DIR/modules/githubdispatch-releases"
+          LIVE="$CRAFT_DIR/modules/githubdispatch-current"
+
+          [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+          grep -qxF 'val-dieu-craft-root-v1' "$CRAFT_DIR/.val-dieu-craft-root"
+          test -L "$LIVE"
+          RELEASES_REAL="$(cd "$RELEASES" && pwd -P)"
+          CURRENT_REAL="$(cd "$LIVE" && pwd -P)"
+          [[ "$CURRENT_REAL" == "$RELEASES_REAL/"* ]]
+          RELEASE_ID="${CURRENT_REAL#"$RELEASES_REAL/"}"
+          [[ "$RELEASE_ID" =~ ^[0-9a-f]{40}$ ]]
+
+          OLD_TARGET="$(readlink "$LIVE")"
+          NEW_TARGET="githubdispatch-releases/$RELEASE_ID"
+          rollback() {
+            status=$?
+            trap - ERR
+            set +e
+            ln -s "$OLD_TARGET" "$LIVE.rollback-$RUN_ID"
+            mv -Tf "$LIVE.rollback-$RUN_ID" "$LIVE"
+            echo 'Craft repair failed; the previous link was restored.' >&2
+            exit "$status"
+          }
+          trap rollback ERR
+
+          if [ "$OLD_TARGET" != "$NEW_TARGET" ]; then
+            ln -s "$NEW_TARGET" "$LIVE.next-$RUN_ID"
+            mv -Tf "$LIVE.next-$RUN_ID" "$LIVE"
+          fi
+
+          cd "$CRAFT_DIR"
+          php craft help --interactive=0 --color=0 >/dev/null
+          SEPARATOR='?'
+          case "$HEALTH_URL" in *\?*) SEPARATOR='&' ;; esac
+          curl --proto '=http,https' --proto-redir '=http,https' \
+            --fail --location --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 2 \
+            -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
+            "${HEALTH_URL}${SEPARATOR}repair=$RUN_ID"
+          trap - ERR
+          echo 'Craft web bootstrap repaired.'
+          REMOTE
+
       - name: Probe the Craft web bootstrap
         env:
           CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
