@@ -10,7 +10,12 @@ $publicKeyPath = __DIR__ . '/' . pathinfo(__FILE__, PATHINFO_FILENAME) . '.pem';
 try {
     $craftRoot = null;
     foreach ([dirname(__DIR__), dirname(__DIR__, 2) . '/craft'] as $candidate) {
-        if (is_file($candidate . '/bootstrap.php')) {
+        if (
+            is_file($candidate . '/.val-dieu-craft-root') &&
+            trim((string)file_get_contents($candidate . '/.val-dieu-craft-root')) === 'val-dieu-craft-root-v1' &&
+            is_file($candidate . '/bootstrap.php') &&
+            is_file($candidate . '/vendor/autoload.php')
+        ) {
             $craftRoot = $candidate;
             break;
         }
@@ -21,9 +26,12 @@ try {
 
     require $craftRoot . '/bootstrap.php';
     $app = require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';
-    if ($app->getModule('github-dispatch') === null) {
+    $module = $app->getModule('github-dispatch');
+    if ($module === null) {
         throw new RuntimeException('The GitHub dispatch module is unavailable in the web bootstrap.');
     }
+    $module->getControllerPath();
+    $app->run();
     if (ob_get_level() > 0) {
         ob_end_clean();
     }
