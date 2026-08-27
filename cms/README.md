@@ -75,7 +75,16 @@ Recommended setup:
 - Build environment: set `CRAFT_API_URL=https://cms.your-domain.be/api/homepage.json`.
   Eleventy uses that URL to derive the other Craft API endpoints on the same CMS host.
 
-For automatic rebuilds, install the Webhooks plugin, then configure a webhook in Craft that fires when entries are saved. Point it to a GitHub Actions `repository_dispatch` or `workflow_dispatch` URL. GitHub Actions can then run `npm ci`, `npm run build`, and deploy `dist` to OVH.
+Automatic rebuilds are handled by the versioned `github-dispatch` Craft module in `cms/modules`. When a non-draft Entry is saved, deleted, or restored, it queues a GitHub `repository_dispatch` event. This avoids storing the integration in Craft's database, where a database restore could silently remove it.
+
+Production must define the following values in `cms/.env`:
+
+```dotenv
+GITHUB_DISPATCH_REPOSITORY=crokstudio/val-dieu
+GITHUB_DISPATCH_TOKEN=github_pat_...
+```
+
+Use a fine-grained GitHub token restricted to this repository with only `Contents: write`. The token is read only while the queued job runs; it is never stored in the job payload or the Webhooks plug-in activity table.
 
 This repo includes `.github/workflows/rebuild-from-craft.yml` for that flow. Add these GitHub secrets before enabling OVH deployment:
 
@@ -86,6 +95,8 @@ This repo includes `.github/workflows/rebuild-from-craft.yml` for that flow. Add
 - `OVH_DEPLOY_KEY`: private SSH key allowed to deploy to the OVH target.
 - `OVH_TARGET_DIR`: directory where the static website should be deployed.
 
-Then set the GitHub repository variable `ENABLE_OVH_DEPLOY=true`. Until that variable exists, the workflow only builds and uploads `dist` as an artifact.
+Every successful build on `main` deploys to OVH. The same workflow can also be started manually from GitHub Actions.
+
+GitHub Actions sets `CRAFT_REQUIRE_API=true`, so an unavailable or invalid Craft API stops the deployment instead of publishing fallback content. OVH paths are validated against one-time root markers before every sync, all root dotfiles and `cms/` are protected, and recovery data for the ten latest deployments is kept outside the webroot. The exact deployed revision is always verified over SSH. Set the optional `OVH_SITE_URL` repository variable to an HTTPS public URL to add a public verification after each run.
 
 Keep `CRAFT_ALLOW_ADMIN_CHANGES=false` in production once the content model is deployed. The client should edit entries and assets, while structural CMS changes stay in code/migrations.
