@@ -25,13 +25,16 @@ use craft\helpers\App;
 // Keep this integration independent from Composer so production can deploy it
 // without changing the remotely-installed dependency set.
 $moduleRoot = dirname(__DIR__) . '/modules';
+$releasesRoot = $moduleRoot . '/githubdispatch-releases';
 $currentRelease = $moduleRoot . '/githubdispatch-current';
 if (is_link($currentRelease)) {
-    $githubDispatchRoot = readlink($currentRelease);
+    $resolvedReleasesRoot = realpath($releasesRoot);
+    $githubDispatchRoot = realpath($currentRelease);
     if (
+        !is_string($resolvedReleasesRoot) ||
         !is_string($githubDispatchRoot) ||
         !preg_match(
-            '~^' . preg_quote($moduleRoot . '/githubdispatch-releases/', '~') . '[0-9a-f]{40}$~',
+            '~^' . preg_quote($resolvedReleasesRoot . '/', '~') . '[0-9a-f]{40}$~',
             $githubDispatchRoot,
         )
     ) {
