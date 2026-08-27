@@ -46,6 +46,7 @@ if (is_link($currentRelease)) {
 } else {
     $githubDispatchRoot = $moduleRoot . '/githubdispatch';
 }
+Craft::setAlias('@modules/githubdispatch', $githubDispatchRoot);
 require_once $githubDispatchRoot . '/jobs/DispatchRepository.php';
 require_once $githubDispatchRoot . '/Module.php';
 
