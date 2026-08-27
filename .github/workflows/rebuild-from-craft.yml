@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      diagnostics_only:
+        description: Inspect and back up Craft production without deploying
+        required: false
+        type: boolean
+        default: false
   repository_dispatch:
     types:
       - craft-content-saved
@@ -14,7 +20,67 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  diagnose-ovh:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.diagnostics_only }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env:
+          OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$OVH_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Inspect and back up Craft production
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          ssh "$OVH_USER@$OVH_HOST" 'bash -s' <<'REMOTE'
+          set -eu
+
+          craft_dir="$HOME/craft"
+          env_file="$craft_dir/.env"
+          public_cms="$HOME/www/cms"
+
+          test -d "$craft_dir"
+          test -f "$env_file"
+          test -d "$public_cms"
+
+          echo "craft_root_present=true"
+          echo "public_cms_present=true"
+          stat -c 'craft_env_mtime=%y' "$env_file"
+          stat -c 'craft_app_config_mtime=%y' "$craft_dir/config/app.php"
+
+          if grep -Eq '^[[:space:]]*GITHUB_DISPATCH_TOKEN=.+$' "$env_file"; then
+            echo "github_dispatch_token=present"
+          else
+            echo "github_dispatch_token=absent"
+          fi
+
+          integration_keys="$(sed -n -E 's/^[[:space:]]*([A-Z0-9_]*(GITHUB|DISPATCH|WEBHOOK)[A-Z0-9_]*)=.*/\1/p' "$env_file" | sort -u | paste -sd, -)"
+          if [ -n "$integration_keys" ]; then
+            echo "integration_env_keys=$integration_keys"
+          else
+            echo "integration_env_keys=none"
+          fi
+
+          cd "$craft_dir"
+          before_count="$(find storage/backups -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
+          php craft db/backup storage/backups/ --interactive=0 --color=0 >/dev/null
+          after_count="$(find storage/backups -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
+          echo "craft_backup_created=$([ "$after_count" -gt "$before_count" ] && echo true || echo false)"
+          echo "craft_backup_count=$after_count"
+
+          php craft exec/exec '$db = Craft::$app->getDb(); $out = []; foreach ($db->getSchema()->getTableNames() as $name) { if (str_contains($name, "webhook")) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out);' --interactive=0 --color=0
+          REMOTE
+
   build:
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.diagnostics_only) }}
     runs-on: ubuntu-latest
     env:
       CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
