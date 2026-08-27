@@ -94,8 +94,8 @@ jobs:
           echo "craft_backup_created=$([ "$after_count" -gt "$before_count" ] && echo true || echo false)"
           echo "craft_backup_count=$after_count"
 
-          php craft exec/exec '$db = Craft::$app->getDb(); $out = []; foreach ($db->getSchema()->getTableNames() as $name) { if (str_contains($name, "webhook")) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out);' --interactive=0 --color=0
-          php craft exec/exec '$db = Craft::$app->getDb(); $schema = $db->getSchema(); $out = []; foreach (["users", "entries"] as $name) { if ($schema->getTableSchema($name, true) !== null) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out);' --interactive=0 --color=0
+          php craft exec/exec '(function() { $db = Craft::$app->getDb(); $out = []; foreach ($db->getSchema()->getTableNames() as $name) { if (str_contains($name, "webhook")) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out); })()' --interactive=0 --color=0
+          php craft exec/exec '(function() { $db = Craft::$app->getDb(); $schema = $db->getSchema(); $out = []; foreach (["users", "entries"] as $name) { if ($schema->getTableSchema($name, true) !== null) { $out[$name] = (int)$db->createCommand("SELECT COUNT(*) FROM " . $db->quoteTableName($name))->queryScalar(); } } return json_encode($out); })()' --interactive=0 --color=0
           REMOTE
 
   build:
