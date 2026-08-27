@@ -9,15 +9,19 @@ on:
     types:
       - craft-content-saved
 
-concurrency:
-  group: static-site-deploy
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: static-site-build-${{ github.event_name == 'repository_dispatch' && 'craft' || github.event_name == 'push' && 'push-main' || github.run_id }}
+      cancel-in-progress: ${{ github.event_name == 'repository_dispatch' || github.event_name == 'push' }}
     env:
       CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
+      CRAFT_REQUIRE_API: "true"
       DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
       DEEPL_API_HOST: ${{ vars.DEEPL_API_HOST }}
 
@@ -30,6 +34,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -51,6 +57,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Stamp build
+        run: printf '%s\n' "$GITHUB_SHA" > dist/deploy-version.txt
+
       - name: Upload static build
         uses: actions/upload-artifact@v4
         with:
@@ -60,9 +69,18 @@ jobs:
   deploy-ovh:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ vars.ENABLE_OVH_DEPLOY == 'true' }}
+    timeout-minutes: 30
+    concurrency:
+      group: static-site-deploy
+      cancel-in-progress: false
+    if: ${{ vars.ENABLE_OVH_DEPLOY == 'true' && github.ref == 'refs/heads/main' }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
       - name: Download static build
         uses: actions/download-artifact@v4
         with:
@@ -77,15 +95,236 @@ jobs:
           OVH_DEPLOY_KEY: ${{ secrets.OVH_DEPLOY_KEY }}
           OVH_HOST: ${{ secrets.OVH_HOST }}
         run: |
-          mkdir -p ~/.ssh
+          set -Eeuo pipefail
+          : "${OVH_DEPLOY_KEY:?Missing OVH_DEPLOY_KEY}"
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          install -m 700 -d ~/.ssh
           printf '%s\n' "$OVH_DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
 
-      - name: Deploy to OVH
+      - name: Validate OVH paths and prepare rollback
+        id: ovh
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_TARGET_DIR: ${{ secrets.OVH_TARGET_DIR }}
           OVH_USER: ${{ secrets.OVH_USER }}
         run: |
-          rsync -az --delete --exclude "cms/" --exclude ".ovhconfig" dist/ "$OVH_USER@$OVH_HOST:$OVH_TARGET_DIR/"
+          set -Eeuo pipefail
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          : "${OVH_TARGET_DIR:?Missing OVH_TARGET_DIR}"
+
+          [[ "$OVH_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo "Invalid OVH_HOST" >&2; exit 1; }
+          [[ "$OVH_USER" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Invalid OVH_USER" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" =~ ^(~/|/?)[A-Za-z0-9._/-]+$ ]] || { echo "Invalid OVH_TARGET_DIR" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" != "/" && "$OVH_TARGET_DIR" != "." && "$OVH_TARGET_DIR" != ".." ]] || { echo "Unsafe OVH_TARGET_DIR" >&2; exit 1; }
+          [[ "$OVH_TARGET_DIR" != *"//"* ]] || { echo "Unsafe OVH_TARGET_DIR" >&2; exit 1; }
+          case "$OVH_TARGET_DIR" in
+            ../*|*/../*|*/..|./*|*/./*|*/.) echo "Unsafe OVH_TARGET_DIR" >&2; exit 1 ;;
+          esac
+
+          SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          REMOTE_HOME="$(ssh "$SSH_TARGET" 'cd && pwd -P')"
+          [[ "$REMOTE_HOME" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "Unexpected remote home" >&2; exit 1; }
+          if [[ "$OVH_TARGET_DIR" == "~/"* ]]; then
+            TARGET_FOR_CD="$REMOTE_HOME/${OVH_TARGET_DIR#\~/}"
+          else
+            TARGET_FOR_CD="$OVH_TARGET_DIR"
+          fi
+          REMOTE_TARGET="$(ssh "$SSH_TARGET" "cd -- '$TARGET_FOR_CD' && pwd -P")"
+          REMOTE_CRAFT="$(ssh "$SSH_TARGET" 'cd "$HOME/craft" && pwd -P')"
+
+          [[ "$REMOTE_TARGET" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "Unexpected remote target" >&2; exit 1; }
+          [[ "$REMOTE_CRAFT" =~ ^/[A-Za-z0-9._/-]+$ ]] || { echo "Unexpected Craft root" >&2; exit 1; }
+          [[ "$REMOTE_TARGET" != "$REMOTE_HOME" && "$REMOTE_TARGET" == "$REMOTE_HOME/"* ]] || { echo "Target must be a child of the remote home" >&2; exit 1; }
+          [[ "$REMOTE_CRAFT" == "$REMOTE_HOME/craft" ]] || { echo "Unexpected Craft root" >&2; exit 1; }
+          [[ "$REMOTE_TARGET" != "$REMOTE_CRAFT" && "$REMOTE_TARGET" != "$REMOTE_CRAFT/"* && "$REMOTE_CRAFT" != "$REMOTE_TARGET/"* ]] || { echo "Static and Craft roots overlap" >&2; exit 1; }
+
+          ssh "$SSH_TARGET" \
+            "test -d '$REMOTE_TARGET/cms' &&
+             test -f '$REMOTE_TARGET/cms/index.php' &&
+             test -f '$REMOTE_CRAFT/.env' &&
+             test -f '$REMOTE_CRAFT/config/app.php' &&
+             test -f '$REMOTE_CRAFT/craft' &&
+             test -f '$REMOTE_CRAFT/vendor/autoload.php'"
+
+          ssh "$SSH_TARGET" \
+            "test -f '$REMOTE_TARGET/.val-dieu-deploy-root' &&
+             grep -qxF 'val-dieu-static-root-v1' '$REMOTE_TARGET/.val-dieu-deploy-root' &&
+             test -f '$REMOTE_CRAFT/.val-dieu-craft-root' &&
+             grep -qxF 'val-dieu-craft-root-v1' '$REMOTE_CRAFT/.val-dieu-craft-root'"
+
+          BACKUP_ID="$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          REMOTE_BACKUP="$REMOTE_HOME/.val-dieu-deploy-backups/$BACKUP_ID"
+          ssh "$SSH_TARGET" \
+            "set -eu
+             umask 077
+             mkdir -p '$REMOTE_BACKUP/static'
+             find '$REMOTE_TARGET' -mindepth 1 \( -path '$REMOTE_TARGET/cms' -o -path '$REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$REMOTE_BACKUP/static-manifest-before.txt'"
+
+          printf 'remote_target=%s\n' "$REMOTE_TARGET" >> "$GITHUB_OUTPUT"
+          printf 'remote_craft=%s\n' "$REMOTE_CRAFT" >> "$GITHUB_OUTPUT"
+          printf 'remote_backup=%s\n' "$REMOTE_BACKUP" >> "$GITHUB_OUTPUT"
+
+      - name: Back up Craft integration and create stage
+        if: ${{ github.event_name != 'repository_dispatch' }}
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_REMOTE_CRAFT: ${{ steps.ovh.outputs.remote_craft }}
+        run: |
+          set -Eeuo pipefail
+          SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          ssh "$SSH_TARGET" \
+            "set -eu
+             umask 077
+             mkdir -p '$OVH_REMOTE_BACKUP/craft' '$OVH_REMOTE_BACKUP/craft-stage/config' '$OVH_REMOTE_BACKUP/craft-stage/modules/githubdispatch/jobs'
+             cp -p '$OVH_REMOTE_CRAFT/config/app.php' '$OVH_REMOTE_BACKUP/craft/app.php'
+             if [ -L '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' ]; then
+               readlink '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' > '$OVH_REMOTE_BACKUP/craft/githubdispatch.previous-link'
+             elif [ -e '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' ]; then
+               echo 'Unexpected non-symlink Craft module path' >&2
+               exit 1
+             fi"
+
+      - name: Deploy versioned Craft rebuild integration
+        if: ${{ github.event_name != 'repository_dispatch' }}
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_REMOTE_CRAFT: ${{ steps.ovh.outputs.remote_craft }}
+          RELEASE_ID: ${{ github.sha }}
+        run: |
+          set -Eeuo pipefail
+          SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          STAGE="$OVH_REMOTE_BACKUP/craft-stage"
+
+          rsync -az cms/config/app.php "$SSH_TARGET:$STAGE/config/"
+          rsync -az cms/modules/githubdispatch/ "$SSH_TARGET:$STAGE/modules/githubdispatch/"
+
+          ssh "$SSH_TARGET" "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_BACKUP' '$RELEASE_ID' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+          set -Eeuo pipefail
+          CRAFT_DIR="$1"
+          BACKUP_DIR="$2"
+          RELEASE_ID="$3"
+          RUN_ID="$4"
+          STAGE="$BACKUP_DIR/craft-stage"
+          RELEASES="$CRAFT_DIR/modules/githubdispatch-releases"
+          RELEASE="$RELEASES/$RELEASE_ID"
+          TEMP_RELEASE="$RELEASES/.release-$RUN_ID"
+          LIVE="$CRAFT_DIR/modules/githubdispatch-current"
+          OLD_KIND="absent"
+          OLD_TARGET=""
+
+          [[ "$RELEASE_ID" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+
+          php -l "$STAGE/config/app.php"
+          php -l "$STAGE/modules/githubdispatch/Module.php"
+          php -l "$STAGE/modules/githubdispatch/jobs/DispatchRepository.php"
+
+          mkdir -p "$RELEASES"
+          if [ ! -d "$RELEASE" ]; then
+            test ! -e "$TEMP_RELEASE"
+            mkdir -p "$TEMP_RELEASE/jobs"
+            install -m 0644 "$STAGE/modules/githubdispatch/jobs/DispatchRepository.php" "$TEMP_RELEASE/jobs/DispatchRepository.php"
+            install -m 0644 "$STAGE/modules/githubdispatch/Module.php" "$TEMP_RELEASE/Module.php"
+            mv "$TEMP_RELEASE" "$RELEASE"
+          else
+            cmp -s "$STAGE/modules/githubdispatch/jobs/DispatchRepository.php" "$RELEASE/jobs/DispatchRepository.php"
+            cmp -s "$STAGE/modules/githubdispatch/Module.php" "$RELEASE/Module.php"
+          fi
+
+          if [ -L "$LIVE" ]; then
+            OLD_KIND="symlink"
+            OLD_TARGET="$(readlink "$LIVE")"
+          elif [ -e "$LIVE" ]; then
+            echo "Unexpected non-symlink Craft module path" >&2
+            exit 1
+          fi
+
+          rollback() {
+            status=$?
+            trap - ERR
+            set +e
+            install -m 0644 "$BACKUP_DIR/craft/app.php" "$CRAFT_DIR/config/app.php.rollback-$RUN_ID"
+            mv -f "$CRAFT_DIR/config/app.php.rollback-$RUN_ID" "$CRAFT_DIR/config/app.php"
+            if [ "$OLD_KIND" = "symlink" ]; then
+              ln -s "$OLD_TARGET" "$LIVE.rollback-$RUN_ID"
+              mv -Tf "$LIVE.rollback-$RUN_ID" "$LIVE"
+            elif [ -L "$LIVE" ]; then
+              mv "$LIVE" "$BACKUP_DIR/craft/githubdispatch.failed-link"
+            fi
+            echo "Craft integration failed; module link and app.php were rolled back." >&2
+            exit "$status"
+          }
+          trap rollback ERR
+
+          ln -s "$RELEASE" "$LIVE.next-$RUN_ID"
+          mv -Tf "$LIVE.next-$RUN_ID" "$LIVE"
+          install -m 0644 "$STAGE/config/app.php" "$CRAFT_DIR/config/app.php.next"
+          mv "$CRAFT_DIR/config/app.php.next" "$CRAFT_DIR/config/app.php"
+
+          cd "$CRAFT_DIR"
+          php craft help --interactive=0 --color=0 >/dev/null
+          php craft exec/exec '(function (): bool { $token = \craft\helpers\App::env("GITHUB_DISPATCH_TOKEN"); $repository = \craft\helpers\App::env("GITHUB_DISPATCH_REPOSITORY") ?: "crokstudio/val-dieu"; if (!is_string($token) || trim($token) === "") { throw new RuntimeException("GITHUB_DISPATCH_TOKEN is missing"); } if (!is_string($repository) || !preg_match("~^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$~", $repository)) { throw new RuntimeException("GITHUB_DISPATCH_REPOSITORY is invalid"); } if (Craft::$app->getModule("github-dispatch") === null) { throw new RuntimeException("github-dispatch module is unavailable"); } return true; })()' --interactive=0 --color=0
+          trap - ERR
+          REMOTE
+
+      - name: Deploy to OVH
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_REMOTE_TARGET: ${{ steps.ovh.outputs.remote_target }}
+        run: |
+          set -Eeuo pipefail
+          rsync -az \
+            --delete-delay \
+            --delay-updates \
+            --backup \
+            --backup-dir="$OVH_REMOTE_BACKUP/static" \
+            --exclude='/cms/' \
+            --exclude='/.*' \
+            --itemize-changes \
+            dist/ "$OVH_USER@$OVH_HOST:$OVH_REMOTE_TARGET/"
+
+          ssh "$OVH_USER@$OVH_HOST" \
+            "find '$OVH_REMOTE_TARGET' -mindepth 1 \( -path '$OVH_REMOTE_TARGET/cms' -o -path '$OVH_REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$OVH_REMOTE_BACKUP/static-manifest-after.txt'"
+
+      - name: Verify deployed revision
+        if: ${{ vars.SITE_URL != '' }}
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$SITE_URL" =~ ^https://[^[:space:]]+$ ]] || { echo "SITE_URL must use HTTPS" >&2; exit 1; }
+          ACTUAL="$(curl --fail --location --silent --show-error --max-time 20 --retry 5 --retry-delay 5 --retry-all-errors "${SITE_URL%/}/deploy-version.txt?run=${GITHUB_RUN_ID}")"
+          [[ "$ACTUAL" == "$GITHUB_SHA" ]] || { echo "Deployed revision mismatch" >&2; exit 1; }
+
+      - name: Report unavailable public health check
+        if: ${{ vars.SITE_URL == '' }}
+        run: echo "::warning::SITE_URL is not configured; public revision verification was skipped."
+
+      - name: Retain the ten latest recovery backups
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          ssh "$OVH_USER@$OVH_HOST" 'bash -s' <<'REMOTE'
+          set -Eeuo pipefail
+          BACKUP_ROOT="$HOME/.val-dieu-deploy-backups"
+          test -d "$BACKUP_ROOT"
+          kept=0
+          while IFS= read -r name; do
+            [[ "$name" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]] || continue
+            kept=$((kept + 1))
+            if [ "$kept" -gt 10 ]; then
+              rm -rf -- "$BACKUP_ROOT/$name"
+            fi
+          done < <(find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | LC_ALL=C sort -r)
+          REMOTE

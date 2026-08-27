@@ -2,6 +2,9 @@ import "dotenv/config";
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const LOCAL_CRAFT_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const REQUIRE_CRAFT_API = ["1", "true", "yes"].includes(
+  process.env.CRAFT_REQUIRE_API?.trim().toLowerCase()
+);
 
 const readCraftPayload = (payload) => {
   if (payload?.data?.attributes) {
@@ -74,6 +77,10 @@ export const fetchCraftEntry = async (endpoint, fallback, label = endpoint) => {
   const fallbackData = clone(fallback);
 
   if (!apiUrl) {
+    if (REQUIRE_CRAFT_API) {
+      throw new Error(`[${label}] CRAFT_API_URL is required for this build`);
+    }
+
     return {
       ...fallbackData,
       source: "fallback",
@@ -94,10 +101,7 @@ export const fetchCraftEntry = async (endpoint, fallback, label = endpoint) => {
     const payload = readCraftPayload(await response.json());
 
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      return {
-        ...fallbackData,
-        source: "fallback",
-      };
+      throw new Error("Craft API returned an invalid payload");
     }
 
     return {
@@ -106,6 +110,10 @@ export const fetchCraftEntry = async (endpoint, fallback, label = endpoint) => {
       source: "craft",
     };
   } catch (error) {
+    if (REQUIRE_CRAFT_API) {
+      throw new Error(`[${label}] Craft API is unavailable: ${error.message}`);
+    }
+
     console.warn(`[${label}] Using fallback content: ${error.message}`);
 
     return {

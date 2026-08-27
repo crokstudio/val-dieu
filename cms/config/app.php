@@ -22,6 +22,31 @@
 
 use craft\helpers\App;
 
+// Keep this integration independent from Composer so production can deploy it
+// without changing the remotely-installed dependency set.
+$moduleRoot = dirname(__DIR__) . '/modules';
+$currentRelease = $moduleRoot . '/githubdispatch-current';
+if (is_link($currentRelease)) {
+    $githubDispatchRoot = readlink($currentRelease);
+    if (
+        !is_string($githubDispatchRoot) ||
+        !preg_match(
+            '~^' . preg_quote($moduleRoot . '/githubdispatch-releases/', '~') . '[0-9a-f]{40}$~',
+            $githubDispatchRoot,
+        )
+    ) {
+        throw new RuntimeException('The GitHub dispatch release link is invalid.');
+    }
+} else {
+    $githubDispatchRoot = $moduleRoot . '/githubdispatch';
+}
+require_once $githubDispatchRoot . '/jobs/DispatchRepository.php';
+require_once $githubDispatchRoot . '/Module.php';
+
 return [
     'id' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
+    'modules' => [
+        'github-dispatch' => \modules\githubdispatch\Module::class,
+    ],
+    'bootstrap' => ['github-dispatch'],
 ];
