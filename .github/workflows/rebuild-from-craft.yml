@@ -445,9 +445,19 @@ jobs:
                   }
               }
               $realTempDir = realpath($tempDir);
-              $systemTempDir = realpath(sys_get_temp_dir());
+              $systemTempPath = sys_get_temp_dir();
+              $systemTempDir = realpath($systemTempPath);
               if (!is_string($realTempDir) || $systemTempDir !== $realTempDir) {
-                  throw new RuntimeException("Craft did not adopt the private database temp directory.");
+                  $flag = static fn(bool $value): string => $value ? "yes" : "no";
+                  throw new RuntimeException(sprintf(
+                      "Private database temp validation failed (ini=%s, text=%s, real=%s, directory=%s, writable=%s, open_basedir=%s).",
+                      $flag(ini_get("sys_temp_dir") === $tempDir),
+                      $flag($systemTempPath === $tempDir),
+                      $flag(is_string($realTempDir) && $systemTempDir === $realTempDir),
+                      $flag(is_dir($tempDir)),
+                      $flag(is_writable($tempDir)),
+                      $flag((string)ini_get("open_basedir") !== ""),
+                  ));
               }
 
               $db = Craft::$app->getDb();
