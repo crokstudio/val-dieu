@@ -434,7 +434,7 @@ jobs:
           trap dump_cleanup EXIT
 
           cd "$CRAFT_DIR"
-          php craft exec/exec '(function (): bool {
+          php -d "sys_temp_dir=$dump_temp_dir" craft exec/exec '(function (): bool {
               $target = getenv("VALDIEU_DB_BACKUP_TARGET");
               $commandFile = getenv("VALDIEU_DB_BACKUP_COMMAND_FILE");
               $cnfPointer = getenv("VALDIEU_DB_BACKUP_CNF_POINTER");
