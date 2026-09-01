@@ -54,6 +54,7 @@ jobs:
         run: |
           php -l src/api/guided-visits.php
           php -l cms/config/app.php
+          php -l ops/prepare-craft-db-backup.php
 
       - name: Restore DeepL translation cache
         uses: actions/cache@v4
@@ -185,7 +186,8 @@ jobs:
           ssh "$SSH_TARGET" \
             "set -eu
              umask 077
-             mkdir -p '$REMOTE_BACKUP/static'
+             mkdir -p '$REMOTE_BACKUP/static' '$REMOTE_BACKUP/craft-stage'
+             chmod 700 '$REMOTE_BACKUP' '$REMOTE_BACKUP/static' '$REMOTE_BACKUP/craft-stage'
              find '$REMOTE_TARGET' -mindepth 1 \( -path '$REMOTE_TARGET/cms' -o -path '$REMOTE_TARGET/uploads' -o -path '$REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$REMOTE_BACKUP/static-manifest-before.txt'"
 
           printf 'remote_target=%s\n' "$REMOTE_TARGET" >> "$GITHUB_OUTPUT"
@@ -202,11 +204,14 @@ jobs:
         run: |
           set -Eeuo pipefail
           SSH_TARGET="${OVH_USER}@${OVH_HOST}"
+          rsync -az --chmod=F600 -- \
+            ops/prepare-craft-db-backup.php \
+            "$SSH_TARGET:$OVH_REMOTE_BACKUP/craft-stage/prepare-craft-db-backup.php"
           ssh "$SSH_TARGET" "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_TARGET' '$OVH_REMOTE_BACKUP'" <<'REMOTE'
           set -Eeuo pipefail
           CRAFT_DIR="$(cd "$1" && pwd -P)"
           TARGET_DIR="$(cd "$2" && pwd -P)"
-          BACKUP_DIR="$3"
+          BACKUP_DIR="$(cd "$3" && pwd -P)"
           HOME_DIR="$(cd "$HOME" && pwd -P)"
 
           [[ "$CRAFT_DIR" == "$HOME_DIR/craft" ]]
@@ -220,6 +225,12 @@ jobs:
             "$BACKUP_DIR/craft-stage/config" \
             "$BACKUP_DIR/craft-stage/modules/githubdispatch/jobs"
           chmod 700 "$BACKUP_DIR" "$BACKUP_DIR/craft" "$BACKUP_DIR/craft-stage"
+          backup_helper="$BACKUP_DIR/craft-stage/prepare-craft-db-backup.php"
+          test -f "$backup_helper"
+          test ! -L "$backup_helper"
+          test -O "$backup_helper"
+          [[ "$(stat -c '%a' "$backup_helper")" == '600' ]]
+          php -l "$backup_helper" >/dev/null
 
           describe_cms_entry() {
             entry="$TARGET_DIR/cms"
@@ -398,141 +409,151 @@ jobs:
             fi
           fi
 
-          # Craft builds the canonical mysqldump command and a temporary 0600
-          # defaults file, but OVH terminates Craft's nested process wrapper.
-          # Execute that generated command directly in this SSH shell instead.
+          # OVH terminates Craft's nested process wrapper, and its PHP runtime
+          # caches sys_get_temp_dir() before CLI overrides are applied. Build
+          # the same private client config at a deterministic path, then run
+          # Craft's two canonical mysqldump phases directly in this SSH shell.
           dump_target="$BACKUP_DIR/craft/database.sql"
-          dump_command_file="$BACKUP_DIR/craft/database-backup-command.sh"
-          dump_cnf_pointer="$BACKUP_DIR/craft/database-backup-cnf-path.txt"
+          dump_partial="$BACKUP_DIR/craft/database.sql.partial"
           dump_temp_dir="$BACKUP_DIR/craft-stage/database-tmp"
+          test ! -e "$dump_target"
+          test ! -L "$dump_target"
+          test ! -e "$dump_partial"
+          test ! -L "$dump_partial"
+          test ! -L "$dump_temp_dir"
           install -d -m 700 "$dump_temp_dir"
           dump_temp_dir="$(cd "$dump_temp_dir" && pwd -P)"
-          export VALDIEU_DB_BACKUP_TARGET="$dump_target"
-          export VALDIEU_DB_BACKUP_COMMAND_FILE="$dump_command_file"
-          export VALDIEU_DB_BACKUP_CNF_POINTER="$dump_cnf_pointer"
+          [[ "$dump_temp_dir" == "$BACKUP_DIR/craft-stage/database-tmp" ]]
+          test -O "$dump_temp_dir"
+          [[ "$(stat -c '%a' "$dump_temp_dir")" == '700' ]]
+
+          dump_cnf="$dump_temp_dir/database.cnf"
+          dump_database_file="$dump_temp_dir/database-name.txt"
+          dump_charset_file="$dump_temp_dir/database-charset.txt"
+          dump_single_transaction_file="$dump_temp_dir/single-transaction.txt"
+          dump_ignored_tables_file="$dump_temp_dir/ignored-tables.nul"
+          export VALDIEU_DB_BACKUP_CNF="$dump_cnf"
+          export VALDIEU_DB_BACKUP_DATABASE_FILE="$dump_database_file"
+          export VALDIEU_DB_BACKUP_CHARSET_FILE="$dump_charset_file"
+          export VALDIEU_DB_BACKUP_SINGLE_TRANSACTION_FILE="$dump_single_transaction_file"
+          export VALDIEU_DB_BACKUP_IGNORED_TABLES_FILE="$dump_ignored_tables_file"
           export VALDIEU_DB_BACKUP_TEMP_DIR="$dump_temp_dir"
-          export TMPDIR="$dump_temp_dir"
-          dump_cnf=''
+          dump_complete='false'
           dump_cleanup() {
+            prior_status=$?
             trap - EXIT
-            if [ -z "$dump_cnf" ] && [ -s "$dump_cnf_pointer" ]; then
-              candidate_cnf=''
-              IFS= read -r candidate_cnf < "$dump_cnf_pointer" || true
-              if [ "${candidate_cnf%/*}" = "$dump_temp_dir" ] && [[ "${candidate_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]; then
-                dump_cnf="$candidate_cnf"
-              fi
+            set +e
+            cleanup_failed=0
+            if [ "$dump_complete" != 'true' ]; then
+              rm -f -- "$dump_target" "$dump_partial" || cleanup_failed=1
             fi
-            if [ "${dump_cnf%/*}" = "$dump_temp_dir" ] && [[ "${dump_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]; then
-              rm -f -- "$dump_cnf"
-            fi
-            rm -f -- "$dump_command_file" "$dump_cnf_pointer"
             if [ -d "$dump_temp_dir" ]; then
-              find "$dump_temp_dir" -mindepth 1 -delete
-              rmdir -- "$dump_temp_dir"
+              find "$dump_temp_dir" -mindepth 1 -delete || cleanup_failed=1
+              rmdir -- "$dump_temp_dir" || cleanup_failed=1
             fi
+            set -e
+            if [ "$cleanup_failed" -ne 0 ]; then
+              echo 'Private database backup cleanup failed.' >&2
+              return 1
+            fi
+            return "$prior_status"
           }
           trap dump_cleanup EXIT
 
           cd "$CRAFT_DIR"
-          php -d "sys_temp_dir=$dump_temp_dir" craft exec/exec '(function (): bool {
-              $target = getenv("VALDIEU_DB_BACKUP_TARGET");
-              $commandFile = getenv("VALDIEU_DB_BACKUP_COMMAND_FILE");
-              $cnfPointer = getenv("VALDIEU_DB_BACKUP_CNF_POINTER");
-              $tempDir = getenv("VALDIEU_DB_BACKUP_TEMP_DIR");
-              foreach ([$target, $commandFile, $cnfPointer, $tempDir] as $path) {
-                  if (!is_string($path) || !preg_match("~^/[A-Za-z0-9._/-]+$~", $path)) {
-                      throw new RuntimeException("Invalid backup path.");
-                  }
-              }
-              $realTempDir = realpath($tempDir);
-              $systemTempPath = sys_get_temp_dir();
-              $systemTempDir = realpath($systemTempPath);
-              if (!is_string($realTempDir) || $systemTempDir !== $realTempDir) {
-                  $flag = static fn(bool $value): string => $value ? "yes" : "no";
-                  throw new RuntimeException(sprintf(
-                      "Private database temp validation failed (ini=%s, text=%s, real=%s, directory=%s, writable=%s, open_basedir=%s).",
-                      $flag(ini_get("sys_temp_dir") === $tempDir),
-                      $flag($systemTempPath === $tempDir),
-                      $flag(is_string($realTempDir) && $systemTempDir === $realTempDir),
-                      $flag(is_dir($tempDir)),
-                      $flag(is_writable($tempDir)),
-                      $flag((string)ini_get("open_basedir") !== ""),
-                  ));
-              }
+          export VALDIEU_DB_BACKUP_HELPER="$backup_helper"
+          php craft exec/exec 'require getenv("VALDIEU_DB_BACKUP_HELPER")' \
+            --interactive=0 --color=0 >/dev/null
 
-              $db = Craft::$app->getDb();
-              $parsedDsn = \craft\helpers\Db::parseDsn($db->dsn);
-              $database = $parsedDsn["dbname"] ?? null;
-              if (!is_string($database) || !preg_match("~^[A-Za-z0-9_]+$~", $database)) {
-                  throw new RuntimeException("Invalid database name.");
-              }
+          for private_file in \
+            "$dump_cnf" \
+            "$dump_database_file" \
+            "$dump_charset_file" \
+            "$dump_single_transaction_file" \
+            "$dump_ignored_tables_file"
+          do
+            test -f "$private_file"
+            test ! -L "$private_file"
+            test -O "$private_file"
+            [[ "$(stat -c '%a' "$private_file")" == '600' ]]
+          done
 
-              $schema = $db->getSchema();
-              if (!method_exists($schema, "getDefaultBackupCommand") || !property_exists($schema, "tempMyCnfPath")) {
-                  throw new RuntimeException("Unsupported database backup schema.");
-              }
-              $staged = false;
-              try {
-                  $command = $schema->getDefaultBackupCommand();
-                  $cnfPath = $schema->tempMyCnfPath;
-                  if (
-                      !is_string($cnfPath) ||
-                      dirname($cnfPath) !== $realTempDir ||
-                      !preg_match("~^[A-Za-z0-9]{12}\\.cnf$~", basename($cnfPath))
-                  ) {
-                      throw new RuntimeException("Invalid temporary database config path.");
-                  }
+          IFS= read -r dump_database < "$dump_database_file"
+          IFS= read -r dump_charset < "$dump_charset_file"
+          IFS= read -r dump_single_transaction < "$dump_single_transaction_file"
+          [[ "$dump_database" =~ ^[A-Za-z0-9_]+$ ]]
+          [[ "$dump_charset" =~ ^[A-Za-z0-9_-]+$ ]]
+          [[ "$dump_single_transaction" == '0' || "$dump_single_transaction" == '1' ]]
 
-                  $command = strtr($command, ["{file}" => $target, "{database}" => $database]);
-                  $password = is_string($db->password) ? $db->password : "";
-                  if (
-                      !str_contains($command, "mysqldump") ||
-                      !str_contains($command, "--defaults-file") ||
-                      str_contains($command, "{") ||
-                      str_contains($command, "\n") ||
-                      ($password !== "" && str_contains($command, $password))
-                  ) {
-                      throw new RuntimeException("Unsafe generated database backup command.");
-                  }
-                  $script = "#!/usr/bin/env bash\nset -Eeuo pipefail\n{$command}\n";
-                  if (file_put_contents($commandFile, $script) === false || chmod($commandFile, 0600) === false) {
-                      throw new RuntimeException("Unable to stage database backup command.");
-                  }
-                  if (file_put_contents($cnfPointer, $cnfPath . "\n") === false || chmod($cnfPointer, 0600) === false) {
-                      throw new RuntimeException("Unable to stage database config pointer.");
-                  }
-                  $staged = true;
-                  return true;
-              } finally {
-                  if (!$staged) {
-                      $candidate = $schema->tempMyCnfPath;
-                      if (
-                          is_string($candidate) &&
-                          dirname($candidate) === $realTempDir &&
-                          preg_match("~^[A-Za-z0-9]{12}\\.cnf$~", basename($candidate))
-                      ) {
-                          @unlink($candidate);
-                      }
-                      @unlink($commandFile);
-                      @unlink($cnfPointer);
-                  }
-              }
-          })()' --interactive=0 --color=0 >/dev/null
+          ignore_args=()
+          while IFS= read -r -d '' ignored_table; do
+            [[ "$ignored_table" =~ ^[A-Za-z0-9_]+$ ]]
+            ignore_args+=("--ignore-table=$dump_database.$ignored_table")
+          done < "$dump_ignored_tables_file"
+          (( ${#ignore_args[@]} > 0 ))
 
-          IFS= read -r dump_cnf < "$dump_cnf_pointer"
-          [ "${dump_cnf%/*}" = "$dump_temp_dir" ]
-          [[ "${dump_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]
-          test -s "$dump_cnf"
-          test -s "$dump_command_file"
-          bash "$dump_command_file"
+          command -v mysqldump >/dev/null
+          dump_client_home="$dump_temp_dir/client-home"
+          install -d -m 700 "$dump_client_home"
+          dump_client_home="$(cd "$dump_client_home" && pwd -P)"
+          test -O "$dump_client_home"
+          [[ "$(stat -c '%a' "$dump_client_home")" == '700' ]]
+          export HOME="$dump_client_home"
+          unset MYSQL_TEST_LOGIN_FILE MYSQL_HOME MYSQL_GROUP_SUFFIX
+          unset MYSQL_PWD MYSQL_HOST MYSQL_TCP_PORT MYSQL_UNIX_PORT
+          dump_help="$dump_temp_dir/mysqldump-help.txt"
+          LC_ALL=C mysqldump --no-defaults --help > "$dump_help" 2>/dev/null
+          dump_args=(
+            "--defaults-file=$dump_cnf"
+            --add-drop-table
+            --comments
+            --create-options
+            --dump-date
+            --no-autocommit
+            --routines
+            "--default-character-set=$dump_charset"
+            --set-charset
+            --triggers
+            --no-tablespaces
+          )
+          if [ "$dump_single_transaction" == '1' ]; then
+            dump_args+=(--single-transaction)
+          fi
+          if grep -F -- 'column-statistics' "$dump_help" >/dev/null; then
+            dump_args+=(--column-statistics=0)
+          fi
+
+          mysqldump "${dump_args[@]}" \
+            --skip-events \
+            --no-data \
+            --skip-triggers \
+            "--result-file=$dump_partial" \
+            "$dump_database"
+          mysqldump "${dump_args[@]}" \
+            --events \
+            --no-create-info \
+            "${ignore_args[@]}" \
+            "$dump_database" >> "$dump_partial"
+          test -f "$dump_partial"
+          test ! -L "$dump_partial"
+          test -O "$dump_partial"
+          [[ "$(stat -c '%a' "$dump_partial")" == '600' ]]
+          test -s "$dump_partial"
+          grep -m1 -E '^CREATE TABLE ' "$dump_partial" >/dev/null
+          grep -m1 -E '^INSERT INTO ' "$dump_partial" >/dev/null
+          mv -- "$dump_partial" "$dump_target"
+          dump_complete='true'
           dump_cleanup
-          unset VALDIEU_DB_BACKUP_TARGET VALDIEU_DB_BACKUP_COMMAND_FILE VALDIEU_DB_BACKUP_CNF_POINTER
-          unset VALDIEU_DB_BACKUP_TEMP_DIR TMPDIR
+          export HOME="$HOME_DIR"
+          unset VALDIEU_DB_BACKUP_CNF VALDIEU_DB_BACKUP_DATABASE_FILE VALDIEU_DB_BACKUP_CHARSET_FILE
+          unset VALDIEU_DB_BACKUP_SINGLE_TRANSACTION_FILE VALDIEU_DB_BACKUP_IGNORED_TABLES_FILE
+          unset VALDIEU_DB_BACKUP_TEMP_DIR VALDIEU_DB_BACKUP_HELPER
 
           test -s "$BACKUP_DIR/craft/database.sql"
           gzip -9 "$BACKUP_DIR/craft/database.sql"
           gzip -t "$BACKUP_DIR/craft/database.sql.gz"
-          zgrep -m1 -E '^(--|SET |CREATE |INSERT |DROP )' "$BACKUP_DIR/craft/database.sql.gz" >/dev/null
+          zgrep -m1 -E '^CREATE TABLE ' "$BACKUP_DIR/craft/database.sql.gz" >/dev/null
+          zgrep -m1 -E '^INSERT INTO ' "$BACKUP_DIR/craft/database.sql.gz" >/dev/null
           sha256sum "$BACKUP_DIR/craft/database.sql.gz" > "$BACKUP_DIR/craft/database.sha256"
 
           if [ -L "$CRAFT_DIR/modules/githubdispatch-current" ]; then
