@@ -2,6 +2,7 @@ import "dotenv/config";
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const LOCAL_CRAFT_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const CRAFT_ASSET_PATH_PREFIXES = ["/uploads/", "/cms/uploads/"];
 const REQUIRE_CRAFT_API = ["1", "true", "yes"].includes(
   process.env.CRAFT_REQUIRE_API?.trim().toLowerCase()
 );
@@ -18,22 +19,51 @@ const readCraftPayload = (payload) => {
   return payload;
 };
 
-const isLocalCraftUrl = (value) => {
-  try {
-    return LOCAL_CRAFT_HOSTS.has(new URL(value).hostname);
-  } catch {
+const configuredCraftOrigins = () => {
+  const configuredUrls = [
+    process.env.CRAFT_API_URL,
+    process.env.SITE_URL,
+    "https://www.abbaye-du-val-dieu.be",
+  ];
+
+  return new Set(
+    configuredUrls
+      .filter((value) => typeof value === "string" && value.trim() !== "")
+      .flatMap((value) => {
+        try {
+          return [new URL(value).origin];
+        } catch {
+          return [];
+        }
+      })
+  );
+};
+
+const isCraftAssetUrl = (url) => {
+  if (!CRAFT_ASSET_PATH_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) {
     return false;
+  }
+
+  return LOCAL_CRAFT_HOSTS.has(url.hostname) || configuredCraftOrigins().has(url.origin);
+};
+
+const parseHttpUrl = (value) => {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? url : null;
+  } catch {
+    return null;
   }
 };
 
-const normalizeCraftAssetUrl = (value) => {
-  if (typeof value !== "string" || !/^https?:\/\//.test(value) || !isLocalCraftUrl(value)) {
+export const normalizeCraftAssetUrl = (value) => {
+  if (typeof value !== "string") {
     return value;
   }
 
-  const url = new URL(value);
+  const url = parseHttpUrl(value);
 
-  if (!url.pathname.startsWith("/uploads/")) {
+  if (!url || !isCraftAssetUrl(url)) {
     return value;
   }
 

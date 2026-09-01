@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-const FORM_TO = 'elann.fraiture@gmail.com';
-const FORM_FROM = 'infotourist@val-dieu.net';
+use PHPMailer\PHPMailer\PHPMailer;
+
 const SITE_NAME = 'Val-Dieu';
+const LEGACY_FORM_TO = 'elann.fraiture@gmail.com';
+const FORM_FROM = 'infotourist@val-dieu.net';
 
 function post_value(string $key): string
 {
@@ -55,17 +57,150 @@ HTML;
     exit;
 }
 
-function send_email(string $to, string $subject, string $body, string $replyTo = FORM_FROM): bool
+/**
+ * Load SMTP secrets from the environment or from a PHP file outside the web
+ * root. Environment variables take precedence over file values.
+ *
+ * @return array{mode:string,host:string,port:int,encryption:string,username:string,password:string,from_email:string,from_name:string,to_email:string}
+ */
+function mail_configuration(): array
 {
-    $headers = [
-        'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
-        'From: ' . SITE_NAME . ' <' . FORM_FROM . '>',
-        'Reply-To: ' . clean_header($replyTo),
-        'X-Mailer: PHP/' . phpversion(),
+    static $configuration = null;
+
+    if (is_array($configuration)) {
+        return $configuration;
+    }
+
+    $configPath = getenv('VALDIEU_MAIL_CONFIG');
+    if (!is_string($configPath) || $configPath === '') {
+        $configPath = dirname(__DIR__, 2) . '/.val-dieu-mail.php';
+    }
+
+    $fileValues = [];
+    if (is_file($configPath) && is_readable($configPath)) {
+        $loadedValues = require $configPath;
+        if (is_array($loadedValues)) {
+            $fileValues = $loadedValues;
+        }
+    }
+
+    $value = static function (string $key, string $default = '') use ($fileValues): string {
+        $environmentValue = getenv($key);
+        if (is_string($environmentValue) && $environmentValue !== '') {
+            return trim($environmentValue);
+        }
+
+        $fileValue = $fileValues[$key] ?? $default;
+        return is_scalar($fileValue) ? trim((string) $fileValue) : $default;
+    };
+
+    $configuration = [
+        'mode' => 'mail',
+        'host' => $value('VALDIEU_SMTP_HOST'),
+        'port' => (int) $value('VALDIEU_SMTP_PORT', '587'),
+        'encryption' => strtolower($value('VALDIEU_SMTP_ENCRYPTION', 'tls')),
+        'username' => $value('VALDIEU_SMTP_USERNAME'),
+        'password' => $value('VALDIEU_SMTP_PASSWORD'),
+        'from_email' => $value('VALDIEU_SMTP_FROM_EMAIL', FORM_FROM),
+        'from_name' => $value('VALDIEU_SMTP_FROM_NAME', SITE_NAME),
+        'to_email' => $value('VALDIEU_FORM_TO_EMAIL', LEGACY_FORM_TO),
     ];
 
-    return mail($to, clean_header($subject), $body, implode("\r\n", $headers), '-f ' . FORM_FROM);
+    $smtpKeys = ['host', 'username', 'password'];
+    $configuredSmtpKeys = array_filter(
+        $smtpKeys,
+        static fn(string $key): bool => $configuration[$key] !== '',
+    );
+    if ($configuredSmtpKeys !== []) {
+        foreach ($smtpKeys as $smtpKey) {
+            if ($configuration[$smtpKey] === '') {
+                throw new RuntimeException("Missing mail configuration: {$smtpKey}");
+            }
+        }
+        $configuration['mode'] = 'smtp';
+    }
+
+    if ($configuration['mode'] === 'smtp') {
+        if ($configuration['port'] < 1 || $configuration['port'] > 65535) {
+            throw new RuntimeException('Invalid SMTP port.');
+        }
+
+        if (!in_array($configuration['encryption'], ['tls', 'smtps', 'none'], true)) {
+            throw new RuntimeException('Invalid SMTP encryption mode.');
+        }
+    }
+
+    if (
+        !filter_var($configuration['from_email'], FILTER_VALIDATE_EMAIL) ||
+        !filter_var($configuration['to_email'], FILTER_VALIDATE_EMAIL)
+    ) {
+        throw new RuntimeException('Invalid configured mail address.');
+    }
+
+    return $configuration;
+}
+
+function send_email(string $to, string $subject, string $body, ?string $replyTo = null): bool
+{
+    try {
+        $configuration = mail_configuration();
+
+        if ($configuration['mode'] === 'mail') {
+            $headers = [
+                'MIME-Version: 1.0',
+                'Content-Type: text/plain; charset=UTF-8',
+                'From: ' . $configuration['from_name'] . ' <' . $configuration['from_email'] . '>',
+                'Reply-To: ' . clean_header($replyTo ?? $configuration['from_email']),
+                'X-Mailer: PHP/' . phpversion(),
+            ];
+
+            return mail(
+                clean_header($to),
+                clean_header($subject),
+                $body,
+                implode("\r\n", $headers),
+                '-f ' . clean_header($configuration['from_email']),
+            );
+        }
+
+        $autoloadPath = __DIR__ . '/vendor/autoload.php';
+        if (!is_file($autoloadPath)) {
+            throw new RuntimeException('PHPMailer dependency is unavailable.');
+        }
+        require_once $autoloadPath;
+
+        $mailer = new PHPMailer(true);
+        $mailer->isSMTP();
+        $mailer->Host = $configuration['host'];
+        $mailer->Port = $configuration['port'];
+        $mailer->SMTPAuth = true;
+        $mailer->Username = $configuration['username'];
+        $mailer->Password = $configuration['password'];
+        $mailer->Timeout = 15;
+        $mailer->CharSet = PHPMailer::CHARSET_UTF8;
+
+        if ($configuration['encryption'] === 'tls') {
+            $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        } elseif ($configuration['encryption'] === 'smtps') {
+            $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } else {
+            $mailer->SMTPAutoTLS = false;
+            $mailer->SMTPSecure = '';
+        }
+
+        $mailer->setFrom($configuration['from_email'], $configuration['from_name']);
+        $mailer->addAddress(clean_header($to));
+        if ($replyTo !== null && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
+            $mailer->addReplyTo(clean_header($replyTo));
+        }
+        $mailer->Subject = clean_header($subject);
+        $mailer->Body = $body;
+
+        return $mailer->send();
+    } catch (Throwable $exception) {
+        error_log('Val-Dieu form email failed: ' . $exception->getMessage());
+        return false;
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -126,7 +261,14 @@ $lines[] = '';
 $lines[] = 'Envoye depuis : ' . ($_SERVER['HTTP_REFERER'] ?? 'inconnu');
 $adminBody = implode("\n", $lines);
 
-if (!send_email(FORM_TO, $subject, $adminBody, $fields['Email'])) {
+try {
+    $mailConfiguration = mail_configuration();
+} catch (Throwable $exception) {
+    error_log('Val-Dieu form configuration failed: ' . $exception->getMessage());
+    render_response('Formulaire indisponible', 'Le formulaire est temporairement indisponible. Merci de nous contacter directement.', 503);
+}
+
+if (!send_email($mailConfiguration['to_email'], $subject, $adminBody, $fields['Email'])) {
     render_response('Erreur d\'envoi', "Votre demande n'a pas pu etre envoyee. Merci de reessayer ou de nous contacter directement.", 500);
 }
 

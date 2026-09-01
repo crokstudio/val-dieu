@@ -1,0 +1,95 @@
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /fr/404.html
+
+<IfModule mod_headers.c>
+    <IfModule mod_setenvif.c>
+        # Keep the temporary OVH hostname out of search indexes before launch.
+        SetEnvIf Host "^czrmbdl\.cluster100\.hosting\.ovh\.net$" val_dieu_preview
+        Header always set X-Robots-Tag "noindex, nofollow" env=val_dieu_preview
+    </IfModule>
+
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # This is safe to deploy before cutover: it only applies to the final
+    # hostnames, never to the temporary OVH hostname. Keep it temporary (302)
+    # until the certificate and both names have been validated.
+    RewriteCond %{HTTP_HOST} ^abbaye-du-val-dieu\.be$ [NC,OR]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP_HOST} ^(?:www\.)?abbaye-du-val-dieu\.be$ [NC]
+    RewriteRule ^ https://www.abbaye-du-val-dieu.be%{REQUEST_URI} [R=302,L,NE]
+
+    # Keep the historical language contract: French is the default and every
+    # language has a stable prefix, including English under /en/.
+    RewriteRule ^$ /fr/ [R=301,L]
+
+    # Old WordPress calendars and articles now live in the Community section.
+    RewriteRule ^(fr|en|nl|de)/agenda(?:/.*)?$ /$1/community/ [R=301,L,NC]
+    RewriteRule ^fr/(messes-dominicales|temps-de-priere|paques-2026)(?:/.*)?$ /fr/community/ [R=301,L,NC]
+
+    # Community, prayer and Cistercian pages.
+    RewriteRule ^fr/spiritualite(?:/.*)?$ /fr/community/ [R=301,L,NC]
+    RewriteRule ^fr/(les-cisterciens|atelier-dicones|les-temps-forts-de-la-communaute|offices|blog-fr)(?:/.*)?$ /fr/community/ [R=301,L,NC]
+    RewriteRule ^en/(cistercians|spirituality|services|blog-en)(?:/.*)?$ /en/community/ [R=301,L,NC]
+    RewriteRule ^nl/(les-cisterciens-nl|kerkdiensten|blog-nl)(?:/.*)?$ /nl/community/ [R=301,L,NC]
+    RewriteRule ^de/(les-cisterciens-de|spiritualiteit|spiritualitat|gottesdiensten|blog-de)(?:/.*)?$ /de/community/ [R=301,L,NC]
+
+    # History, timeline and photo gallery pages.
+    RewriteRule ^fr/(un-peu-dhistoire|un-peu-dhistoire-2|aujourdhui|ligne-du-temps|galerie-photographique)(?:/.*)?$ /fr/discover/ [R=301,L,NC]
+    RewriteRule ^en/(history|today|val-dieu-abbey-was-founded-in-1216)(?:/.*)?$ /en/discover/ [R=301,L,NC]
+    RewriteRule ^nl/(geschiedenis|vandaag|tijdlijn|album|9939-2)(?:/.*)?$ /nl/discover/ [R=301,L,NC]
+    RewriteRule ^de/(deschichte|heute|test-valdieu-2)(?:/.*)?$ /de/discover/ [R=301,L,NC]
+
+    # Guided tours retain their intent across all old translated slugs.
+    RewriteRule ^fr/(visites-guidees|visites-guidees-individuels|visites-guidees-groupes|guides-2022)(?:/.*)?$ /fr/guided-visits/ [R=301,L,NC]
+    RewriteRule ^en/guided-tours(?:/.*)?$ /en/guided-visits/ [R=301,L,NC]
+    RewriteRule ^nl/rondleidingen(?:/.*)?$ /nl/guided-visits/ [R=301,L,NC]
+    RewriteRule ^de/fuhrungen(?:/.*)?$ /de/guided-visits/ [R=301,L,NC]
+
+    # Visitor services, park, walks, shop and local products.
+    RewriteRule ^fr/(la-brasserie|la-fromagerie|la-cidrerie|le-magasin|parc|promenades-balisees|balades-velo|office-du-tourisme|se-loger|location)(?:/.*)?$ /fr/visit/ [R=301,L,NC]
+    RewriteRule ^en/(the-brewery|the-cheese-factory|the-cider-factory|the-shop|park|waymarked-walks|cycling-tours|office-of-tourism|rental)(?:/.*)?$ /en/visit/ [R=301,L,NC]
+    RewriteRule ^nl/(de-brouwerij|de-kaasfabriek|de-ciderfabriek|de-winkel|parck-nl|wandelingen|fietstochten|toeristische-dienst|verhuur)(?:/.*)?$ /nl/visit/ [R=301,L,NC]
+    RewriteRule ^de/(la-brasserie-de|die-kaserei-2|die-ciderfabrik|der-klosterladen|parc-de|markierte-spaziergaenge|die-touristeninformation|vermietung)(?:/.*)?$ /de/visit/ [R=301,L,NC]
+
+    # Support, donations and contact.
+    RewriteRule ^fr/nous-aider/?$ /fr/support/ [R=301,L,NC]
+    RewriteRule ^en/nous-aider-en/?$ /en/support/ [R=301,L,NC]
+    RewriteRule ^nl/nous-aider-nl/?$ /nl/support/ [R=301,L,NC]
+    RewriteRule ^de/nous-aider-de/?$ /de/support/ [R=301,L,NC]
+    RewriteRule ^fr/faire-un-don(?:/.*)?$ /fr/donation/ [R=301,L,NC]
+    RewriteRule ^fr/coordonnees-et-acces/?$ /fr/info-contact/ [R=301,L,NC]
+    RewriteRule ^en/coordonnees-et-acces-en/?$ /en/info-contact/ [R=301,L,NC]
+    RewriteRule ^nl/coordonnees-et-acces-nl/?$ /nl/info-contact/ [R=301,L,NC]
+    RewriteRule ^de/coordonnees-et-acces-de/?$ /de/info-contact/ [R=301,L,NC]
+
+    # WordPress homepage attachments and retired content types.
+    RewriteRule ^fr/accueil(?:/.*)?$ /fr/ [R=301,L,NC]
+    RewriteRule ^en/accueil-en(?:/.*)?$ /en/ [R=301,L,NC]
+    RewriteRule ^nl/accueil-nl(?:/.*)?$ /nl/ [R=301,L,NC]
+    RewriteRule ^de/accueil-de(?:/.*)?$ /de/ [R=301,L,NC]
+    RewriteRule ^(fr|en|nl|de)/team-members(?:/.*)?$ /$1/community/ [R=301,L,NC]
+    RewriteRule ^fr/(category|team-group|author)(?:/.*)?$ /fr/community/ [R=301,L,NC]
+    RewriteRule ^fr/(portfolio|portfolio-category)(?:/.*)?$ /fr/discover/ [R=301,L,NC]
+    RewriteRule ^fr/testimonial(?:/.*)?$ /fr/ [R=301,L,NC]
+
+    # The temporary site originally published English without a language
+    # prefix. Preserve those bookmarks after the language URL migration.
+    RewriteRule ^(community|discover|donation|guided-visits|info-contact|support|visit)/?$ /en/$1/ [R=301,L,NC]
+
+    # Superseded utility pages.
+    RewriteRule ^fr/conditions-generales/?$ /assets/medias/pdf/TC.pdf [R=301,L,NC]
+    RewriteRule ^en/conditions-generales-en/?$ /assets/medias/pdf/TC.pdf [R=301,L,NC]
+    RewriteRule ^nl/conditions-generales-nl/?$ /assets/medias/pdf/TC.pdf [R=301,L,NC]
+    RewriteRule ^de/conditions-generales-de/?$ /assets/medias/pdf/TC.pdf [R=301,L,NC]
+    RewriteRule ^fr/plan-du-site/?$ /fr/ [R=301,L,NC]
+    RewriteRule ^en/sitemap/?$ /en/ [R=301,L,NC]
+    RewriteRule ^nl/plan-du-site-nl/?$ /nl/ [R=301,L,NC]
+    RewriteRule ^de/plan-du-site-de/?$ /de/ [R=301,L,NC]
+
+</IfModule>

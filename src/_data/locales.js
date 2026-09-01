@@ -2,7 +2,7 @@ export default [
   {
     code: "en",
     language: "en",
-    prefix: "/",
+    prefix: "/en/",
     label: "EN",
   },
   {

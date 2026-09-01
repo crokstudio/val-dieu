@@ -74,7 +74,7 @@ const renderPlainImageTag = (src, attributes = {}) => {
 const localeByCode = new Map(locales.map((locale) => [locale.code, locale]));
 const localeByOutputPath = (outputPath = "") => {
   const normalizedPath = outputPath.replace(/\\/g, "/");
-  const localizedMatch = normalizedPath.match(/\/(fr|de|nl)\//);
+  const localizedMatch = normalizedPath.match(/\/(en|fr|de|nl)\//);
 
   if (localizedMatch) {
     return localeByCode.get(localizedMatch[1]);
@@ -101,11 +101,7 @@ const localizeUrl = (href, locale) => {
   const hashOrQuery = href.slice(pathPart.length);
   const normalizedPath = pathPart === "/" ? "/" : `${pathPart.replace(/\/$/, "")}/`;
 
-  if (locale.code === "en") {
-    return `${normalizedPath}${hashOrQuery}`;
-  }
-
-  const withoutLocale = normalizedPath.replace(/^\/(fr|de|nl)\//, "/");
+  const withoutLocale = normalizedPath.replace(/^\/(en|fr|de|nl)\//, "/");
   return `${locale.prefix.replace(/\/$/, "")}${withoutLocale}${hashOrQuery}`;
 };
 
@@ -137,6 +133,10 @@ export default async function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("t", (key, localeCode = "en") => translate(key, localeCode));
+
+  eleventyConfig.addFilter("absoluteUrl", (url, baseUrl) => {
+    return new URL(url, `${String(baseUrl).replace(/\/$/, "")}/`).href;
+  });
 
   eleventyConfig.addTransform("localize-html", function (content) {
     if (!this.page.outputPath?.endsWith(".html")) {
@@ -221,6 +221,8 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "./src/assets/medias/pdf": "assets/medias/pdf" });
   eleventyConfig.addPassthroughCopy({ "./cms/web/uploads": "uploads" });
   eleventyConfig.addPassthroughCopy({ "./src/api": "api" });
+  eleventyConfig.addPassthroughCopy({ "./vendor": "api/vendor" });
+  eleventyConfig.addPassthroughCopy("./src/.htaccess");
   
   // Eleventy dev server config
   eleventyConfig.setServerOptions({

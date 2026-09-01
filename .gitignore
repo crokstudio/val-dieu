@@ -150,3 +150,7 @@ dist
 
 # Email info
 config.php
+
+# Local encrypted migration backups and their private decryption key
+.migration-private/
+migration-backups/

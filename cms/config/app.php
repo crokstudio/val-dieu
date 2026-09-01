@@ -21,6 +21,8 @@
  */
 
 use craft\helpers\App;
+use craft\helpers\MailerHelper;
+use craft\mail\transportadapters\Smtp;
 
 // Keep this integration independent from Composer so production can deploy it
 // without changing the remotely-installed dependency set.
@@ -50,10 +52,56 @@ Craft::setAlias('@modules/githubdispatch', $githubDispatchRoot);
 require_once $githubDispatchRoot . '/jobs/DispatchRepository.php';
 require_once $githubDispatchRoot . '/Module.php';
 
+$mailerComponent = static function(): object {
+    $config = App::mailerConfig();
+    $smtpHost = App::env('VALDIEU_SMTP_HOST');
+
+    // Retain the stored Craft transport until the complete SMTP configuration
+    // has been installed on the server.
+    if (!is_string($smtpHost) || trim($smtpHost) === '') {
+        return Craft::createObject($config);
+    }
+
+    $requiredVariables = [
+        'VALDIEU_SMTP_USERNAME',
+        'VALDIEU_SMTP_PASSWORD',
+        'VALDIEU_SMTP_FROM_EMAIL',
+    ];
+    foreach ($requiredVariables as $requiredVariable) {
+        $value = App::env($requiredVariable);
+        if (!is_string($value) || trim($value) === '') {
+            throw new RuntimeException("{$requiredVariable} is missing.");
+        }
+    }
+
+    $adapter = MailerHelper::createTransportAdapter(Smtp::class, [
+        'host' => $smtpHost,
+        'port' => App::env('VALDIEU_SMTP_PORT') ?: 587,
+        'useAuthentication' => true,
+        'username' => App::env('VALDIEU_SMTP_USERNAME'),
+        'password' => App::env('VALDIEU_SMTP_PASSWORD'),
+    ]);
+
+    $fromEmail = trim((string) App::env('VALDIEU_SMTP_FROM_EMAIL'));
+    $fromName = trim((string) (App::env('VALDIEU_SMTP_FROM_NAME') ?: 'Val-Dieu'));
+    if (!filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+        throw new RuntimeException('VALDIEU_SMTP_FROM_EMAIL is invalid.');
+    }
+
+    $config['from'] = [$fromEmail => $fromName];
+    $config['replyTo'] = $fromEmail;
+    $config['transport'] = $adapter->defineTransport();
+
+    return Craft::createObject($config);
+};
+
 return [
     'id' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
     'modules' => [
         'github-dispatch' => \modules\githubdispatch\Module::class,
     ],
     'bootstrap' => ['github-dispatch'],
+    'components' => [
+        'mailer' => $mailerComponent,
+    ],
 ];

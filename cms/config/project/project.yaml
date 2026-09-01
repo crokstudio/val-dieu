@@ -1,6 +1,6 @@
-dateModified: 1781013822
+dateModified: 1788265074
 email:
-  fromEmail: contact@matestudio.be
+  fromEmail: infotourist@val-dieu.net
   fromName: Val-Dieu
   transportType: craft\mail\transportadapters\Sendmail
 fs:
@@ -58,7 +58,7 @@ system:
   live: true
   name: Val-Dieu
   schemaVersion: 5.10.0.0
-  timeZone: America/Los_Angeles
+  timeZone: Europe/Brussels
 users:
   allowPublicRegistration: false
   defaultGroup: null

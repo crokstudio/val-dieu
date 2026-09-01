@@ -3,7 +3,11 @@ pagination:
   data: locales
   size: 1
   alias: locale
-permalink: "{% if locale.code == 'en' %}404.html{% else %}{{ locale.code }}/404.html{% endif %}"
+permalink: "{{ locale.code }}/404.html"
+sitemap: false
+robots: "noindex, follow"
+alternateLanguages: false
+canonical: false
 eleventyComputed:
   language: "{{ locale.language }}"
   currentLocale: "{{ locale.code }}"

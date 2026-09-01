@@ -1,0 +1,14 @@
+---
+permalink: sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for locale in locales %}
+  {% for route in site.routes %}
+  <url>
+    <loc>{{ route | localeUrl(locale.code) | absoluteUrl(site.url) }}</loc>
+  </url>
+  {% endfor %}
+{% endfor %}
+</urlset>

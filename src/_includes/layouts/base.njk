@@ -1,4 +1,7 @@
-{% set title = (pageTitle |default('Home' | t(currentLocale))) + " | Abbaye du Val-Dieu" %}
+{% set title = (pageTitle | default('Home' | t(currentLocale))) + " | Abbaye du Val-Dieu" %}
+{% set description = metaDescription | default(site.descriptions[currentLocale]) %}
+{% set canonicalPath = currentPath | localeUrl(currentLocale) %}
+{% set canonicalUrl = canonicalPath | absoluteUrl(site.url) %}
 
 <!DOCTYPE html>
 <html lang="{{ language or 'en' }}">
@@ -6,7 +9,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }}</title>
-  <title>Abbaye du Val-Dieu</title>
+  <meta name="description" content="{{ description }}">
+  {% if robots %}<meta name="robots" content="{{ robots }}">{% endif %}
+  {% if canonical != false %}<link rel="canonical" href="{{ canonicalUrl }}">{% endif %}
+  {% if alternateLanguages != false %}
+    {% for item in locales %}
+  <link rel="alternate" hreflang="{{ item.language }}" href="{{ currentPath | localeUrl(item.code) | absoluteUrl(site.url) }}">
+    {% endfor %}
+  <link rel="alternate" hreflang="x-default" href="{{ currentPath | localeUrl('fr') | absoluteUrl(site.url) }}">
+  {% endif %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Abbaye du Val-Dieu">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  {% if canonical != false %}<meta property="og:url" content="{{ canonicalUrl }}">{% endif %}
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="icon" href="/assets/medias/icons/abbaye-val-dieu.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />  

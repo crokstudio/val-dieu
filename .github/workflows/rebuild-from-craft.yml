@@ -38,8 +38,22 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install form mailer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Validate PHP entry points
+        run: |
+          php -l src/api/guided-visits.php
+          php -l cms/config/app.php
 
       - name: Restore DeepL translation cache
         uses: actions/cache@v4
@@ -64,6 +78,7 @@ jobs:
         with:
           name: dist
           path: dist
+          include-hidden-files: true
 
   deploy-ovh:
     needs: build
@@ -79,6 +94,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Determine deployment mode
+        id: deployment
+        run: |
+          if test -f ops/deployment-enabled; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            echo 'Deployment is enabled for this revision.'
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'Preflight-only revision: remote backup will run, deployment will be skipped.'
+          fi
 
       - name: Download static build
         uses: actions/download-artifact@v4
@@ -160,34 +186,186 @@ jobs:
             "set -eu
              umask 077
              mkdir -p '$REMOTE_BACKUP/static'
-             find '$REMOTE_TARGET' -mindepth 1 \( -path '$REMOTE_TARGET/cms' -o -path '$REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$REMOTE_BACKUP/static-manifest-before.txt'"
+             find '$REMOTE_TARGET' -mindepth 1 \( -path '$REMOTE_TARGET/cms' -o -path '$REMOTE_TARGET/uploads' -o -path '$REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$REMOTE_BACKUP/static-manifest-before.txt'"
 
           printf 'remote_target=%s\n' "$REMOTE_TARGET" >> "$GITHUB_OUTPUT"
           printf 'remote_craft=%s\n' "$REMOTE_CRAFT" >> "$GITHUB_OUTPUT"
           printf 'remote_backup=%s\n' "$REMOTE_BACKUP" >> "$GITHUB_OUTPUT"
 
-      - name: Back up Craft integration and create stage
+      - name: Back up Craft data and create stage
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
           OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
           OVH_REMOTE_CRAFT: ${{ steps.ovh.outputs.remote_craft }}
+          OVH_REMOTE_TARGET: ${{ steps.ovh.outputs.remote_target }}
         run: |
           set -Eeuo pipefail
           SSH_TARGET="${OVH_USER}@${OVH_HOST}"
-          ssh "$SSH_TARGET" \
-            "set -eu
-             umask 077
-             mkdir -p '$OVH_REMOTE_BACKUP/craft' '$OVH_REMOTE_BACKUP/craft-stage/config' '$OVH_REMOTE_BACKUP/craft-stage/modules/githubdispatch/jobs'
-             cp -p '$OVH_REMOTE_CRAFT/config/app.php' '$OVH_REMOTE_BACKUP/craft/app.php'
-             if [ -L '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' ]; then
-               readlink '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' > '$OVH_REMOTE_BACKUP/craft/githubdispatch.previous-link'
-             elif [ -e '$OVH_REMOTE_CRAFT/modules/githubdispatch-current' ]; then
-               echo 'Unexpected non-symlink Craft module path' >&2
-               exit 1
-             fi"
+          ssh "$SSH_TARGET" "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_TARGET' '$OVH_REMOTE_BACKUP'" <<'REMOTE'
+          set -Eeuo pipefail
+          CRAFT_DIR="$(cd "$1" && pwd -P)"
+          TARGET_DIR="$(cd "$2" && pwd -P)"
+          BACKUP_DIR="$3"
+          HOME_DIR="$(cd "$HOME" && pwd -P)"
+
+          [[ "$CRAFT_DIR" == "$HOME_DIR/craft" ]]
+          [[ "$TARGET_DIR" == "$HOME_DIR/"* && "$TARGET_DIR" != "$HOME_DIR" ]]
+          [[ "$BACKUP_DIR" == "$HOME_DIR/.val-dieu-deploy-backups/"* ]]
+          [[ "${BACKUP_DIR##*/}" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+
+          umask 077
+          mkdir -p \
+            "$BACKUP_DIR/craft" \
+            "$BACKUP_DIR/craft-stage/config" \
+            "$BACKUP_DIR/craft-stage/modules/githubdispatch/jobs"
+          chmod 700 "$BACKUP_DIR" "$BACKUP_DIR/craft" "$BACKUP_DIR/craft-stage"
+
+          describe_cms_entry() {
+            entry="$TARGET_DIR/cms"
+            if [ -L "$entry" ]; then
+              kind='symlink'
+              link_target="$(readlink "$entry")"
+            elif [ -d "$entry" ]; then
+              kind='directory'
+              link_target=''
+            else
+              echo 'The CMS entry point is missing.' >&2
+              return 1
+            fi
+            real_target="$(cd "$entry" && pwd -P)"
+            printf 'kind=%s\nlink=%s\nreal=%s\n' "$kind" "$link_target" "$real_target"
+          }
+
+          describe_cms_entry > "$BACKUP_DIR/craft/cms-entry-before.txt"
+          cp -p "$CRAFT_DIR/.env" "$BACKUP_DIR/craft/craft.env"
+          cp -p "$CRAFT_DIR/config/app.php" "$BACKUP_DIR/craft/app.php"
+
+          set -- .env config composer.json composer.lock modules
+          for optional_path in storage/config-deltas web/index.php web/.htaccess; do
+            if [ -e "$CRAFT_DIR/$optional_path" ]; then
+              set -- "$@" "$optional_path"
+            fi
+          done
+          tar -C "$CRAFT_DIR" -czf "$BACKUP_DIR/craft/craft-files.tar.gz" "$@"
+          tar -tzf "$BACKUP_DIR/craft/craft-files.tar.gz" >/dev/null
+          sha256sum "$BACKUP_DIR/craft/craft-files.tar.gz" > "$BACKUP_DIR/craft/craft-files.sha256"
+
+          # Resolve uploads through the public CMS entry point: Craft's web root
+          # is configurable and the uploads directory may itself be a symlink.
+          test -d "$TARGET_DIR/cms/uploads"
+          uploads_real="$(cd "$TARGET_DIR/cms/uploads" && pwd -P)"
+          [[ "$uploads_real" == "$HOME_DIR/"* ]]
+          printf '%s\n' "$uploads_real" > "$BACKUP_DIR/craft/uploads-real-path.txt"
+          tar -C "$uploads_real" -czf "$BACKUP_DIR/craft/uploads.tar.gz" .
+          tar -tzf "$BACKUP_DIR/craft/uploads.tar.gz" >/dev/null
+          sha256sum "$BACKUP_DIR/craft/uploads.tar.gz" > "$BACKUP_DIR/craft/uploads.sha256"
+          uploads_file_count="$(find "$uploads_real" -type f -printf '.' | wc -c | tr -d '[:space:]')"
+          [[ "$uploads_file_count" =~ ^[0-9]+$ ]]
+          (( uploads_file_count > 0 ))
+          printf '%s\n' "$uploads_file_count" > "$BACKUP_DIR/craft/uploads-file-count.txt"
+
+          if [ -d "$TARGET_DIR/uploads" ]; then
+            root_uploads_real="$(cd "$TARGET_DIR/uploads" && pwd -P)"
+            [[ "$root_uploads_real" == "$HOME_DIR/"* ]]
+            if [ "$root_uploads_real" != "$uploads_real" ]; then
+              tar -C "$root_uploads_real" -czf "$BACKUP_DIR/craft/root-uploads.tar.gz" .
+              tar -tzf "$BACKUP_DIR/craft/root-uploads.tar.gz" >/dev/null
+              sha256sum "$BACKUP_DIR/craft/root-uploads.tar.gz" > "$BACKUP_DIR/craft/root-uploads.sha256"
+            fi
+          fi
+
+          cd "$CRAFT_DIR"
+          php craft db/backup "$BACKUP_DIR/craft/database.sql" \
+            --zip=0 --overwrite=1 --interactive=0 --color=0
+          test -s "$BACKUP_DIR/craft/database.sql"
+          gzip -9 "$BACKUP_DIR/craft/database.sql"
+          gzip -t "$BACKUP_DIR/craft/database.sql.gz"
+          zgrep -m1 -E '^(--|SET |CREATE |INSERT |DROP )' "$BACKUP_DIR/craft/database.sql.gz" >/dev/null
+          sha256sum "$BACKUP_DIR/craft/database.sql.gz" > "$BACKUP_DIR/craft/database.sha256"
+
+          if [ -L "$CRAFT_DIR/modules/githubdispatch-current" ]; then
+            readlink "$CRAFT_DIR/modules/githubdispatch-current" > "$BACKUP_DIR/craft/githubdispatch.previous-link"
+          elif [ -e "$CRAFT_DIR/modules/githubdispatch-current" ]; then
+            echo 'Unexpected non-symlink Craft module path' >&2
+            exit 1
+          fi
+
+          test -s "$BACKUP_DIR/craft/database.sql.gz"
+          test -s "$BACKUP_DIR/craft/uploads.tar.gz"
+          test -s "$BACKUP_DIR/craft/craft-files.tar.gz"
+          echo 'Craft database, uploads, environment and configuration backup verified.'
+          REMOTE
+
+      - name: Create encrypted offsite preflight backup
+        if: ${{ steps.deployment.outputs.enabled != 'true' }}
+        id: offsite
+        env:
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          BACKUP_ID="${OVH_REMOTE_BACKUP##*/}"
+          [[ "$BACKUP_ID" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+          OFFSITE_DIR="$RUNNER_TEMP/val-dieu-offsite-$BACKUP_ID"
+          PLAINTEXT_ARCHIVE="$RUNNER_TEMP/val-dieu-$BACKUP_ID.tar.gz"
+          ENCRYPTED_ARCHIVE="$RUNNER_TEMP/val-dieu-$BACKUP_ID.tar.gz.cms"
+          trap 'rm -rf -- "$OFFSITE_DIR" "$PLAINTEXT_ARCHIVE"' EXIT
+
+          install -d -m 700 "$OFFSITE_DIR/craft"
+          rsync -az -- \
+            "$OVH_USER@$OVH_HOST:$OVH_REMOTE_BACKUP/craft/" \
+            "$OFFSITE_DIR/craft/"
+
+          test -s "$OFFSITE_DIR/craft/database.sql.gz"
+          test -s "$OFFSITE_DIR/craft/uploads.tar.gz"
+          test -s "$OFFSITE_DIR/craft/craft-files.tar.gz"
+          gzip -t "$OFFSITE_DIR/craft/database.sql.gz"
+          tar -tzf "$OFFSITE_DIR/craft/uploads.tar.gz" >/dev/null
+          tar -tzf "$OFFSITE_DIR/craft/craft-files.tar.gz" >/dev/null
+          for item in database.sql.gz uploads.tar.gz craft-files.tar.gz; do
+            case "$item" in
+              database.sql.gz) checksum_file='database.sha256' ;;
+              uploads.tar.gz) checksum_file='uploads.sha256' ;;
+              craft-files.tar.gz) checksum_file='craft-files.sha256' ;;
+            esac
+            expected="$(awk 'NR == 1 { print $1 }' "$OFFSITE_DIR/craft/$checksum_file")"
+            actual="$(sha256sum "$OFFSITE_DIR/craft/$item" | awk '{ print $1 }')"
+            [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]]
+          done
+          if [ -e "$OFFSITE_DIR/craft/root-uploads.tar.gz" ] || [ -e "$OFFSITE_DIR/craft/root-uploads.sha256" ]; then
+            test -s "$OFFSITE_DIR/craft/root-uploads.tar.gz"
+            test -s "$OFFSITE_DIR/craft/root-uploads.sha256"
+            tar -tzf "$OFFSITE_DIR/craft/root-uploads.tar.gz" >/dev/null
+            expected="$(awk 'NR == 1 { print $1 }' "$OFFSITE_DIR/craft/root-uploads.sha256")"
+            actual="$(sha256sum "$OFFSITE_DIR/craft/root-uploads.tar.gz" | awk '{ print $1 }')"
+            [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]]
+          fi
+
+          tar -C "$OFFSITE_DIR" -czf "$PLAINTEXT_ARCHIVE" craft
+          openssl cms -encrypt -binary -aes256 -outform DER \
+            -in "$PLAINTEXT_ARCHIVE" \
+            -out "$ENCRYPTED_ARCHIVE" \
+            ops/offsite-backup-cert.pem
+          test -s "$ENCRYPTED_ARCHIVE"
+          sha256sum "$ENCRYPTED_ARCHIVE"
+          printf 'artifact_name=encrypted-recovery-%s\n' "$BACKUP_ID" >> "$GITHUB_OUTPUT"
+          printf 'encrypted_path=%s\n' "$ENCRYPTED_ARCHIVE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload encrypted offsite preflight backup
+        if: ${{ steps.deployment.outputs.enabled != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.offsite.outputs.artifact_name }}
+          path: ${{ steps.offsite.outputs.encrypted_path }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
 
       - name: Deploy versioned Craft rebuild integration
+        if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
@@ -272,6 +450,7 @@ jobs:
           REMOTE
 
       - name: Verify Craft web and roll back on failure
+        if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
           CRAFT_API_URL: ${{ secrets.CRAFT_API_URL }}
           OVH_HOST: ${{ secrets.OVH_HOST }}
@@ -346,6 +525,7 @@ jobs:
           exit 1
 
       - name: Deploy to OVH
+        if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
@@ -358,15 +538,54 @@ jobs:
             --delay-updates \
             --backup \
             --backup-dir="$OVH_REMOTE_BACKUP/static" \
-            --exclude='/cms/' \
+            --exclude='/cms' \
+            --exclude='/uploads' \
+            --include='/.htaccess' \
             --exclude='/.*' \
             --itemize-changes \
             dist/ "$OVH_USER@$OVH_HOST:$OVH_REMOTE_TARGET/"
 
-          ssh "$OVH_USER@$OVH_HOST" \
-            "find '$OVH_REMOTE_TARGET' -mindepth 1 \( -path '$OVH_REMOTE_TARGET/cms' -o -path '$OVH_REMOTE_TARGET/.*' \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > '$OVH_REMOTE_BACKUP/static-manifest-after.txt'"
+          ssh "$OVH_USER@$OVH_HOST" "bash -s -- '$OVH_REMOTE_TARGET' '$OVH_REMOTE_BACKUP'" <<'REMOTE'
+          set -Eeuo pipefail
+          TARGET_DIR="$(cd "$1" && pwd -P)"
+          BACKUP_DIR="$(cd "$2" && pwd -P)"
+          HOME_DIR="$(cd "$HOME" && pwd -P)"
+          [[ "$TARGET_DIR" == "$HOME_DIR/"* && "$TARGET_DIR" != "$HOME_DIR" ]]
+          [[ "$BACKUP_DIR" == "$HOME_DIR/.val-dieu-deploy-backups/"* ]]
+
+          describe_cms_entry() {
+            entry="$TARGET_DIR/cms"
+            if [ -L "$entry" ]; then
+              kind='symlink'
+              link_target="$(readlink "$entry")"
+            elif [ -d "$entry" ]; then
+              kind='directory'
+              link_target=''
+            else
+              echo 'The CMS entry point disappeared during deployment.' >&2
+              return 1
+            fi
+            real_target="$(cd "$entry" && pwd -P)"
+            printf 'kind=%s\nlink=%s\nreal=%s\n' "$kind" "$link_target" "$real_target"
+          }
+
+          describe_cms_entry > "$BACKUP_DIR/craft/cms-entry-after.txt"
+          cmp -s "$BACKUP_DIR/craft/cms-entry-before.txt" "$BACKUP_DIR/craft/cms-entry-after.txt"
+          test -d "$TARGET_DIR/cms/uploads"
+          uploads_real_after="$(cd "$TARGET_DIR/cms/uploads" && pwd -P)"
+          printf '%s\n' "$uploads_real_after" > "$BACKUP_DIR/craft/uploads-real-path-after.txt"
+          cmp -s "$BACKUP_DIR/craft/uploads-real-path.txt" "$BACKUP_DIR/craft/uploads-real-path-after.txt"
+          uploads_file_count_after="$(find "$uploads_real_after" -type f -printf '.' | wc -c | tr -d '[:space:]')"
+          [[ "$uploads_file_count_after" =~ ^[0-9]+$ ]]
+          (( uploads_file_count_after > 0 ))
+          test -s "$BACKUP_DIR/craft/database.sql.gz"
+          gzip -t "$BACKUP_DIR/craft/database.sql.gz"
+          find "$TARGET_DIR" -mindepth 1 \( -path "$TARGET_DIR/cms" -o -path "$TARGET_DIR/uploads" -o -path "$TARGET_DIR/.*" \) -prune -o -type f -printf '%P\n' | LC_ALL=C sort > "$BACKUP_DIR/static-manifest-after.txt"
+          echo 'CMS entry point and verified Craft backup are intact after rsync.'
+          REMOTE
 
       - name: Verify deployed revision over SSH
+        if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
@@ -378,7 +597,7 @@ jobs:
           [[ "$ACTUAL" == "$EXPECTED" ]] || { echo "Deployed OVH revision mismatch" >&2; exit 1; }
 
       - name: Verify public OVH revision
-        if: ${{ vars.OVH_SITE_URL != '' }}
+        if: ${{ steps.deployment.outputs.enabled == 'true' && vars.OVH_SITE_URL != '' }}
         env:
           OVH_SITE_URL: ${{ vars.OVH_SITE_URL }}
         run: |
@@ -389,10 +608,15 @@ jobs:
           [[ "$ACTUAL" == "$EXPECTED" ]] || { echo "Deployed revision mismatch" >&2; exit 1; }
 
       - name: Report unavailable public health check
-        if: ${{ vars.OVH_SITE_URL == '' }}
+        if: ${{ steps.deployment.outputs.enabled == 'true' && vars.OVH_SITE_URL == '' }}
         run: echo "::warning::OVH_SITE_URL is not configured; public OVH revision verification was skipped."
 
+      - name: Report preflight-only completion
+        if: ${{ steps.deployment.outputs.enabled != 'true' }}
+        run: echo 'Preflight backup completed and verified; no production files were deployed.'
+
       - name: Retain the ten latest recovery backups
+        if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
