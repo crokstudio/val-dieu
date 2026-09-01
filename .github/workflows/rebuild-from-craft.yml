@@ -241,6 +241,129 @@ jobs:
           cp -p "$CRAFT_DIR/.env" "$BACKUP_DIR/craft/craft.env"
           cp -p "$CRAFT_DIR/config/app.php" "$BACKUP_DIR/craft/app.php"
 
+          if [ -L "$TARGET_DIR/.htaccess" ]; then
+            echo 'Static .htaccess must not be a symlink.' >&2
+            exit 1
+          elif [ -f "$TARGET_DIR/.htaccess" ]; then
+            install -m 0600 -- "$TARGET_DIR/.htaccess" "$BACKUP_DIR/craft/static-root.htaccess"
+            if grep -Eq 'VALDIEU_(MAIL_CONFIG|SMTP_[A-Z_]+|FORM_TO_EMAIL)' "$TARGET_DIR/.htaccess"; then
+              echo 'Mail preflight failed: the existing static .htaccess injects private mail settings.' >&2
+              exit 1
+            fi
+          fi
+
+          # The public reservation form falls back to the existing PHP mail()
+          # behavior when this private file is absent. If it exists, validate
+          # it without printing values and include it in the encrypted backup.
+          mail_config="$HOME_DIR/.val-dieu-mail.php"
+          if [ -L "$mail_config" ]; then
+            echo 'Mail preflight failed: private configuration must not be a symlink.' >&2
+            exit 1
+          elif [ -e "$mail_config" ]; then
+            test -f "$mail_config"
+            test -r "$mail_config"
+            mail_mode="$(
+              php -d display_errors=0 -d log_errors=0 -r '
+                  $fail = static function(): never {
+                      fwrite(STDERR, "Private mail configuration validation failed.\n");
+                      exit(1);
+                  };
+                  $bufferLevel = ob_get_level();
+                  set_error_handler(static function(
+                      int $severity,
+                      string $message,
+                      string $file,
+                      int $line,
+                  ): never {
+                      throw new ErrorException("Configuration load failed.", 0, $severity, $file, $line);
+                  });
+                  ob_start();
+                  try {
+                      $path = $argv[1] ?? "";
+                      if (!is_file($path) || is_link($path) || !is_readable($path)) {
+                          $fail();
+                        }
+                      $permissions = fileperms($path);
+                      if (!is_int($permissions) || (($permissions & 0077) !== 0)) {
+                          $fail();
+                      }
+                      $values = require $path;
+                      $unexpectedOutput = ob_get_clean();
+                      restore_error_handler();
+                      if ($unexpectedOutput !== "" || !is_array($values)) {
+                          $fail();
+                      }
+                      $value = static function(string $key, string $default = "") use ($values, $fail): string {
+                          if (!array_key_exists($key, $values) || $values[$key] === null) {
+                              return $default;
+                          }
+                          if (!is_scalar($values[$key])) {
+                              $fail();
+                          }
+                          $candidate = trim((string)$values[$key]);
+                          if (str_contains($candidate, "\0") || str_contains($candidate, "\r") || str_contains($candidate, "\n")) {
+                              $fail();
+                          }
+                          return $candidate;
+                      };
+                      $smtp = [
+                          $value("VALDIEU_SMTP_HOST"),
+                          $value("VALDIEU_SMTP_USERNAME"),
+                          $value("VALDIEU_SMTP_PASSWORD"),
+                      ];
+                      $smtpCount = count(array_filter($smtp, static fn(string $item): bool => $item !== ""));
+                      if ($smtpCount !== 0 && $smtpCount !== 3) {
+                          $fail();
+                      }
+                      if ($smtpCount === 3) {
+                          $placeholders = ["smtp.example.com", "smtp-user@example.com", "replace-with-a-secret"];
+                          foreach ($smtp as $item) {
+                              if (in_array(strtolower($item), $placeholders, true)) {
+                                  $fail();
+                              }
+                          }
+                          $port = $value("VALDIEU_SMTP_PORT", "587");
+                          if (preg_match("~\A[0-9]{1,5}\z~D", $port) !== 1 || (int)$port < 1 || (int)$port > 65535) {
+                              $fail();
+                          }
+                          $encryption = strtolower($value("VALDIEU_SMTP_ENCRYPTION", "tls"));
+                          if (!in_array($encryption, ["tls", "smtps", "none"], true)) {
+                              $fail();
+                          }
+                      }
+                      $from = $value("VALDIEU_SMTP_FROM_EMAIL", "infotourist@val-dieu.net");
+                      $value("VALDIEU_SMTP_FROM_NAME", "Val-Dieu");
+                      $to = $value("VALDIEU_FORM_TO_EMAIL", "elann.fraiture@gmail.com");
+                      if (!filter_var($from, FILTER_VALIDATE_EMAIL) || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                          $fail();
+                      }
+                      fwrite(STDOUT, $smtpCount === 3 ? "smtp\n" : "mail\n");
+                  } catch (Throwable) {
+                      while (ob_get_level() > $bufferLevel) {
+                          ob_end_clean();
+                      }
+                      restore_error_handler();
+                      $fail();
+                    }
+              ' -- "$mail_config"
+            )"
+            case "$mail_mode" in
+              mail|smtp) ;;
+              *) echo 'Unexpected private mail mode.' >&2; exit 1 ;;
+            esac
+            install -m 0600 -- "$mail_config" "$BACKUP_DIR/craft/mail-secrets.php"
+            cmp -s -- "$mail_config" "$BACKUP_DIR/craft/mail-secrets.php"
+            (
+              cd "$BACKUP_DIR/craft"
+              sha256sum mail-secrets.php > mail-secrets.sha256
+            )
+            printf 'private-%s\n' "$mail_mode" > "$BACKUP_DIR/craft/mail-mode.txt"
+            echo "Mail preflight: private configuration validated; $mail_mode mode selected."
+          else
+            printf 'fallback-mail\n' > "$BACKUP_DIR/craft/mail-mode.txt"
+            echo 'Mail preflight: no private configuration; legacy mail() fallback confirmed.'
+          fi
+
           set -- .env config composer.json composer.lock modules
           for optional_path in storage/config-deltas web/index.php web/.htaccess; do
             if [ -e "$CRAFT_DIR/$optional_path" ]; then
@@ -275,9 +398,127 @@ jobs:
             fi
           fi
 
+          # Craft builds the canonical mysqldump command and a temporary 0600
+          # defaults file, but OVH terminates Craft's nested process wrapper.
+          # Execute that generated command directly in this SSH shell instead.
+          dump_target="$BACKUP_DIR/craft/database.sql"
+          dump_command_file="$BACKUP_DIR/craft/database-backup-command.sh"
+          dump_cnf_pointer="$BACKUP_DIR/craft/database-backup-cnf-path.txt"
+          dump_temp_dir="$BACKUP_DIR/craft-stage/database-tmp"
+          install -d -m 700 "$dump_temp_dir"
+          dump_temp_dir="$(cd "$dump_temp_dir" && pwd -P)"
+          export VALDIEU_DB_BACKUP_TARGET="$dump_target"
+          export VALDIEU_DB_BACKUP_COMMAND_FILE="$dump_command_file"
+          export VALDIEU_DB_BACKUP_CNF_POINTER="$dump_cnf_pointer"
+          export VALDIEU_DB_BACKUP_TEMP_DIR="$dump_temp_dir"
+          export TMPDIR="$dump_temp_dir"
+          dump_cnf=''
+          dump_cleanup() {
+            trap - EXIT
+            if [ -z "$dump_cnf" ] && [ -s "$dump_cnf_pointer" ]; then
+              candidate_cnf=''
+              IFS= read -r candidate_cnf < "$dump_cnf_pointer" || true
+              if [ "${candidate_cnf%/*}" = "$dump_temp_dir" ] && [[ "${candidate_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]; then
+                dump_cnf="$candidate_cnf"
+              fi
+            fi
+            if [ "${dump_cnf%/*}" = "$dump_temp_dir" ] && [[ "${dump_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]; then
+              rm -f -- "$dump_cnf"
+            fi
+            rm -f -- "$dump_command_file" "$dump_cnf_pointer"
+            if [ -d "$dump_temp_dir" ]; then
+              find "$dump_temp_dir" -mindepth 1 -delete
+              rmdir -- "$dump_temp_dir"
+            fi
+          }
+          trap dump_cleanup EXIT
+
           cd "$CRAFT_DIR"
-          php craft db/backup "$BACKUP_DIR/craft/database.sql" \
-            --zip=0 --overwrite=1 --interactive=0 --color=0
+          php craft exec/exec '(function (): bool {
+              $target = getenv("VALDIEU_DB_BACKUP_TARGET");
+              $commandFile = getenv("VALDIEU_DB_BACKUP_COMMAND_FILE");
+              $cnfPointer = getenv("VALDIEU_DB_BACKUP_CNF_POINTER");
+              $tempDir = getenv("VALDIEU_DB_BACKUP_TEMP_DIR");
+              foreach ([$target, $commandFile, $cnfPointer, $tempDir] as $path) {
+                  if (!is_string($path) || !preg_match("~^/[A-Za-z0-9._/-]+$~", $path)) {
+                      throw new RuntimeException("Invalid backup path.");
+                  }
+              }
+              $realTempDir = realpath($tempDir);
+              $systemTempDir = realpath(sys_get_temp_dir());
+              if (!is_string($realTempDir) || $systemTempDir !== $realTempDir) {
+                  throw new RuntimeException("Craft did not adopt the private database temp directory.");
+              }
+
+              $db = Craft::$app->getDb();
+              $parsedDsn = \craft\helpers\Db::parseDsn($db->dsn);
+              $database = $parsedDsn["dbname"] ?? null;
+              if (!is_string($database) || !preg_match("~^[A-Za-z0-9_]+$~", $database)) {
+                  throw new RuntimeException("Invalid database name.");
+              }
+
+              $schema = $db->getSchema();
+              if (!method_exists($schema, "getDefaultBackupCommand") || !property_exists($schema, "tempMyCnfPath")) {
+                  throw new RuntimeException("Unsupported database backup schema.");
+              }
+              $staged = false;
+              try {
+                  $command = $schema->getDefaultBackupCommand();
+                  $cnfPath = $schema->tempMyCnfPath;
+                  if (
+                      !is_string($cnfPath) ||
+                      dirname($cnfPath) !== $realTempDir ||
+                      !preg_match("~^[A-Za-z0-9]{12}\\.cnf$~", basename($cnfPath))
+                  ) {
+                      throw new RuntimeException("Invalid temporary database config path.");
+                  }
+
+                  $command = strtr($command, ["{file}" => $target, "{database}" => $database]);
+                  $password = is_string($db->password) ? $db->password : "";
+                  if (
+                      !str_contains($command, "mysqldump") ||
+                      !str_contains($command, "--defaults-file") ||
+                      str_contains($command, "{") ||
+                      str_contains($command, "\n") ||
+                      ($password !== "" && str_contains($command, $password))
+                  ) {
+                      throw new RuntimeException("Unsafe generated database backup command.");
+                  }
+                  $script = "#!/usr/bin/env bash\nset -Eeuo pipefail\n{$command}\n";
+                  if (file_put_contents($commandFile, $script) === false || chmod($commandFile, 0600) === false) {
+                      throw new RuntimeException("Unable to stage database backup command.");
+                  }
+                  if (file_put_contents($cnfPointer, $cnfPath . "\n") === false || chmod($cnfPointer, 0600) === false) {
+                      throw new RuntimeException("Unable to stage database config pointer.");
+                  }
+                  $staged = true;
+                  return true;
+              } finally {
+                  if (!$staged) {
+                      $candidate = $schema->tempMyCnfPath;
+                      if (
+                          is_string($candidate) &&
+                          dirname($candidate) === $realTempDir &&
+                          preg_match("~^[A-Za-z0-9]{12}\\.cnf$~", basename($candidate))
+                      ) {
+                          @unlink($candidate);
+                      }
+                      @unlink($commandFile);
+                      @unlink($cnfPointer);
+                  }
+              }
+          })()' --interactive=0 --color=0 >/dev/null
+
+          IFS= read -r dump_cnf < "$dump_cnf_pointer"
+          [ "${dump_cnf%/*}" = "$dump_temp_dir" ]
+          [[ "${dump_cnf##*/}" =~ ^[A-Za-z0-9]{12}\.cnf$ ]]
+          test -s "$dump_cnf"
+          test -s "$dump_command_file"
+          bash "$dump_command_file"
+          dump_cleanup
+          unset VALDIEU_DB_BACKUP_TARGET VALDIEU_DB_BACKUP_COMMAND_FILE VALDIEU_DB_BACKUP_CNF_POINTER
+          unset VALDIEU_DB_BACKUP_TEMP_DIR TMPDIR
+
           test -s "$BACKUP_DIR/craft/database.sql"
           gzip -9 "$BACKUP_DIR/craft/database.sql"
           gzip -t "$BACKUP_DIR/craft/database.sql.gz"
@@ -322,6 +563,7 @@ jobs:
           test -s "$OFFSITE_DIR/craft/database.sql.gz"
           test -s "$OFFSITE_DIR/craft/uploads.tar.gz"
           test -s "$OFFSITE_DIR/craft/craft-files.tar.gz"
+          test -s "$OFFSITE_DIR/craft/mail-mode.txt"
           gzip -t "$OFFSITE_DIR/craft/database.sql.gz"
           tar -tzf "$OFFSITE_DIR/craft/uploads.tar.gz" >/dev/null
           tar -tzf "$OFFSITE_DIR/craft/craft-files.tar.gz" >/dev/null
@@ -335,6 +577,27 @@ jobs:
             actual="$(sha256sum "$OFFSITE_DIR/craft/$item" | awk '{ print $1 }')"
             [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]]
           done
+
+          IFS= read -r mail_mode < "$OFFSITE_DIR/craft/mail-mode.txt"
+          case "$mail_mode" in
+            fallback-mail)
+              test ! -e "$OFFSITE_DIR/craft/mail-secrets.php"
+              test ! -e "$OFFSITE_DIR/craft/mail-secrets.sha256"
+              ;;
+            private-mail|private-smtp)
+              test -f "$OFFSITE_DIR/craft/mail-secrets.php"
+              test ! -L "$OFFSITE_DIR/craft/mail-secrets.php"
+              test -s "$OFFSITE_DIR/craft/mail-secrets.sha256"
+              expected="$(awk 'NR == 1 { print $1 }' "$OFFSITE_DIR/craft/mail-secrets.sha256")"
+              actual="$(sha256sum "$OFFSITE_DIR/craft/mail-secrets.php" | awk '{ print $1 }')"
+              [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]]
+              ;;
+            *)
+              echo 'Unexpected backed-up mail mode.' >&2
+              exit 1
+              ;;
+          esac
+
           if [ -e "$OFFSITE_DIR/craft/root-uploads.tar.gz" ] || [ -e "$OFFSITE_DIR/craft/root-uploads.sha256" ]; then
             test -s "$OFFSITE_DIR/craft/root-uploads.tar.gz"
             test -s "$OFFSITE_DIR/craft/root-uploads.sha256"

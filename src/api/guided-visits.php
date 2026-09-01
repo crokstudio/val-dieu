@@ -149,7 +149,7 @@ function send_email(string $to, string $subject, string $body, ?string $replyTo 
             $headers = [
                 'MIME-Version: 1.0',
                 'Content-Type: text/plain; charset=UTF-8',
-                'From: ' . $configuration['from_name'] . ' <' . $configuration['from_email'] . '>',
+                'From: ' . clean_header($configuration['from_name']) . ' <' . $configuration['from_email'] . '>',
                 'Reply-To: ' . clean_header($replyTo ?? $configuration['from_email']),
                 'X-Mailer: PHP/' . phpversion(),
             ];
