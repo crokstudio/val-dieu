@@ -510,7 +510,6 @@ jobs:
             --create-options
             --dump-date
             --no-autocommit
-            --routines
             "--default-character-set=$dump_charset"
             --set-charset
             --triggers
@@ -525,12 +524,14 @@ jobs:
 
           mysqldump "${dump_args[@]}" \
             --skip-events \
+            --skip-routines \
             --no-data \
             --skip-triggers \
             "--result-file=$dump_partial" \
             "$dump_database"
           mysqldump "${dump_args[@]}" \
             --events \
+            --routines \
             --no-create-info \
             "${ignore_args[@]}" \
             "$dump_database" >> "$dump_partial"
