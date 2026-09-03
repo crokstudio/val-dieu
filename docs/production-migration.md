@@ -98,9 +98,14 @@ installer une configuration SMTP partielle : elle est rejetée explicitement.
    le formulaire et `deploy-version.txt` depuis plusieurs résolveurs.
 6. La redirection conditionnelle HTTP/apex vers
    `https://www.abbaye-du-val-dieu.be` est déjà préparée en 302 et ne s'active
-   que pour les deux noms finaux. Après validation, la promouvoir en 301 puis
-   définir la variable GitHub Actions
-   `OVH_SITE_URL=https://www.abbaye-du-val-dieu.be`.
+   que pour les deux noms finaux. Après validation, définir la variable GitHub
+   Actions
+   `CRAFT_PRIMARY_SITE_URL=https://www.abbaye-du-val-dieu.be/cms`, lancer un
+   déploiement et vérifier que Craft répond avec cette URL. Remplacer ensuite
+   le secret
+   `CRAFT_API_URL=https://www.abbaye-du-val-dieu.be/cms/api/homepage.json`,
+   définir `OVH_SITE_URL=https://www.abbaye-du-val-dieu.be`, relancer le
+   déploiement, puis promouvoir la redirection en 301.
 7. Après stabilisation, remettre le TTL à 3600 secondes.
 
 OVH exige que le domaine pointe vers l'hébergement pour émettre ou importer le

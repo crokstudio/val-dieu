@@ -819,6 +819,101 @@ jobs:
           echo 'Craft web verification failed; the previous integration was restored.' >&2
           exit 1
 
+      - name: Configure Craft production site URL
+        if: ${{ steps.deployment.outputs.enabled == 'true' && vars.CRAFT_PRIMARY_SITE_URL != '' }}
+        env:
+          CRAFT_PRIMARY_SITE_URL: ${{ vars.CRAFT_PRIMARY_SITE_URL }}
+          OVH_HOST: ${{ secrets.OVH_HOST }}
+          OVH_REMOTE_BACKUP: ${{ steps.ovh.outputs.remote_backup }}
+          OVH_REMOTE_CRAFT: ${{ steps.ovh.outputs.remote_craft }}
+          OVH_USER: ${{ secrets.OVH_USER }}
+        run: |
+          set -Eeuo pipefail
+          : "${OVH_HOST:?Missing OVH_HOST}"
+          : "${OVH_USER:?Missing OVH_USER}"
+          : "${OVH_REMOTE_BACKUP:?Missing OVH_REMOTE_BACKUP}"
+          : "${OVH_REMOTE_CRAFT:?Missing OVH_REMOTE_CRAFT}"
+
+          EXPECTED_SITE_URL='https://www.abbaye-du-val-dieu.be/cms'
+          [[ "$CRAFT_PRIMARY_SITE_URL" == "$EXPECTED_SITE_URL" ]] || {
+            echo 'CRAFT_PRIMARY_SITE_URL is not the approved production URL.' >&2
+            exit 1
+          }
+
+          ssh "$OVH_USER@$OVH_HOST" \
+            "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_BACKUP' '$CRAFT_PRIMARY_SITE_URL' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+          set -Eeuo pipefail
+          CRAFT_DIR="$(cd "$1" && pwd -P)"
+          BACKUP_DIR="$(cd "$2" && pwd -P)"
+          SITE_URL="$3"
+          RUN_ID="$4"
+          HOME_DIR="$(cd "$HOME" && pwd -P)"
+          ENV_FILE="$CRAFT_DIR/.env"
+          BACKUP_ENV="$BACKUP_DIR/craft/craft.env"
+          NEXT_ENV="$CRAFT_DIR/.env.next-$RUN_ID"
+          RESTORE_ENV="$CRAFT_DIR/.env.restore-$RUN_ID"
+          UPDATED='false'
+
+          [[ "$CRAFT_DIR" == "$HOME_DIR/craft" ]]
+          [[ "$BACKUP_DIR" == "$HOME_DIR/.val-dieu-deploy-backups/"* ]]
+          [[ "${BACKUP_DIR##*/}" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+          [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+          [[ "$SITE_URL" == 'https://www.abbaye-du-val-dieu.be/cms' ]]
+          test -f "$ENV_FILE"
+          test ! -L "$ENV_FILE"
+          test -O "$ENV_FILE"
+          test -f "$BACKUP_ENV"
+          test ! -L "$BACKUP_ENV"
+          test -O "$BACKUP_ENV"
+          test ! -e "$NEXT_ENV"
+          test ! -e "$RESTORE_ENV"
+          [[ "$(grep -c '^PRIMARY_SITE_URL=' "$ENV_FILE" || true)" == '1' ]]
+          cmp -s -- "$BACKUP_ENV" "$ENV_FILE"
+
+          rollback_env() {
+            status=$?
+            trap - ERR
+            set +e
+            rm -f -- "$NEXT_ENV"
+            if [ "$UPDATED" = 'true' ]; then
+              if cp -p -- "$BACKUP_ENV" "$RESTORE_ENV" &&
+                 mv -f -- "$RESTORE_ENV" "$ENV_FILE" &&
+                 cmp -s -- "$BACKUP_ENV" "$ENV_FILE"
+              then
+                echo 'Craft site URL validation failed; the backed-up environment was restored.' >&2
+              else
+                echo "Craft site URL rollback failed; manual recovery from $BACKUP_ENV is required." >&2
+              fi
+            fi
+            exit "$status"
+          }
+          trap rollback_env ERR
+
+          umask 077
+          awk -v site_url="$SITE_URL" '
+            /^PRIMARY_SITE_URL=/ {
+              print "PRIMARY_SITE_URL=" site_url
+              next
+            }
+            { print }
+          ' "$ENV_FILE" > "$NEXT_ENV"
+          chmod --reference="$ENV_FILE" "$NEXT_ENV"
+          [[ "$(grep -c '^PRIMARY_SITE_URL=' "$NEXT_ENV" || true)" == '1' ]]
+          grep -qxF "PRIMARY_SITE_URL=$SITE_URL" "$NEXT_ENV"
+          mv -- "$NEXT_ENV" "$ENV_FILE"
+          UPDATED='true'
+
+          cd "$CRAFT_DIR"
+          php craft exec/exec '(function (): bool { $siteUrl = \craft\helpers\App::env("PRIMARY_SITE_URL"); if ($siteUrl !== "https://www.abbaye-du-val-dieu.be/cms") { throw new RuntimeException("PRIMARY_SITE_URL verification failed"); } return true; })()' --interactive=0 --color=0
+          curl --proto '=https' --fail --location --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 2 \
+            -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
+            "$SITE_URL/api/homepage.json?deploy_health=$RUN_ID"
+
+          trap - ERR
+          echo 'Craft PRIMARY_SITE_URL now uses the approved production URL.'
+          REMOTE
+
       - name: Deploy to OVH
         if: ${{ steps.deployment.outputs.enabled == 'true' }}
         env:
