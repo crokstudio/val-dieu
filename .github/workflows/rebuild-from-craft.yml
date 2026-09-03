@@ -905,10 +905,20 @@ jobs:
 
           cd "$CRAFT_DIR"
           php craft exec/exec '(function (): bool { $siteUrl = \craft\helpers\App::env("PRIMARY_SITE_URL"); if ($siteUrl !== "https://www.abbaye-du-val-dieu.be/cms") { throw new RuntimeException("PRIMARY_SITE_URL verification failed"); } return true; })()' --interactive=0 --color=0
-          curl --proto '=https' --fail --location --silent --show-error --output /dev/null \
-            --connect-timeout 10 --max-time 30 --retry 5 --retry-delay 5 --retry-all-errors \
-            -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
-            "$SITE_URL/api/homepage.json?deploy_health=$RUN_ID"
+          SITE_URL_OK='false'
+          for attempt in 1 2 3 4 5; do
+            if curl --proto '=https' --fail --location --silent --show-error --output /dev/null \
+              --connect-timeout 10 --max-time 30 \
+              -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
+              "$SITE_URL/api/homepage.json?deploy_health=$RUN_ID"; then
+              SITE_URL_OK='true'
+              break
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              sleep 5
+            fi
+          done
+          [ "$SITE_URL_OK" = 'true' ]
 
           trap - ERR
           echo 'Craft PRIMARY_SITE_URL now uses the approved production URL.'
