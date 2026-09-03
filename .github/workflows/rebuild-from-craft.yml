@@ -905,24 +905,53 @@ jobs:
 
           cd "$CRAFT_DIR"
           php craft exec/exec '(function (): bool { $siteUrl = \craft\helpers\App::env("PRIMARY_SITE_URL"); if ($siteUrl !== "https://www.abbaye-du-val-dieu.be/cms") { throw new RuntimeException("PRIMARY_SITE_URL verification failed"); } return true; })()' --interactive=0 --color=0
-          SITE_URL_OK='false'
-          for attempt in 1 2 3 4 5; do
-            if curl --proto '=https' --fail --location --silent --show-error --output /dev/null \
-              --connect-timeout 10 --max-time 30 \
-              -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
-              "$SITE_URL/api/homepage.json?deploy_health=$RUN_ID"; then
-              SITE_URL_OK='true'
-              break
-            fi
-            if [ "$attempt" -lt 5 ]; then
-              sleep 5
-            fi
-          done
-          [ "$SITE_URL_OK" = 'true' ]
 
           trap - ERR
-          echo 'Craft PRIMARY_SITE_URL now uses the approved production URL.'
           REMOTE
+
+          if ! curl --proto '=https' --fail --location --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 --retry 5 --retry-delay 5 --retry-all-errors \
+            -H 'Accept: application/json' -H 'Cache-Control: no-cache' \
+            "$CRAFT_PRIMARY_SITE_URL/api/homepage.json?deploy_health=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          then
+            if ssh "$OVH_USER@$OVH_HOST" \
+              "bash -s -- '$OVH_REMOTE_CRAFT' '$OVH_REMOTE_BACKUP' '${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'" <<'REMOTE'
+            set -Eeuo pipefail
+            CRAFT_DIR="$(cd "$1" && pwd -P)"
+            BACKUP_DIR="$(cd "$2" && pwd -P)"
+            RUN_ID="$3"
+            HOME_DIR="$(cd "$HOME" && pwd -P)"
+            ENV_FILE="$CRAFT_DIR/.env"
+            BACKUP_ENV="$BACKUP_DIR/craft/craft.env"
+            RESTORE_ENV="$CRAFT_DIR/.env.restore-public-$RUN_ID"
+
+            [[ "$CRAFT_DIR" == "$HOME_DIR/craft" ]]
+            [[ "$BACKUP_DIR" == "$HOME_DIR/.val-dieu-deploy-backups/"* ]]
+            [[ "${BACKUP_DIR##*/}" =~ ^[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$ ]]
+            [[ "$RUN_ID" =~ ^[0-9]+-[0-9]+$ ]]
+            test -f "$ENV_FILE"
+            test ! -L "$ENV_FILE"
+            test -O "$ENV_FILE"
+            test -f "$BACKUP_ENV"
+            test ! -L "$BACKUP_ENV"
+            test -O "$BACKUP_ENV"
+            test ! -e "$RESTORE_ENV"
+
+            cp -p -- "$BACKUP_ENV" "$RESTORE_ENV"
+            mv -f -- "$RESTORE_ENV" "$ENV_FILE"
+            cmp -s -- "$BACKUP_ENV" "$ENV_FILE"
+            cd "$CRAFT_DIR"
+            php craft help --interactive=0 --color=0 >/dev/null
+          REMOTE
+            then
+              echo 'Public Craft URL validation failed; the backed-up environment was restored.' >&2
+            else
+              echo 'Public Craft URL validation and automatic rollback both failed; manual recovery is required.' >&2
+            fi
+            exit 1
+          fi
+
+          echo 'Craft PRIMARY_SITE_URL now uses the approved production URL.'
 
       - name: Deploy to OVH
         if: ${{ steps.deployment.outputs.enabled == 'true' }}
