@@ -344,7 +344,7 @@ jobs:
                       }
                       $from = $value("VALDIEU_SMTP_FROM_EMAIL", "infotourist@val-dieu.net");
                       $value("VALDIEU_SMTP_FROM_NAME", "Val-Dieu");
-                      $to = $value("VALDIEU_FORM_TO_EMAIL", "elann.fraiture@gmail.com");
+                      $to = $value("VALDIEU_FORM_TO_EMAIL", "infotourist@val-dieu.net");
                       if (!filter_var($from, FILTER_VALIDATE_EMAIL) || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
                           $fail();
                       }
@@ -372,7 +372,7 @@ jobs:
             echo "Mail preflight: private configuration validated; $mail_mode mode selected."
           else
             printf 'fallback-mail\n' > "$BACKUP_DIR/craft/mail-mode.txt"
-            echo 'Mail preflight: no private configuration; legacy mail() fallback confirmed.'
+            echo 'Mail preflight: no private configuration; default mail() configuration confirmed.'
           fi
 
           set -- .env config composer.json composer.lock modules

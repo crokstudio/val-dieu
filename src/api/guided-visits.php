@@ -5,7 +5,7 @@ declare(strict_types=1);
 use PHPMailer\PHPMailer\PHPMailer;
 
 const SITE_NAME = 'Val-Dieu';
-const LEGACY_FORM_TO = 'elann.fraiture@gmail.com';
+const DEFAULT_FORM_TO = 'infotourist@val-dieu.net';
 const FORM_FROM = 'infotourist@val-dieu.net';
 
 function post_value(string $key): string
@@ -103,7 +103,7 @@ function mail_configuration(): array
         'password' => $value('VALDIEU_SMTP_PASSWORD'),
         'from_email' => $value('VALDIEU_SMTP_FROM_EMAIL', FORM_FROM),
         'from_name' => $value('VALDIEU_SMTP_FROM_NAME', SITE_NAME),
-        'to_email' => $value('VALDIEU_FORM_TO_EMAIL', LEGACY_FORM_TO),
+        'to_email' => $value('VALDIEU_FORM_TO_EMAIL', DEFAULT_FORM_TO),
     ];
 
     $smtpKeys = ['host', 'username', 'password'];
