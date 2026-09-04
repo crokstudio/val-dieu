@@ -16,9 +16,12 @@ ErrorDocument 404 /fr/404.html
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # HTTPS canonicalisation is intentionally deferred until the OVH
-    # certificate covers both production hostnames. This keeps HTTP usable
-    # during the short DNS-to-certificate activation window.
+    # Canonical production origin: HTTPS with www. The first two conditions
+    # form an OR group, while the final one limits the redirect to our hosts.
+    RewriteCond %{HTTP_HOST} ^abbaye-du-val-dieu\.be$ [NC,OR]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP_HOST} ^(?:www\.)?abbaye-du-val-dieu\.be$ [NC]
+    RewriteRule ^ https://www.abbaye-du-val-dieu.be%{REQUEST_URI} [R=301,L,NE]
 
     # Keep the historical language contract: French is the default and every
     # language has a stable prefix, including English under /en/.
