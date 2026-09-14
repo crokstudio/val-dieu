@@ -215,7 +215,8 @@
     width: 100%;
 }
 
-.guided-visits--form fieldset p input {
+.guided-visits--form fieldset p input,
+.guided-visits--form fieldset p select {
     width: 100%;
     border: 0;
     padding: var(--sp-1) var(--sp-2);
@@ -243,4 +244,20 @@
 .form--visit-type p input {
     width: auto !important;
     cursor: pointer;
+}
+.guided-visits--information {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin-top: var(--sp-5);
+}
+
+.guided-visits--notice {
+    font-weight: 600;
+}
+
+.guided-visits--form select {
+    font: inherit;
+    color: var(--text-color-100);
+    background-color: var(--color-white-100);
 }

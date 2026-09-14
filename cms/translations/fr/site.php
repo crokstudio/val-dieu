@@ -178,6 +178,16 @@ return [
     'Dog' => 'Chien',
 
 
+    'SmallGroup' => 'Groupe de moins de 15 personnes',
+    'LargeGroup' => 'Groupe de 15 personnes et plus',
+    'BookingNotice' => 'Ceci est une demande de réservation et non une réservation ferme. Une réponse vous sera envoyée dans les 7 jours.',
+    'SharedVisitInfo' => 'Ces tarifs et informations s’appliquent aux deux catégories de groupes.',
+    'VisitAccessibility' => 'La visite de l’abbaye n’est pas accessible pour les PMR car de nombreuses marches sont présentes. La visite de la brasserie est quant à elle accessible aux PMR.',
+    'GroupMinimumError' => 'Le groupe doit comprendre au moins 15 personnes, enfants de 0 à 4 ans compris.',
+    'VisitDateHelp' => 'Choisissez une date au moins 21 jours à l’avance.',
+    'ChooseTime' => 'Choisir une heure',
+    'Church' => 'Église',
+
     //Book page
     'BP-introText' => <<<EOT
     Cette visite guidée vous permet de découvrir le cloître et la nouvelle brasserie. Votre parcours débutera à l'accueil, au fond de cour intérieure de l'abbaye. En chemin, vous entrerez dans le jardin du cloître, la salle du chapitre et le réfectoire. Après l'abbaye, la visite se poursuivra dans la brasserie où vous découvrirez la fabrication de la bière dans des bâtiments du 17ème siècle. L'histoire du Val-Dieu et le brassage de la bière n'auront (presque) plus de secrets pour vous !
@@ -190,13 +200,13 @@ return [
     'PreferredDate' => 'Date souhaitée',
     'PreferredTime' => 'Heure souhaitée',
     'GroupName' => 'Nom du groupe',
-    'AdultNumber' => 'Nombre d\'adultes (+/- 5 personnes)',
-    'YoungNumber' => 'Nombre de jeunes (12-17 ans)',
-    'KidsNumber' => 'Nombre d\'enfants (moins de 12 ans)',
+    'AdultNumber' => 'Nombre d’adultes',
+    'YoungNumber' => 'Nombre de jeunes (5-17 ans)',
+    'KidsNumber' => 'Nombre d’enfants de 0 à 4 ans (gratuit)',
 
     'TourType' => 'Type de visite',
     'AbbeyTour' => 'Visite de l\'abbaye - 1 heure',
-    'AbbeyBreweryTour' => 'Visite de l\'abbaye et de la brasserie - 2 heures',
+    'AbbeyBreweryTour' => 'Visite de l’abbaye et de la brasserie - 2 heures 15 minutes',
 
     'PhoneNumber' => 'Numéro de téléphone',
     'AdditionalMessage' => 'Message complémentaire',

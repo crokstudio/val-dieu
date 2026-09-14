@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use PHPMailer\PHPMailer\PHPMailer;
 
+require_once __DIR__ . '/guided-visits-validation.php';
+
 const SITE_NAME = 'Val-Dieu';
 const DEFAULT_FORM_TO = 'infotourist@val-dieu.net';
 const FORM_FROM = 'infotourist@val-dieu.net';
@@ -216,8 +218,8 @@ $fields = [
     'Heure souhaitee' => post_value('visit_time'),
     'Nom du groupe' => post_value('group_name'),
     'Nombre adultes' => post_value('adult_count'),
-    'Nombre jeunes 12-17 ans' => post_value('teen_count'),
-    'Nombre enfants moins de 12 ans' => post_value('child_count'),
+    'Nombre jeunes 5-17 ans' => post_value('teen_count'),
+    'Nombre enfants 0-4 ans (gratuit)' => post_value('child_count'),
     'Type de visite' => post_value('visit_type'),
     'Email' => post_value('email'),
     'Telephone' => post_value('phone'),
@@ -230,8 +232,8 @@ $required = [
     'Heure souhaitee',
     'Nom du groupe',
     'Nombre adultes',
-    'Nombre jeunes 12-17 ans',
-    'Nombre enfants moins de 12 ans',
+    'Nombre jeunes 5-17 ans',
+    'Nombre enfants 0-4 ans (gratuit)',
     'Type de visite',
     'Email',
     'Telephone',
@@ -245,6 +247,17 @@ foreach ($required as $label) {
 
 if (!filter_var($fields['Email'], FILTER_VALIDATE_EMAIL)) {
     render_response('Email invalide', "Merci d'indiquer une adresse email valide.", 400);
+}
+
+$validationError = guided_visit_validation_error([
+    'adult_count' => post_value('adult_count'),
+    'teen_count' => post_value('teen_count'),
+    'child_count' => post_value('child_count'),
+    'visit_date' => post_value('visit_date'),
+    'visit_time' => post_value('visit_time'),
+]);
+if ($validationError !== null) {
+    render_response('Demande non envoyée', guided_visit_error_message($validationError, post_value('locale')), 400);
 }
 
 $subject = '[Val-Dieu] Demande de reservation groupe';
@@ -277,7 +290,7 @@ Bonjour,
 
 Nous avons bien recu votre demande de reservation pour une visite guidee de Val-Dieu.
 
-Notre equipe reviendra vers vous pour confirmer la disponibilite et finaliser la reservation.
+Ceci est une demande de réservation et non une réservation ferme. Une réponse vous sera envoyée dans les 7 jours.
 
 Recapitulatif :
 Date souhaitee : {$fields['Date souhaitee']}
@@ -290,4 +303,4 @@ TEXT;
 
 send_email($fields['Email'], 'Votre demande de reservation - Val-Dieu', $confirmationBody);
 
-render_response('Demande envoyee', 'Merci, votre demande a bien ete envoyee. Vous allez recevoir un email de confirmation automatique.');
+render_response('Demande envoyee', 'Merci, votre demande a bien été envoyée. Ceci est une demande de réservation et non une réservation ferme. Une réponse vous sera envoyée dans les 7 jours.');

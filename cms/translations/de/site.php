@@ -179,6 +179,16 @@ return [
     'Dog' => 'Hund',
 
 
+    'SmallGroup' => 'Gruppe mit weniger als 15 Personen',
+    'LargeGroup' => 'Gruppe ab 15 Personen',
+    'BookingNotice' => 'Dies ist eine Buchungsanfrage und keine verbindliche Reservierung. Sie erhalten innerhalb von 7 Tagen eine Antwort.',
+    'SharedVisitInfo' => 'Diese Preise und Informationen gelten für beide Gruppenkategorien.',
+    'VisitAccessibility' => 'Die Abteiführung ist aufgrund zahlreicher Stufen für Personen mit eingeschränkter Mobilität nicht zugänglich. Die Brauereiführung ist hingegen für Personen mit eingeschränkter Mobilität zugänglich.',
+    'GroupMinimumError' => 'Die Gruppe muss mindestens 15 Personen umfassen, einschließlich Kindern von 0 bis 4 Jahren.',
+    'VisitDateHelp' => 'Wählen Sie ein Datum mindestens 21 Tage im Voraus.',
+    'ChooseTime' => 'Uhrzeit auswählen',
+    'Church' => 'Kirche',
+
     //Book page
     'BP-introText' => <<<EOT
     Diese Führung ermöglicht es Ihnen, den Kreuzgang und die neue Brauerei zu entdecken. Ihr Rundgang beginnt am Empfang am Ende des Innenhofs der Abtei. Unterwegs betreten Sie den Kreuzganggarten, den Kapitelsaal und das Refektorium. Nach der Abtei geht die Führung in der Brauerei weiter, wo Sie in Gebäuden aus dem 17. Jahrhundert die Herstellung des Bieres kennenlernen. Die Geschichte von Val-Dieu und das Bierbrauen werden dann (fast) keine Geheimnisse mehr für Sie haben!
@@ -191,13 +201,13 @@ return [
     'PreferredDate' => 'Wunschdatum',
     'PreferredTime' => 'Wunschuhrzeit',
     'GroupName' => 'Gruppenname',
-    'AdultNumber' => 'Anzahl der Erwachsenen (+/- 5 Personen)',
-    'YoungNumber' => 'Anzahl der Jugendlichen (12–17 Jahre)',
-    'KidsNumber' => 'Anzahl der Kinder (unter 12 Jahren)',
+    'AdultNumber' => 'Anzahl der Erwachsenen',
+    'YoungNumber' => 'Anzahl der Kinder und Jugendlichen (5–17 Jahre)',
+    'KidsNumber' => 'Anzahl der Kinder von 0 bis 4 Jahren (kostenlos)',
 
     'TourType' => 'Art der Führung',
     'AbbeyTour' => 'Abteiführung – 1 Stunde',
-    'AbbeyBreweryTour' => 'Kombinierte Führung durch die Abtei und die Brauerei – 2 Stunden',
+    'AbbeyBreweryTour' => 'Führung durch die Abtei und die Brauerei – 2 Stunden 15 Minuten',
 
     'PhoneNumber' => 'Telefonnummer',
     'AdditionalMessage' => 'Zusätzliche Nachricht',

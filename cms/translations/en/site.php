@@ -179,6 +179,16 @@ return [
     'Dog' => 'Dog',
 
 
+    'SmallGroup' => 'Group of fewer than 15 people',
+    'LargeGroup' => 'Group of 15 people or more',
+    'BookingNotice' => 'This is a booking request, not a confirmed reservation. You will receive a reply within 7 days.',
+    'SharedVisitInfo' => 'These prices and information apply to both group categories.',
+    'VisitAccessibility' => 'The abbey tour is not accessible to people with reduced mobility because there are many steps. The brewery tour is accessible to people with reduced mobility.',
+    'GroupMinimumError' => 'The group must include at least 15 people, including children aged 0 to 4.',
+    'VisitDateHelp' => 'Choose a date at least 21 days in advance.',
+    'ChooseTime' => 'Choose a time',
+    'Church' => 'Church',
+
     //Book page
     'BP-introText' => <<<EOT
     This guided tour allows you to discover the cloister and the new brewery. Your route begins at reception, at the far end of the abbey’s inner courtyard. Along the way, you will enter the cloister garden, the chapter house and the refectory. After the abbey, the tour continues in the brewery, where you will discover beer production in 17th-century buildings. The history of Val-Dieu and the brewing of beer will hold (almost) no more secrets for you!
@@ -191,13 +201,13 @@ return [
     'PreferredDate' => 'Preferred Date',
     'PreferredTime' => 'Preferred Time',
     'GroupName' => 'Group Name',
-    'AdultNumber' => 'Number of adults (+/- 5 people)',
-    'YoungNumber' => 'Number of teenagers (12-17 years old)',
-    'KidsNumber' => 'Number of children (under 12 years old)',
+    'AdultNumber' => 'Number of adults',
+    'YoungNumber' => 'Number of young people (ages 5-17)',
+    'KidsNumber' => 'Number of children aged 0 to 4 (free)',
 
     'TourType' => 'Tour Type',
     'AbbeyTour' => 'Abbey Tour - 1 hour',
-    'AbbeyBreweryTour' => 'Abbey & Brewery Tour - 2 hours',
+    'AbbeyBreweryTour' => 'Abbey & Brewery Tour - 2 hours 15 minutes',
 
     'PhoneNumber' => 'Phone Number',
     'AdditionalMessage' => 'Additional Message',

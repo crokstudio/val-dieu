@@ -178,6 +178,16 @@ return [
     'Dog' => 'Hond',
 
 
+    'SmallGroup' => 'Groep van minder dan 15 personen',
+    'LargeGroup' => 'Groep van 15 personen of meer',
+    'BookingNotice' => 'Dit is een reserveringsaanvraag, geen definitieve reservering. U ontvangt binnen 7 dagen een antwoord.',
+    'SharedVisitInfo' => 'Deze tarieven en informatie gelden voor beide groepscategorieën.',
+    'VisitAccessibility' => 'De rondleiding door de abdij is niet toegankelijk voor personen met beperkte mobiliteit omdat er veel trappen zijn. De rondleiding door de brouwerij is wel toegankelijk voor personen met beperkte mobiliteit.',
+    'GroupMinimumError' => 'De groep moet uit minstens 15 personen bestaan, inclusief kinderen van 0 tot 4 jaar.',
+    'VisitDateHelp' => 'Kies een datum minstens 21 dagen van tevoren.',
+    'ChooseTime' => 'Kies een tijdstip',
+    'Church' => 'Kerk',
+
     //Book page
     'BP-introText' => <<<EOT
     Tijdens deze rondleiding ontdekt u de kloostergang en de nieuwe brouwerij. Uw parcours begint aan het onthaal, achteraan op de binnenplaats van de abdij. Onderweg betreedt u de kloostertuin, de kapittelzaal en de refter. Na de abdij gaat het bezoek verder in de brouwerij, waar u in gebouwen uit de 17e eeuw ontdekt hoe bier wordt gebrouwen. De geschiedenis van Val-Dieu en het brouwen van bier zullen daarna (bijna) geen geheimen meer voor u hebben!
@@ -190,13 +200,13 @@ return [
     'PreferredDate' => 'Gewenste datum',
     'PreferredTime' => 'Gewenste tijdstip',
     'GroupName' => 'Naam van de groep',
-    'AdultNumber' => 'Aantal volwassenen (+/- 5 personen)',
-    'YoungNumber' => 'Aantal jongeren (12-17 jaar)',
-    'KidsNumber' => 'Aantal kinderen (onder de 12 jaar)',
+    'AdultNumber' => 'Aantal volwassenen',
+    'YoungNumber' => 'Aantal jongeren (5-17 jaar)',
+    'KidsNumber' => 'Aantal kinderen van 0 tot 4 jaar (gratis)',
 
     'TourType' => 'Type bezoek',
     'AbbeyTour' => 'Rondleiding door de abdij – 1 uur',
-    'AbbeyBreweryTour' => 'Gecombineerde rondleiding door de abdij en de brouwerij – 2 uren',
+    'AbbeyBreweryTour' => 'Rondleiding door de abdij en de brouwerij – 2 uur en 15 minuten',
 
     'PhoneNumber' => 'Telefoonnummer',
     'AdditionalMessage' => 'Aanvullend bericht',
