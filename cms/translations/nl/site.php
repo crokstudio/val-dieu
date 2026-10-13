@@ -7,7 +7,7 @@ return [
     'Visit' => 'Bezoeken',
     'Community' => 'Gemeenschap',
     'Info&Contact' => 'Info & Contact',
-    'Book' => 'Boeken',
+    'Book' => 'Een bezoek boeken',
     'Support' => 'Steunen',
     
 

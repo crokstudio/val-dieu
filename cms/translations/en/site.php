@@ -7,7 +7,7 @@ return [
     'Visit' => 'Visit',
     'Community' => 'Community',
     'Info&Contact' => 'Info & Contact',
-    'Book' => 'Book',
+    'Book' => 'Book a visit',
     'Support' => 'Support',
     
 
