@@ -26,6 +26,8 @@ if (PHP_SAPI === 'cli') {
         }
         if (str_starts_with($resourceBasePath, '/') && !is_dir($resourceBasePath)) {
             $resourceBasePath = $hostingWebroot . '/cpresources';
+            // Craft reapplies CRAFT_* environment values after loading this file.
+            $_SERVER['CRAFT_RESOURCE_BASE_PATH'] = $resourceBasePath;
         }
     }
 }
