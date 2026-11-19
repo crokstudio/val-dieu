@@ -3,9 +3,9 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "craftcms/cms": "^5.9.0",
-    "craftcms/element-api": "^4.2",
-    "craftcms/webhooks": "^3.2",
+    "craftcms/cms": "^5.12.1",
+    "craftcms/element-api": "^4.4.1",
+    "craftcms/webhooks": "^3.5.1",
     "vlucas/phpdotenv": "^5.4.0"
   },
   "require-dev": {
