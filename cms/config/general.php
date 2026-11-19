@@ -18,11 +18,15 @@ $resourceBaseUrl = App::env('CRAFT_RESOURCE_BASE_URL') ?: '@web/cpresources';
 
 // OVH exposes different home paths to PHP-FPM and SSH. Resolve the local
 // sibling web root for CLI commands when the configured web path is unavailable.
-if (PHP_SAPI === 'cli' && !is_dir($webroot)) {
+if (PHP_SAPI === 'cli') {
     $hostingWebroot = dirname(__DIR__, 2) . '/www/cms';
     if (is_dir($hostingWebroot)) {
-        $webroot = $hostingWebroot;
-        $resourceBasePath = $webroot . '/cpresources';
+        if (!is_dir($webroot)) {
+            $webroot = $hostingWebroot;
+        }
+        if (str_starts_with($resourceBasePath, '/') && !is_dir($resourceBasePath)) {
+            $resourceBasePath = $hostingWebroot . '/cpresources';
+        }
     }
 }
 
